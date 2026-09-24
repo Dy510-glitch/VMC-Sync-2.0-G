@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VMC SYNC - Villagers Montessori College</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        vmc: {
+                            navy: '#0b192c',
+                            blue: '#1e3e62',
+                            sky: '#f0f4f8',
+                            gold: '#d4af37',
+                            accent: '#3b82f6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar and aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-vmc-sky text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-vmc-gold selection:text-white">
+
+    <!-- Header & Navigation -->
+    <header class="sticky top-0 z-50 bg-vmc-navy text-white shadow-md border-b-2 border-vmc-gold">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Brand Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('feed')">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-vmc-gold to-amber-600 flex items-center justify-center shadow-lg border border-vmc-gold/40">
+                        <i class="fa-solid fa-graduation-cap text-vmc-navy text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-bold tracking-wider bg-gradient-to-r from-white via-slate-100 to-vmc-gold bg-clip-text text-transparent">VMC SYNC</span>
+                        <p class="text-xs text-vmc-gold font-medium uppercase tracking-widest">Villagers Montessori College</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+                    <button onclick="switchTab('feed')" id="nav-btn-feed" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 bg-white/10 text-vmc-gold shadow-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-bullhorn"></i>
+                        <span>Campus Feed</span>
+                    </button>
+                    <button onclick="switchTab('assignments')" id="nav-btn-assignments" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-300 hover:bg-white/5 hover:text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>Assignment Hub</span>
+                    </button>
+                    <button onclick="switchTab('toolkit')" id="nav-btn-toolkit" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-300 hover:bg-white/5 hover:text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-toolbox"></i>
+                        <span>Student Toolkit</span>
+                    </button>
+                    <button onclick="switchTab('lostfound')" id="nav-btn-lostfound" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-300 hover:bg-white/5 hover:text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-box-archive"></i>
+                        <span>Lost & Found</span>
+                    </button>
+                    <button onclick="switchTab('admin')" id="nav-btn-admin" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-amber-300/80 hover:bg-amber-500/10 hover:text-amber-300 flex items-center space-x-2 border border-amber-500/30">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Admin Portal</span>
+                    </button>
+                </nav>
+
+                <!-- User Profile & Mobile Toggle -->
+                <div class="flex items-center space-x-4">
+                    <div class="hidden sm:flex items-center space-x-3 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                        <div class="w-8 h-8 rounded-full bg-vmc-blue text-vmc-gold flex items-center justify-center font-bold text-sm shadow">
+                            <span id="user-initials">JS</span>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-xs font-semibold text-white leading-tight" id="user-display-name">Juan Student</p>
+                            <p class="text-[10px] text-vmc-gold font-mono leading-tight">BSIT - 3rd Year</p>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg bg-white/10 text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg" id="mobile-menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-vmc-blue border-t border-white/10 px-4 pt-2 pb-4 space-y-1">
+            <button onclick="switchTab('feed'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium text-white hover:bg-white/10 flex items-center space-x-3">
+                <i class="fa-solid fa-bullhorn w-5 text-vmc-gold"></i><span>Campus Feed</span>
+            </button>
+            <button onclick="switchTab('assignments'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium text-white hover:bg-white/10 flex items-center space-x-3">
+                <i class="fa-solid fa-list-check w-5 text-vmc-gold"></i><span>Assignment Hub</span>
+            </button>
+            <button onclick="switchTab('toolkit'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium text-white hover:bg-white/10 flex items-center space-x-3">
+                <i class="fa-solid fa-toolbox w-5 text-vmc-gold"></i><span>Student Toolkit</span>
+            </button>
+            <button onclick="switchTab('lostfound'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium text-white hover:bg-white/10 flex items-center space-x-3">
+                <i class="fa-solid fa-box-archive w-5 text-vmc-gold"></i><span>Lost & Found</span>
+            </button>
+            <button onclick="switchTab('admin'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium text-amber-300 hover:bg-amber-500/10 flex items-center space-x-3 border-t border-white/10 mt-2 pt-3">
+                <i class="fa-solid fa-shield-halved w-5 text-amber-400"></i><span>Admin Portal</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Urgent Broadcast Banner -->
+    <div id="urgent-banner" class="hidden bg-gradient-to-r from-amber-500 to-orange-600 text-white px-4 py-3 shadow-md relative z-45">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="flex h-3 w-3 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                </span>
+                <p class="text-sm font-bold uppercase tracking-wider" id="urgent-banner-text">URGENT ANNOUNCEMENT</p>
+            </div>
+            <button onclick="dismissUrgentBanner()" class="text-white hover:bg-white/20 p-1 rounded-md transition text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Application Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ================= TAB 1: CAMPUS FEED ================= -->
+        <section id="tab-feed" class="tab-content space-y-6">
+            <!-- Pinned Announcements Bar -->
+            <div id="pinned-announcements-container" class="space-y-3">
+                <!-- Dynamically injected pinned posts -->
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left/Main Feed Stream -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Create Post Box -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 transition hover:shadow-md">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 rounded-full bg-vmc-navy text-vmc-gold font-bold flex items-center justify-center shrink-0">
+                                JS
+                            </div>
+                            <div class="flex-grow">
+                                <textarea id="post-content" rows="3" placeholder="Share an announcement, event, or question with the VMC community..." class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-vmc-blue/50 resize-none bg-slate-50/50"></textarea>
+                                
+                                <div id="post-image-preview-container" class="hidden relative mb-3 mt-2 rounded-xl overflow-hidden bg-slate-100 max-h-48 border border-slate-200">
+                                    <img id="post-image-preview" src="" alt="Preview" class="w-full h-full object-cover">
+                                    <button onclick="clearPostImage()" class="absolute top-2 right-2 bg-slate-900/70 hover:bg-slate-900 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs transition">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+
+                                <div class="flex flex-wrap items-center justify-between pt-3 border-t border-slate-100 gap-3">
+                                    <div class="flex items-center space-x-3">
+                                        <select id="post-category" class="text-xs font-semibold bg-slate-100 border border-slate-200 text-slate-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-vmc-blue">
+                                            <option value="General">📢 General</option>
+                                            <option value="Events">🎉 Events</option>
+                                            <option value="Academics">📚 Academics</option>
+                                            <option value="Clubs">🏆 Clubs</option>
+                                        </select>
+                                        
+                                        <label class="cursor-pointer text-slate-500 hover:text-vmc-blue text-xs font-medium flex items-center space-x-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200/70 rounded-lg transition">
+                                            <i class="fa-regular fa-image text-sm"></i>
+                                            <span class="hidden sm:inline">Add Image URL</span>
+                                            <input type="text" id="post-image-url-input" placeholder="Paste image URL..." class="hidden" onchange="previewPostImage(this.value)">
+                                        </label>
+                                        <!-- Prompt user for Image URL via prompt helper -->
+                                        <button onclick="promptImageUrl()" class="text-slate-500 hover:text-vmc-blue text-xs font-medium flex items-center space-x-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200/70 rounded-lg transition">
+                                            <i class="fa-regular fa-image text-sm"></i>
+                                            <span>Attach Image</span>
+                                        </button>
+                                    </div>
+                                    <button onclick="createPost()" class="bg-vmc-navy hover:bg-vmc-blue text-white px-5 py-2 rounded-xl text-sm font-semibold shadow transition flex items-center space-x-2">
+                                        <span>Post</span>
+                                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feed Filter Bar -->
+                    <div class="flex items-center justify-between bg-white px-4 py-3 rounded-xl border border-slate-200/80 shadow-sm">
+                        <div class="flex items-center space-x-2 overflow-x-auto py-1">
+                            <button onclick="filterFeed('All')" id="filter-all" class="filter-chip px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-vmc-navy text-white transition">All Posts</button>
+                            <button onclick="filterFeed('General')" id="filter-General" class="filter-chip px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">General</button>
+                            <button onclick="filterFeed('Events')" id="filter-Events" class="filter-chip px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Events</button>
+                            <button onclick="filterFeed('Academics')" id="filter-Academics" class="filter-chip px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Academics</button>
+                            <button onclick="filterFeed('Clubs')" id="filter-Clubs" class="filter-chip px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Clubs</button>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Posts Stream -->
+                    <div id="posts-stream" class="space-y-4">
+                        <!-- Posts injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Right Sidebar: Quick Widgets -->
+                <div class="space-y-6">
+                    <!-- Campus Quick Status Widget -->
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+                        <h3 class="text-sm font-bold text-vmc-navy uppercase tracking-wider mb-4 flex items-center justify-between">
+                            <span>Campus Status</span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        </h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                                <span class="text-slate-600 font-medium">Main Campus</span>
+                                <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">Open / Normal</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                                <span class="text-slate-600 font-medium">Library & E-Lab</span>
+                                <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">Open (Until 8 PM)</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                                <span class="text-slate-600 font-medium">Registry Office</span>
+                                <span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-md">Closing Soon</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming VMC Events Widget -->
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+                        <h3 class="text-sm font-bold text-vmc-navy uppercase tracking-wider mb-4 flex items-center space-x-2">
+                            <i class="fa-regular fa-calendar-days text-vmc-gold"></i>
+                            <span>VMC Upcoming Events</span>
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="p-3 bg-amber-50/60 border border-amber-200/60 rounded-xl">
+                                <div class="flex items-center justify-between text-xs text-amber-700 font-bold mb-1">
+                                    <span>OCT 12, 2026</span>
+                                    <span>Gymnasium</span>
+                                </div>
+                                <h4 class="text-sm font-bold text-slate-800">VMC Intramurals Opening Ceremony</h4>
+                            </div>
+                            <div class="p-3 bg-blue-50/60 border border-blue-200/60 rounded-xl">
+                                <div class="flex items-center justify-between text-xs text-blue-700 font-bold mb-1">
+                                    <span>OCT 25, 2026</span>
+                                    <span>Auditorium</span>
+                                </div>
+                                <h4 class="text-sm font-bold text-slate-800">IT Symposium: AI & Future Tech</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: ASSIGNMENT HUB ================= -->
+        <section id="tab-assignments" class="tab-content hidden space-y-6">
+            <!-- Assignment Hub Header & Stats -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-vmc-navy">Assignment Hub</h2>
+                    <p class="text-sm text-slate-500">Track your academic projects, homework, and exams across all enrolled subjects.</p>
+                </div>
+                
+                <!-- Progress Tracker -->
+                <div class="w-full md:w-72 bg-slate-50 p-4 rounded-xl border border-slate-200/60">
+                    <div class="flex justify-between text-xs font-bold text-slate-700 mb-2">
+                        <span>Overall Completion</span>
+                        <span id="assignment-completion-text">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                        <div id="assignment-progress-bar" class="bg-vmc-gold h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Add Assignment Form -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 h-fit space-y-4">
+                    <h3 class="text-md font-bold text-vmc-navy flex items-center space-x-2">
+                        <i class="fa-solid fa-plus text-vmc-gold"></i>
+                        <span>Add New Assignment</span>
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Assignment Title</label>
+                            <input type="text" id="assignment-title" placeholder="e.g., Data Structures Project" class="w-full text-sm border border-slate-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-vmc-blue/50 bg-slate-50/50">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Subject / Course</label>
+                            <input type="text" id="assignment-subject" placeholder="e.g., IT 301" class="w-full text-sm border border-slate-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-vmc-blue/50 bg-slate-50/50">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Due Date</label>
+                            <input type="date" id="assignment-duedate" class="w-full text-sm border border-slate-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-vmc-blue/50 bg-slate-50/50">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Priority Level</label>
+                            <select id="assignment-priority" class="w-full text-sm border border-slate-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-vmc-blue/50 bg-slate-50/50">
+                                <option value="Low">🟢 Low Priority</option>
+                                <option value="Medium" selected>🟡 Medium Priority</option>
+                                <option value="High">🔴 High Priority</option>
+                            </select>
+                        </div>
+                        <button onclick="addAssignment()" class="w-full bg-vmc-navy hover:bg-vmc-blue text-white py-3 rounded-xl text-sm font-semibold shadow transition mt-2">
+                            Add Assignment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Assignment List -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-md font-bold text-slate-800">Pending & Completed Tasks</h3>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="filterAssignments('All')" id="assign-filter-all" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-vmc-navy text-white transition">All</button>
+                            <button onclick="filterAssignments('Pending')" id="assign-filter-Pending" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Pending</button>
+                            <button onclick="filterAssignments('Completed')" id="assign-filter-Completed" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Completed</button>
+                        </div>
+                    </div>
+
+                    <div id="assignments-list" class="space-y-3">
+                        <!-- Dynamically injected assignment items -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: STUDENT TOOLKIT ================= -->
+        <section id="tab-toolkit" class="tab-content hidden space-y-8">
+            <!-- Header -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
+                <h2 class="text-2xl font-bold text-vmc-navy">Student Toolkit</h2>
+                <p class="text-sm text-slate-500">Essential utilities to calculate your GPA, access academic portals, and focus using the Pomodoro timer.</p>
+            </div>
+
+            <!-- Toolkit Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- 1. GPA / Grade Calculator -->
+                <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                        <h3 class="text-md font-bold text-vmc-navy flex items-center space-x-2">
+                            <i class="fa-solid fa-calculator text-vmc-gold"></i>
+                            <span>GPA & Grade Calculator</span>
+                        </h3>
+                        <div class="bg-vmc-sky px-4 py-2 rounded-xl text-right">
+                            <span class="text-xs font-semibold text-slate-500 block">Computed GPA</span>
+                            <span class="text-xl font-bold text-vmc-navy" id="gpa-result">0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Add Subject Row -->
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end bg-slate-50 p-4 rounded-xl border border-slate-200/60">
+                        <div class="sm:col-span-5">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Subject Name</label>
+                            <input type="text" id="gpa-subject" placeholder="e.g., Networking 1" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-vmc-blue">
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Units</label>
+                            <input type="number" id="gpa-units" min="1" max="6" value="3" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-vmc-blue">
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Grade (1.0 - 5.0)</label>
+                            <input type="number" id="gpa-grade" step="0.25" min="1.0" max="5.0" value="1.75" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-vmc-blue">
+                        </div>
+                        <div class="sm:col-span-1">
+                            <button onclick="addGpaSubject()" class="w-full bg-vmc-navy hover:bg-vmc-blue text-white h-[38px] rounded-lg text-sm font-semibold flex items-center justify-center transition">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Subject Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-100 text-slate-700 font-semibold text-xs uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-3 rounded-l-lg">Subject</th>
+                                    <th class="p-3">Units</th>
+                                    <th class="p-3">Grade</th>
+                                    <th class="p-3 rounded-r-lg text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gpa-table-body" class="divide-y divide-slate-100">
+                                <!-- Dynamically injected GPA items -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right Column: Pomodoro & Quick Links -->
+                <div class="space-y-6">
+                    <!-- Pomodoro Study Timer -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 text-center space-y-4">
+                        <h3 class="text-md font-bold text-vmc-navy flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-clock text-vmc-gold"></i>
+                            <span>Pomodoro Study Timer</span>
+                        </h3>
+                        
+                        <div class="py-4">
+                            <span id="pomo-timer-display" class="text-5xl font-extrabold font-mono text-vmc-navy tracking-wider">25:00</span>
+                            <p class="text-xs font-medium text-slate-400 mt-1 uppercase tracking-widest" id="pomo-status-label">Focus Session</p>
+                        </div>
+
+                        <div class="flex items-center justify-center space-x-3">
+                            <button onclick="togglePomodoro()" id="pomo-start-btn" class="bg-vmc-navy hover:bg-vmc-blue text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow transition flex items-center space-x-2">
+                                <i class="fa-solid fa-play" id="pomo-play-icon"></i>
+                                <span id="pomo-play-text">Start</span>
+                            </button>
+                            <button onclick="resetPomodoro()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl text-sm font-semibold transition">
+                                <i class="fa-solid fa-rotate-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links / Resources Hub -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
+                        <h3 class="text-md font-bold text-vmc-navy flex items-center space-x-2">
+                            <i class="fa-solid fa-compass text-vmc-gold"></i>
+                            <span>Quick Resources</span>
+                        </h3>
+                        <div class="space-y-2.5">
+                            <a href="https://www.facebook.com" target="_blank" class="flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100 rounded-xl transition text-sm font-medium text-slate-700 group">
+                                <span class="flex items-center space-x-3">
+                                    <i class="fa-solid fa-globe text-vmc-blue group-hover:scale-110 transition"></i>
+                                    <span>VMC Student Portal</span>
+                                </span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400"></i>
+                            </a>
+                            <a href="https://classroom.google.com" target="_blank" class="flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100 rounded-xl transition text-sm font-medium text-slate-700 group">
+                                <span class="flex items-center space-x-3">
+                                    <i class="fa-solid fa-graduation-cap text-amber-600 group-hover:scale-110 transition"></i>
+                                    <span>LMS & Google Classroom</span>
+                                </span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400"></i>
+                            </a>
+                            <a href="https://scholar.google.com" target="_blank" class="flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100 rounded-xl transition text-sm font-medium text-slate-700 group">
+                                <span class="flex items-center space-x-3">
+                                    <i class="fa-solid fa-book-open text-emerald-600 group-hover:scale-110 transition"></i>
+                                    <span>E-Library & Journals</span>
+                                </span>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: LOST & FOUND ================= -->
+        <section id="tab-lostfound" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-vmc-navy">Campus Lost & Found</h2>
+                    <p class="text-sm text-slate-500">Report missing belongings or browse found items across VMC campus grounds.</p>
+                </div>
+                <button onclick="openLostFoundModal()" class="bg-vmc-navy hover:bg-vmc-blue text-white px-5 py-3 rounded-xl text-sm font-semibold shadow transition flex items-center space-x-2 shrink-0">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Report Lost / Found Item</span>
+                </button>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="flex items-center space-x-2 bg-white p-2 rounded-xl border border-slate-200/80 shadow-sm w-fit">
+                <button onclick="filterLostFound('All')" id="lf-filter-All" class="lf-chip px-4 py-2 rounded-lg text-xs font-semibold bg-vmc-navy text-white transition">All Items</button>
+                <button onclick="filterLostFound('Lost')" id="lf-filter-Lost" class="lf-chip px-4 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">🔴 Lost Items</button>
+                <button onclick="filterLostFound('Found')" id="lf-filter-Found" class="lf-chip px-4 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">🟢 Found Items</button>
+            </div>
+
+            <!-- Lost & Found Grid -->
+            <div id="lostfound-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- ================= TAB 5: ADMIN PORTAL ================= -->
+        <section id="tab-admin" class="tab-content hidden space-y-8">
+            <div class="bg-gradient-to-r from-vmc-navy to-vmc-blue rounded-2xl p-8 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+                <div>
+                    <span class="bg-amber-400 text-vmc-navy text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3 inline-block">Management Dashboard</span>
+                    <h2 class="text-3xl font-extrabold tracking-tight">Admin Portal</h2>
+                    <p class="text-slate-300 text-sm mt-1">Broadcast urgent campus announcements, pin announcements, and moderate community posts or lost & found items.</p>
+                </div>
+                <div class="bg-white/10 border border-white/20 p-4 rounded-xl text-center shrink-0">
+                    <span class="text-xs text-slate-300 block">Logged in as</span>
+                    <span class="text-sm font-bold text-amber-300">VMC Administrator</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Broadcast Urgent Banner -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
+                    <h3 class="text-md font-bold text-vmc-navy flex items-center space-x-2">
+                        <i class="fa-solid fa-bullhorn text-amber-500"></i>
+                        <span>Broadcast Urgent Campus Alert</span>
+                    </h3>
+                    <p class="text-xs text-slate-500">This will display an urgent notification banner at the top of all student screens across the platform.</p>
+                    
+                    <div class="space-y-3">
+                        <textarea id="admin-broadcast-text" rows="3" placeholder="e.g., Classes suspended this afternoon due to heavy rainfall..." class="w-full text-sm border border-slate-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-slate-50/50"></textarea>
+                        <div class="flex space-x-3">
+                            <button onclick="publishBroadcast()" class="flex-grow bg-amber-500 hover:bg-amber-600 text-white py-3 rounded-xl text-sm font-semibold shadow transition">
+                                Publish Broadcast
+                            </button>
+                            <button onclick="clearBroadcast()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-3 rounded-xl text-sm font-semibold transition">
+                                Clear Alert
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Quick Stats -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
+                    <h3 class="text-md font-bold text-vmc-navy flex items-center space-x-2">
+                        <i class="fa-solid fa-chart-pie text-vmc-gold"></i>
+                        <span>Platform Overview</span>
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4 pt-2">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 text-center">
+                            <span class="text-2xl font-extrabold text-vmc-navy" id="admin-stat-posts">0</span>
+                            <span class="text-xs font-semibold text-slate-500 block mt-1">Total Feed Posts</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/60 text-center">
+                            <span class="text-2xl font-extrabold text-vmc-navy" id="admin-stat-lf">0</span>
+                            <span class="text-xs font-semibold text-slate-500 block mt-1">Lost & Found Items</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Moderation Section -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-6">
+                <h3 class="text-md font-bold text-vmc-navy flex items-center space-x-2">
+                    <i class="fa-solid fa-shield-halved text-vmc-gold"></i>
+                    <span>Community Moderation (Feed Posts & Lost/Found)</span>
+                </h3>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-100 text-slate-700 font-semibold text-xs uppercase tracking-wider">
+                            <tr>
+                                <th class="p-3 rounded-l-lg">Type / Category</th>
+                                <th class="p-3">Content Preview</th>
+                                <th class="p-3">Author</th>
+                                <th class="p-3 rounded-r-lg text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-moderation-table" class="divide-y divide-slate-100">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Lost & Found Modal Form -->
+    <div id="lostfound-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 animate-in fade-in zoom-in duration-200">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="text-lg font-bold text-vmc-navy">Report Lost or Found Item</h3>
+                <button onclick="closeLostFoundModal()" class="text-slate-400 hover:text-slate-700 text-sm p-1 rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Status</label>
+                    <select id="lf-status" class="w-full text-sm border border-slate-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-vmc-blue bg-slate-50/50">
+                        <option value="Lost">🔴 Lost Item</option>
+                        <option value="Found">🟢 Found Item</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Item Name</label>
+                    <input type="text" id="lf-name" placeholder="e.g., Scientific Calculator, Student ID" class="w-full text-sm border border-slate-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-vmc-blue bg-slate-50/50">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Location Last Seen / Found</label>
+                    <input type="text" id="lf-location" placeholder="e.g., 2nd Floor Hallway near IT Lab" class="w-full text-sm border border-slate-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-vmc-blue bg-slate-50/50">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Description & Details</label>
+                    <textarea id="lf-desc" rows="3" placeholder="Provide color, brand, or distinguishing marks..." class="w-full text-sm border border-slate-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-vmc-blue bg-slate-50/50 resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Contact Info (Messenger / Phone / Email)</label>
+                    <input type="text" id="lf-contact" placeholder="e.g., Juan Student (FB / 09123456789)" class="w-full text-sm border border-slate-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-vmc-blue bg-slate-50/50">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Photo Image URL (Optional)</label>
+                    <input type="text" id="lf-image" placeholder="https://images.unsplash.com/photo-..." class="w-full text-sm border border-slate-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-vmc-blue bg-slate-50/50">
+                </div>
+
+                <div class="flex space-x-3 pt-3">
+                    <button onclick="submitLostFoundItem()" class="flex-grow bg-vmc-navy hover:bg-vmc-blue text-white py-3 rounded-xl text-sm font-semibold shadow transition">
+                        Submit Report
+                    </button>
+                    <button onclick="closeLostFoundModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-3 rounded-xl text-sm font-semibold transition">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Modal Message Box (No alert() used) -->
+    <div id="custom-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl text-center space-y-4">
+            <div id="modal-icon" class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-xl font-bold">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h3 id="modal-title" class="text-lg font-bold text-vmc-navy">Success</h3>
+            <p id="modal-message" class="text-sm text-slate-600">Action completed successfully.</p>
+            <button onclick="closeCustomModal()" class="w-full bg-vmc-navy hover:bg-vmc-blue text-white py-2.5 rounded-xl text-sm font-semibold shadow transition">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-vmc-navy text-slate-400 border-t border-white/10 mt-12 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-vmc-gold to-amber-600 flex items-center justify-center text-vmc-navy font-bold shadow">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <p class="text-white font-bold text-sm">VMC SYNC — Villagers Montessori College</p>
+                    <p class="text-xs text-slate-400">All-in-One Student Community & Service Platform</p>
+                </div>
+            </div>
+            <p class="text-xs text-slate-400">&copy; 2026 Villagers Montessori College. Empowering students through seamless digital connectivity.</p>
+        </div>
+    </footer>
+
+    <!-- Application Logic Script -->
+    <script>
+        let currentTab = 'feed';
+        let currentFeedFilter = 'All';
+        let currentAssignFilter = 'All';
+        let currentLFFilter = 'All';
+        let activePostImage = '';
+
+        // Default Seed Data
+        const defaultPosts = [
+            {
+                id: 1,
+                author: 'Prof. Maria Santos',
+                role: 'Faculty - IT Dept',
+                category: 'Academics',
+                content: 'Reminder to all 3rd Year BSIT students: Midterm project milestone submissions are due this coming Friday at 5:00 PM via Google Classroom. Make sure your GitHub repositories are updated!',
+                image: '',
+                likes: 24,
+                liked: false,
+                pinned: true,
+                comments: [
+                    { id: 1, author: 'Juan Student', text: 'Thank you for the reminder Professor!' }
+                ],
+                timestamp: '2 hours ago'
+            },
+            {
+                id: 2,
+                author: 'VMC Supreme Student Council',
+                role: 'Official Org',
+                category: 'Events',
+                content: '🎉 Are you ready for VMC Intramurals 2026? Registration for Basketball, Volleyball, and E-Sports (Mobile Legends / Valorant) is now officially open! Visit the SSC office or message our page to register your team.',
+                image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80',
+                likes: 58,
+                liked: false,
+                pinned: false,
+                comments: [
+                    { id: 1, author: 'Mark Cruz', text: 'Let’s go CS department!' },
+                    { id: 2, author: 'Ana Reyes', text: 'Where can we sign up for ML tournament?' }
+                ],
+                timestamp: 'Yesterday'
+            }
+        ];
+
+        const defaultAssignments = [
+            { id: 1, title: 'Data Structures Final Project', subject: 'IT 301', duedate: '2026-10-15', priority: 'High', completed: false },
+            { id: 2, title: 'Networking Lab Exercise 4', subject: 'IT 302', duedate: '2026-10-10', priority: 'Medium', completed: true },
+            { id: 3, title: 'Philippine History Reflection Paper', subject: 'GE 5', duedate: '2026-10-18', priority: 'Low', completed: false }
+        ];
+
+        const defaultGpaSubjects = [
+            { id: 1, name: 'Advanced Programming', units: 3, grade: 1.25 },
+            { id: 2, name: 'Database Management Systems', units: 3, grade: 1.50 },
+            { id: 3, name: 'Operating Systems', units: 3, grade: 1.75 }
+        ];
+
+        const defaultLostFound = [
+            { id: 1, status: 'Lost', name: 'Casio Scientific Calculator', location: 'Near Room 304, Main Building', desc: 'FX-991ES Plus model with name sticker "Juan S." at the back.', contact: 'Juan Student (Messenger)', image: 'https://images.unsplash.com/photo-1594980598772-a3fab2a32ffc?auto=format&fit=crop&w=600&q=80' },
+            { id: 2, status: 'Found', name: 'Blue Tumbler (Hydro Flask)', location: 'Canteen Dining Area', desc: 'Dark blue insulated tumbler with various stickers.', contact: 'VMC Security Office (0912-345-6789)', image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=600&q=80' }
+        ];
+
+        // LocalStorage initialization
+        let posts = JSON.parse(localStorage.getItem('vmc_posts')) || defaultPosts;
+        let assignments = JSON.parse(localStorage.getItem('vmc_assignments')) || defaultAssignments;
+        let gpaSubjects = JSON.parse(localStorage.getItem('vmc_gpa')) || defaultGpaSubjects;
+        let lostFoundItems = JSON.parse(localStorage.getItem('vmc_lf')) || defaultLostFound;
+        let urgentBroadcast = localStorage.getItem('vmc_broadcast') || '';
+
+        // Pomodoro Timer state
+        let pomoTimer = null;
+        let pomoSeconds = 25 * 60;
+        let pomoRunning = false;
+        let pomoMode = 'work'; // work or break
+
+        // Navigation Handler
+        function switchTab(tabId) {
+            currentTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-white/15', 'text-vmc-gold', 'shadow-sm');
+                btn.classList.add('text-slate-300');
+            });
+            
+            const activeBtn = document.getElementById(`nav-btn-${tabId}`);
+            if(activeBtn) {
+                activeBtn.classList.add('bg-white/15', 'text-vmc-gold', 'shadow-sm');
+                activeBtn.classList.remove('text-slate-300');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Refresh view data if needed
+            if(tabId === 'feed') renderFeed();
+            if(tabId === 'assignments') renderAssignments();
+            if(tabId === 'toolkit') renderGpaTable();
+            if(tabId === 'lostfound') renderLostFound();
+            if(tabId === 'admin') renderAdminPanel();
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function showModal(title, message, isSuccess = true) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = message;
+            const icon = document.getElementById('modal-icon');
+            if(isSuccess) {
+                icon.className = 'w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-xl font-bold';
+                icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+            } else {
+                icon.className = 'w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl font-bold';
+                icon.innerHTML = '<i class="fa-solid fa-exclamation"></i>';
+            }
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+
+        function closeCustomModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        // Campus Feed Logic
+        function persistPosts() {
+            localStorage.setItem('vmc_posts', JSON.stringify(posts));
+        }
+
+        function filterFeed(category) {
+            currentFeedFilter = category;
+            document.querySelectorAll('.filter-chip').forEach(btn => {
+                btn.classList.remove('bg-vmc-navy', 'text-white');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            });
+            const active = document.getElementById(`filter-${category}`);
+            if(active) {
+                active.classList.remove('bg-slate-100', 'text-slate-600');
+                active.classList.add('bg-vmc-navy', 'text-white');
+            }
+            renderFeed();
+        }
+
+        function previewPostImage(url) {
+            activePostImage = url;
+            const container = document.getElementById('post-image-preview-container');
+            const img = document.getElementById('post-image-preview');
+            if(url.trim() !== '') {
+                img.src = url;
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function promptImageUrl() {
+            const url = prompt("Enter Image URL for your post:");
+            if(url) {
+                document.getElementById('post-image-url-input').value = url;
+                previewPostImage(url);
+            }
+        }
+
+        function clearPostImage() {
+            activePostImage = '';
+            document.getElementById('post-image-url-input').value = '';
+            document.getElementById('post-image-preview-container').classList.add('hidden');
+        }
+
+        function createPost() {
+            const content = document.getElementById('post-content').value.trim();
+            const category = document.getElementById('post-category').value;
+
+            if(!content) {
+                showModal('Error', 'Please enter some text for your post.', false);
+                return;
+            }
+
+            const newPost = {
+                id: Date.now(),
+                author: 'Juan Student',
+                role: 'BSIT - 3rd Year',
+                category: category,
+                content: content,
+                image: activePostImage,
+                likes: 0,
+                liked: false,
+                pinned: false,
+                comments: [],
+                timestamp: 'Just now'
+            };
+
+            posts.unshift(newPost);
+            persistPosts();
+
+            // Reset input
+            document.getElementById('post-content').value = '';
+            clearPostImage();
+            renderFeed();
+            showModal('Success', 'Your post was successfully shared to the VMC Campus Feed!');
+        }
+
+        function toggleLike(postId) {
+            const post = posts.find(p => p.id === postId);
+            if(post) {
+                if(post.liked) {
+                    post.likes--;
+                    post.liked = false;
+                } else {
+                    post.likes++;
+                    post.liked = true;
+                }
+                persistPosts();
+                renderFeed();
+            }
+        }
+
+        function addComment(postId) {
+            const input = document.getElementById(`comment-input-${postId}`);
+            const text = input.value.trim();
+            if(!text) return;
+
+            const post = posts.find(p => p.id === postId);
+            if(post) {
+                post.comments.push({
+                    id: Date.now(),
+                    author: 'Juan Student',
+                    text: text
+                });
+                persistPosts();
+                input.value = '';
+                renderFeed();
+            }
+        }
+
+        function renderFeed() {
+            // Render Pinned Announcements bar
+            const pinnedContainer = document.getElementById('pinned-announcements-container');
+            const pinnedPosts = posts.filter(p => p.pinned);
+            
+            if(pinnedPosts.length > 0) {
+                pinnedContainer.innerHTML = pinnedPosts.map(p => `
+                    <div class="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border-l-4 border-vmc-gold bg-white p-5 rounded-2xl shadow-sm">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-md flex items-center space-x-1.5">
+                                <i class="fa-solid fa-thumbtack text-vmc-gold"></i>
+                                <span>Pinned Announcement (${p.category})</span>
+                            </span>
+                            <span class="text-xs text-slate-400">${p.timestamp}</span>
+                        </div>
+                        <p class="text-sm font-semibold text-slate-800 mb-2">${p.content}</p>
+                        <p class="text-xs text-slate-500 font-medium">— ${p.author} (${p.role})</p>
+                    </div>
+                `).join('');
+                pinnedContainer.classList.remove('hidden');
+            } else {
+                pinnedContainer.innerHTML = '';
+                pinnedContainer.classList.add('hidden');
+            }
+
+            // Render main posts stream
+            const stream = document.getElementById('posts-stream');
+            const filtered = currentFeedFilter === 'All' ? posts : posts.filter(p => p.category === currentFeedFilter);
+
+            if(filtered.length === 0) {
+                stream.innerHTML = `
+                    <div class="bg-white rounded-2xl p-12 text-center text-slate-400 border border-slate-200/80">
+                        <i class="fa-regular fa-comment-dots text-4xl mb-3 text-slate-300"></i>
+                        <p class="text-sm font-semibold">No posts found in this category.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            stream.innerHTML = filtered.map(post => `
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
+                    <!-- Post Header -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-vmc-navy text-vmc-gold font-bold flex items-center justify-center text-sm shadow">
+                                ${post.author.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800 leading-tight">${post.author}</h4>
+                                <p class="text-xs text-slate-400">${post.role} • <span class="text-vmc-blue font-medium">${post.category}</span></p>
+                            </div>
+                        </div>
+                        <span class="text-xs text-slate-400 font-medium">${post.timestamp}</span>
+                    </div>
+
+                    <!-- Post Body -->
+                    <p class="text-sm text-slate-700 leading-relaxed">${post.content}</p>
+
+                    ${post.image ? `
+                        <div class="rounded-xl overflow-hidden max-h-96 border border-slate-100 bg-slate-50">
+                            <img src="${post.image}" alt="Post image" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400/f1f5f9/1e3e62?text=VMC+Image'">
+                        </div>
+                    ` : ''}
+
+                    <!-- Post Actions (Likes & Comments Count) -->
+                    <div class="flex items-center justify-between pt-3 border-t border-slate-100 text-xs font-semibold text-slate-600">
+                        <button onclick="toggleLike(${post.id})" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition ${post.liked ? 'text-rose-600' : 'text-slate-600'}">
+                            <i class="${post.liked ? 'fa-solid' : 'fa-regular'} fa-heart text-base"></i>
+                            <span>${post.likes} Likes</span>
+                        </button>
+                        <span class="flex items-center space-x-1.5">
+                            <i class="fa-regular fa-comment text-base"></i>
+                            <span>${post.comments.length} Comments</span>
+                        </span>
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div class="space-y-3 pt-3 border-t border-slate-100 bg-slate-50/50 p-4 rounded-xl">
+                        <div class="space-y-2">
+                            ${post.comments.map(c => `
+                                <div class="bg-white p-2.5 rounded-lg border border-slate-200/60 text-xs shadow-2xs">
+                                    <span class="font-bold text-vmc-navy">${c.author}:</span>
+                                    <span class="text-slate-700 ml-1">${c.text}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <!-- Add Comment Input -->
+                        <div class="flex space-x-2 pt-1">
+                            <input type="text" id="comment-input-${post.id}" placeholder="Write a comment..." class="flex-grow text-xs border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-vmc-blue">
+                            <button onclick="addComment(${post.id})" class="bg-vmc-navy hover:bg-vmc-blue text-white px-4 py-2 rounded-lg text-xs font-semibold transition">
+                                Reply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Assignment Hub Logic
+        function persistAssignments() {
+            localStorage.setItem('vmc_assignments', JSON.stringify(assignments));
+        }
+
+        function filterAssignments(status) {
+            currentAssignFilter = status;
+            ['All', 'Pending', 'Completed'].forEach(s => {
+                const btn = document.getElementById(`assign-filter-${s}`);
+                if(btn) {
+                    btn.className = s === status ? 'text-xs font-semibold px-3 py-1.5 rounded-lg bg-vmc-navy text-white transition' : 'text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition';
+                }
+            });
+            renderAssignments();
+        }
+
+        function addAssignment() {
+            const title = document.getElementById('assignment-title').value.trim();
+            const subject = document.getElementById('assignment-subject').value.trim();
+            const duedate = document.getElementById('assignment-duedate').value;
+            const priority = document.getElementById('assignment-priority').value;
+
+            if(!title || !subject || !duedate) {
+                showModal('Error', 'Please fill in all required assignment fields.', false);
+                return;
+            }
+
+            assignments.push({
+                id: Date.now(),
+                title,
+                subject,
+                duedate,
+                priority,
+                completed: false
+            });
+
+            persistAssignments();
+
+            // Clear inputs
+            document.getElementById('assignment-title').value = '';
+            document.getElementById('assignment-subject').value = '';
+            document.getElementById('assignment-duedate').value = '';
+
+            renderAssignments();
+            showModal('Success', 'New assignment successfully added to your hub!');
+        }
+
+        function toggleAssignmentComplete(id) {
+            const assign = assignments.find(a => a.id === id);
+            if(assign) {
+                assign.completed = !assign.completed;
+                persistAssignments();
+                renderAssignments();
+            }
+        }
+
+        function deleteAssignment(id) {
+            assignments = assignments.filter(a => a.id !== id);
+            persistAssignments();
+            renderAssignments();
+        }
+
+        function renderAssignments() {
+            // Update progress bar
+            const total = assignments.length;
+            const completedCount = assignments.filter(a => a.completed).length;
+            const percent = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+
+            document.getElementById('assignment-completion-text').innerText = `${percent}%`;
+            document.getElementById('assignment-progress-bar').style.width = `${percent}%`;
+
+            const list = document.getElementById('assignments-list');
+            const filtered = currentAssignFilter === 'All' ? assignments :
+                             currentAssignFilter === 'Pending' ? assignments.filter(a => !a.completed) :
+                             assignments.filter(a => a.completed);
+
+            if(filtered.length === 0) {
+                list.innerHTML = `
+                    <div class="bg-white rounded-2xl p-10 text-center text-slate-400 border border-slate-200/80">
+                        <i class="fa-solid fa-clipboard-check text-3xl mb-2 text-slate-300"></i>
+                        <p class="text-sm font-semibold">No assignments found.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = filtered.map(a => `
+                <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200/80 flex items-center justify-between gap-4 transition hover:shadow-md ${a.completed ? 'bg-slate-50/60 opacity-80' : ''}">
+                    <div class="flex items-center space-x-4">
+                        <input type="checkbox" ${a.completed ? 'checked' : ''} onclick="toggleAssignmentComplete(${a.id})" class="w-5 h-5 rounded text-vmc-blue focus:ring-vmc-blue cursor-pointer">
+                        <div>
+                            <div class="flex items-center space-x-2 mb-1">
+                                <span class="bg-vmc-sky text-vmc-navy font-bold text-[10px] px-2 py-0.5 rounded">${a.subject}</span>
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded ${a.priority === 'High' ? 'bg-rose-50 text-rose-600' : a.priority === 'Medium' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}">${a.priority} Priority</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-slate-800 ${a.completed ? 'line-through text-slate-400' : ''}">${a.title}</h4>
+                            <p class="text-xs text-slate-500 mt-0.5"><i class="fa-regular fa-calendar mr-1"></i> Due: ${a.duedate}</p>
+                        </div>
+                    </div>
+                    <button onclick="deleteAssignment(${a.id})" class="text-slate-400 hover:text-rose-600 p-2 rounded-lg transition">
+                        <i class="fa-solid fa-trash-can text-sm"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // GPA Calculator Logic
+        function persistGpa() {
+            localStorage.setItem('vmc_gpa', JSON.stringify(gpaSubjects));
+        }
+
+        function addGpaSubject() {
+            const name = document.getElementById('gpa-subject').value.trim();
+            const units = parseFloat(document.getElementById('gpa-units').value);
+            const grade = parseFloat(document.getElementById('gpa-grade').value);
+
+            if(!name || isNaN(units) || isNaN(grade)) {
+                showModal('Error', 'Please enter valid subject details.', false);
+                return;
+            }
+
+            gpaSubjects.push({ id: Date.now(), name, units, grade });
+            persistGpa();
+
+            document.getElementById('gpa-subject').value = '';
+            renderGpaTable();
+        }
+
+        function deleteGpaSubject(id) {
+            gpaSubjects = gpaSubjects.filter(s => s.id !== id);
+            persistGpa();
+            renderGpaTable();
+        }
+
+        function renderGpaTable() {
+            const tbody = document.getElementById('gpa-table-body');
+            
+            if(gpaSubjects.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 text-xs">No subjects added yet. Add your subjects above to compute your GPA.</td></tr>`;
+                document.getElementById('gpa-result').innerText = '0.00';
+                return;
+            }
+
+            let totalPoints = 0;
+            let totalUnits = 0;
+
+            tbody.innerHTML = gpaSubjects.map(s => {
+                totalPoints += (s.units * s.grade);
+                totalUnits += s.units;
+                return `
+                    <tr class="hover:bg-slate-50/50">
+                        <td class="p-3 font-semibold text-slate-800">${s.name}</td>
+                        <td class="p-3 text-slate-600">${s.units}</td>
+                        <td class="p-3 font-bold text-vmc-navy">${s.grade.toFixed(2)}</td>
+                        <td class="p-3 text-right">
+                            <button onclick="deleteGpaSubject(${s.id})" class="text-slate-400 hover:text-rose-600 p-1.5 transition">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            const gpa = totalUnits > 0 ? (totalPoints / totalUnits) : 0;
+            document.getElementById('gpa-result').innerText = gpa.toFixed(2);
+        }
+
+        // Pomodoro Timer Logic
+        function togglePomodoro() {
+            if(pomoRunning) {
+                clearInterval(pomoTimer);
+                pomoRunning = false;
+                document.getElementById('pomo-play-icon').className = 'fa-solid fa-play';
+                document.getElementById('pomo-play-text').innerText = 'Start';
+            } else {
+                pomoRunning = true;
+                document.getElementById('pomo-play-icon').className = 'fa-solid fa-pause';
+                document.getElementById('pomo-play-text').innerText = 'Pause';
+
+                pomoTimer = setInterval(() => {
+                    if(pomoSeconds > 0) {
+                        pomoSeconds--;
+                        updatePomodoroDisplay();
+                    } else {
+                        clearInterval(pomoTimer);
+                        pomoRunning = false;
+                        if(pomoMode === 'work') {
+                            showModal('Pomodoro Complete!', 'Great job focusing! Time for a 5-minute break.');
+                            pomoSeconds = 5 * 60;
+                            pomoMode = 'break';
+                            document.getElementById('pomo-status-label').innerText = 'Break Time';
+                        } else {
+                            showModal('Break Over!', 'Ready for another focus session?');
+                            pomoSeconds = 25 * 60;
+                            pomoMode = 'work';
+                            document.getElementById('pomo-status-label').innerText = 'Focus Session';
+                        }
+                        document.getElementById('pomo-play-icon').className = 'fa-solid fa-play';
+                        document.getElementById('pomo-play-text').innerText = 'Start';
+                        updatePomodoroDisplay();
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetPomodoro() {
+            clearInterval(pomoTimer);
+            pomoRunning = false;
+            pomoMode = 'work';
+            pomoSeconds = 25 * 60;
+            document.getElementById('pomo-status-label').innerText = 'Focus Session';
+            document.getElementById('pomo-play-icon').className = 'fa-solid fa-play';
+            document.getElementById('pomo-play-text').innerText = 'Start';
+            updatePomodoroDisplay();
+        }
+
+        function updatePomodoroDisplay() {
+            const mins = Math.floor(pomoSeconds / 60);
+            const secs = pomoSeconds % 60;
+            document.getElementById('pomo-timer-display').innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        // Lost & Found Logic
+        function persistLostFound() {
+            localStorage.setItem('vmc_lf', JSON.stringify(lostFoundItems));
+        }
+
+        function openLostFoundModal() {
+            document.getElementById('lostfound-modal').classList.remove('hidden');
+        }
+
+        function closeLostFoundModal() {
+            document.getElementById('lostfound-modal').classList.add('hidden');
+        }
+
+        function filterLostFound(status) {
+            currentLFFilter = status;
+            ['All', 'Lost', 'Found'].forEach(s => {
+                const btn = document.getElementById(`lf-filter-${s}`);
+                if(btn) {
+                    btn.className = s === status ? 'lf-chip px-4 py-2 rounded-lg text-xs font-semibold bg-vmc-navy text-white transition' : 'lf-chip px-4 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition';
+                }
+            });
+            renderLostFound();
+        }
+
+        function submitLostFoundItem() {
+            const status = document.getElementById('lf-status').value;
+            const name = document.getElementById('lf-name').value.trim();
+            const location = document.getElementById('lf-location').value.trim();
+            const desc = document.getElementById('lf-desc').value.trim();
+            const contact = document.getElementById('lf-contact').value.trim();
+            const image = document.getElementById('lf-image').value.trim();
+
+            if(!name || !location || !contact) {
+                showModal('Error', 'Please fill in all required fields.', false);
+                return;
+            }
+
+            lostFoundItems.unshift({
+                id: Date.now(),
+                status,
+                name,
+                location,
+                desc,
+                contact,
+                image: image || 'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=600&q=80'
+            });
+
+            persistLostFound();
+            closeLostFoundModal();
+
+            // Clear inputs
+            document.getElementById('lf-name').value = '';
+            document.getElementById('lf-location').value = '';
+            document.getElementById('lf-desc').value = '';
+            document.getElementById('lf-contact').value = '';
+            document.getElementById('lf-image').value = '';
+
+            renderLostFound();
+            showModal('Success', 'Item successfully posted to Campus Lost & Found!');
+        }
+
+        function renderLostFound() {
+            const grid = document.getElementById('lostfound-grid');
+            const filtered = currentLFFilter === 'All' ? lostFoundItems : lostFoundItems.filter(i => i.status === currentLFFilter);
+
+            if(filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full bg-white rounded-2xl p-12 text-center text-slate-400 border border-slate-200/80">
+                        <i class="fa-solid fa-box-open text-4xl mb-3 text-slate-300"></i>
+                        <p class="text-sm font-semibold">No items found in this category.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(item => `
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200/80 flex flex-col transition hover:shadow-md">
+                    <div class="h-48 overflow-hidden bg-slate-100 relative">
+                        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400/f1f5f9/1e3e62?text=Item+Photo'">
+                        <span class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold shadow ${item.status === 'Lost' ? 'bg-rose-500 text-white' : 'bg-emerald-500 text-white'}">
+                            ${item.status}
+                        </span>
+                    </div>
+                    <div class="p-5 flex flex-col flex-grow justify-between space-y-4">
+                        <div class="space-y-2">
+                            <h3 class="text-md font-bold text-slate-800">${item.name}</h3>
+                            <p class="text-xs text-slate-500 flex items-center space-x-1">
+                                <i class="fa-solid fa-location-dot text-vmc-blue"></i>
+                                <span>${item.location}</span>
+                            </p>
+                            <p class="text-xs text-slate-600 leading-relaxed">${item.desc}</p>
+                        </div>
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                            <span class="font-semibold text-slate-500">Contact:</span>
+                            <span class="font-bold text-vmc-navy bg-vmc-sky px-2.5 py-1 rounded-lg">${item.contact}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Admin Portal Logic
+        function publishBroadcast() {
+            const text = document.getElementById('admin-broadcast-text').value.trim();
+            if(!text) {
+                showModal('Error', 'Please enter broadcast message text.', false);
+                return;
+            }
+            urgentBroadcast = text;
+            localStorage.setItem('vmc_broadcast', text);
+            renderUrgentBanner();
+            showModal('Success', 'Urgent broadcast alert published successfully!');
+        }
+
+        function clearBroadcast() {
+            urgentBroadcast = '';
+            localStorage.removeItem('vmc_broadcast');
+            renderUrgentBanner();
+            showModal('Success', 'Urgent alert cleared.');
+        }
+
+        function renderUrgentBanner() {
+            const banner = document.getElementById('urgent-banner');
+            if(urgentBroadcast) {
+                document.getElementById('urgent-banner-text').innerText = urgentBroadcast;
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+        }
+
+        function dismissUrgentBanner() {
+            document.getElementById('urgent-banner').classList.add('hidden');
+        }
+
+        function adminDeletePost(id) {
+            posts = posts.filter(p => p.id !== id);
+            persistPosts();
+            renderAdminPanel();
+        }
+
+        function adminTogglePin(id) {
+            const p = posts.find(post => post.id === id);
+            if(p) {
+                p.pinned = !p.pinned;
+                persistPosts();
+                renderAdminPanel();
+            }
+        }
+
+        function adminDeleteLF(id) {
+            lostFoundItems = lostFoundItems.filter(i => i.id !== id);
+            persistLostFound();
+            renderAdminPanel();
+        }
+
+        function renderAdminPanel() {
+            document.getElementById('admin-stat-posts').innerText = posts.length;
+            document.getElementById('admin-stat-lf').innerText = lostFoundItems.length;
+
+            const tbody = document.getElementById('admin-moderation-table');
+            
+            let html = '';
+
+            // Render Feed posts in moderation table
+            posts.forEach(p => {
+                html += `
+                    <tr class="hover:bg-slate-50/50">
+                        <td class="p-3 font-semibold text-vmc-navy">Feed Post (${p.category})</td>
+                        <td class="p-3 text-slate-700 truncate max-w-xs">${p.content}</td>
+                        <td class="p-3 text-slate-600">${p.author}</td>
+                        <td class="p-3 text-right space-x-2">
+                            <button onclick="adminTogglePin(${p.id})" class="text-xs px-2.5 py-1 rounded bg-amber-50 text-amber-700 font-semibold hover:bg-amber-100 transition">
+                                ${p.pinned ? 'Unpin' : 'Pin'}
+                            </button>
+                            <button onclick="adminDeletePost(${p.id})" class="text-xs px-2.5 py-1 rounded bg-rose-50 text-rose-600 font-semibold hover:bg-rose-100 transition">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // Render Lost & Found items in moderation table
+            lostFoundItems.forEach(i => {
+                html += `
+                    <tr class="hover:bg-slate-50/50">
+                        <td class="p-3 font-semibold text-vmc-blue">Lost & Found (${i.status})</td>
+                        <td class="p-3 text-slate-700 truncate max-w-xs">${i.name} - ${i.location}</td>
+                        <td class="p-3 text-slate-600">${i.contact}</td>
+                        <td class="p-3 text-right">
+                            <button onclick="adminDeleteLF(${i.id})" class="text-xs px-2.5 py-1 rounded bg-rose-50 text-rose-600 font-semibold hover:bg-rose-100 transition">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html || `<tr><td colspan="4" class="p-6 text-center text-slate-400 text-xs">No items to moderate.</td></tr>`;
+        }
+
+        // Window onload initialization
+        window.onload = function() {
+            renderFeed();
+            renderAssignments();
+            renderGpaTable();
+            renderLostFound();
+            renderUrgentBanner();
+            updatePomodoroDisplay();
+        };
+    </script>
+
+</body>
+</html>
