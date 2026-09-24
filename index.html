@@ -46,6 +46,20 @@
 </head>
 <body class="bg-vmc-sky text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-vmc-gold selection:text-white">
 
+<!-- Main User UI Section -->
+<section id="user-dashboard">
+  <!-- Urgent Campus Announcement Banner -->
+  <div id="admin-banner-container" class="banner-box hidden">
+    <span id="banner-text"></span>
+  </div>
+
+  <!-- Campus Announcements / Feed -->
+  <h2>Campus Announcements</h2>
+  <div id="announcements-list" class="feed-container">
+    <!-- Dynamic items from Admin will render here -->
+  </div>
+</section>
+    
     <!-- Header & Navigation -->
     <header class="sticky top-0 z-50 bg-vmc-navy text-white shadow-md border-b-2 border-vmc-gold">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1418,6 +1432,10 @@
             updatePomodoroDisplay();
         };
     </script>
+
+    <script src="vmc-sync-core.js"></script>
+    
+</body>
 
 </body>
 </html>
