@@ -1,0 +1,33 @@
+<!-- Admin Control Panel -->
+<div class="admin-panel">
+  <h2>VMC SYNC - Admin Control Panel</h2>
+
+  <!-- Broadcast Urgent Banner -->
+  <div class="admin-card">
+    <h3>Broadcast Campus Banner</h3>
+    <input type="text" id="admin-banner-input" placeholder="Type urgent alert message..." />
+    <button onclick="publishBanner()">Update Banner</button>
+    <button onclick="clearBanner()" class="btn-danger">Clear Banner</button>
+  </div>
+
+  <!-- Post Campus Announcement -->
+  <div class="admin-card">
+    <h3>Post New Announcement</h3>
+    <form id="admin-announcement-form" onsubmit="handleAnnouncementSubmit(event)">
+      <input type="text" id="announcement-title" placeholder="Announcement Title" required />
+      <select id="announcement-category">
+        <option value="General">General</option>
+        <option value="Academics">Academics</option>
+        <option value="Events">Events</option>
+      </select>
+      <textarea id="announcement-content" placeholder="Details..." required></textarea>
+      <button type="submit">Publish to Feed</button>
+    </form>
+  </div>
+
+  <!-- Manage Existing Content -->
+  <div class="admin-card">
+    <h3>Manage Published Posts</h3>
+    <div id="admin-posts-list"></div>
+  </div>
+</div>
