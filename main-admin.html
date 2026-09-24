@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VMC SYNC - Admin Portal</title>
+  <style>
+    :root {
+      --primary: #1e3a8a; /* VMC Navy/Blue */
+      --accent: #d97706;  /* VMC Gold */
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --danger: #dc2626;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      margin: 0;
+      padding: 20px;
+    }
+    .admin-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .admin-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    h2, h3 { margin-top: 0; color: var(--primary); }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: var(--primary);
+      color: white;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button.btn-danger { background-color: var(--danger); }
+    button:hover { opacity: 0.9; }
+    .admin-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-container">
+    <header>
+      <h1>VMC SYNC Admin Portal</h1>
+      <span>Role: Administrator</span>
+    </header>
+
+    <!-- Urgent Broadcast Control -->
+    <div class="admin-card">
+      <h3>Broadcast Urgent Alert Banner</h3>
+      <input type="text" id="admin-banner-input" placeholder="Type urgent announcement or alert message..." />
+      <button onclick="publishBanner()">Update Banner</button>
+      <button onclick="clearBanner()" class="btn-danger">Clear Banner</button>
+    </div>
+
+    <!-- Announcement Publisher -->
+    <div class="admin-card">
+      <h3>Publish Campus Announcement</h3>
+      <form id="admin-announcement-form" onsubmit="handleAnnouncementSubmit(event)">
+        <label>Title</label>
+        <input type="text" id="announcement-title" placeholder="e.g. Midterm Examination Schedule" required />
+
+        <label>Category</label>
+        <select id="announcement-category">
+          <option value="General">General</option>
+          <option value="Academics">Academics</option>
+          <option value="Events">Events</option>
+        </select>
+
+        <label>Content</label>
+        <textarea id="announcement-content" rows="4" placeholder="Announcement details..." required></textarea>
+
+        <button type="submit">Publish to Student UI</button>
+      </form>
+    </div>
+
+    <!-- Posts Management -->
+    <div class="admin-card">
+      <h3>Manage Published Announcements</h3>
+      <div id="admin-posts-list">
+        <p>Loading published posts...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared Sync Script -->
+  <script src="vmc-sync-core.js"></script>
+
+</body>
+</html>
