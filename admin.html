@@ -114,6 +114,43 @@
     </div>
   </div>
 
+  <!-- Inside admin.html -->
+
+<!-- 1. Campus Status Management -->
+<div class="admin-card">
+  <h3>Campus Status Control</h3>
+  <label for="campus-status-select">Current Operating Status:</label>
+  <select id="campus-status-select">
+    <option value="Normal Operations">🟢 Normal Operations</option>
+    <option value="Classes Suspended">🔴 Classes Suspended</option>
+    <option value="Online / Asynchronous">🟡 Online / Asynchronous Classes</option>
+    <option value="Exam Week Mode">🔵 Exam Week in Progress</option>
+  </select>
+
+  <label for="campus-status-note">Status Note / Detail:</label>
+  <input type="text" id="campus-status-note" placeholder="e.g. Heavy rainfall advisory - Stay safe!" />
+
+  <button onclick="updateCampusStatus()">Update Campus Status</button>
+</div>
+
+<!-- 2. Upcoming VMC Events Management -->
+<div class="admin-card">
+  <h3>Add Upcoming VMC Event</h3>
+  <form id="admin-event-form" onsubmit="handleEventSubmit(event)">
+    <input type="text" id="event-title" placeholder="Event Title (e.g., VMC Sports Fest 2026)" required />
+    <input type="date" id="event-date" required />
+    <input type="text" id="event-location" placeholder="Location (e.g., Main Gymnasium / Quadrangle)" required />
+    <textarea id="event-description" placeholder="Brief event description..."></textarea>
+    
+    <button type="submit">Add Event</button>
+  </form>
+
+  <h4 style="margin-top: 20px;">Manage Upcoming Events</h4>
+  <div id="admin-events-list">
+    <!-- Live list of posted events -->
+  </div>
+</div>
+
 <!-- Inside admin.html -->
 <a href="index.html" class="nav-link">Return to Student View</a>
   
