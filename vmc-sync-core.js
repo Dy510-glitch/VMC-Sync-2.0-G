@@ -400,3 +400,194 @@ function logAdminAudit(event) {
     auditLog.appendChild(entry);
   }
 }
+
+/* ==========================================================================
+   STUDENT TOOLKIT & LOST AND FOUND CORE LOGIC
+   ========================================================================== */
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderSchedule();
+  renderLostFoundItems();
+  initCountdownTimer();
+});
+
+// 1. TOOLKIT TAB SWITCHING
+function switchToolkitTab(tabId) {
+  document.querySelectorAll('.toolkit-tab-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.toolkit-tab-btn').forEach(btn => btn.classList.remove('active'));
+
+  document.getElementById(`tab-${tabId}`).style.display = 'block';
+  event.currentTarget.classList.add('active');
+}
+
+// 2. GPA CALCULATOR LOGIC
+function addGpaRow() {
+  const tbody = document.getElementById('gpa-course-rows');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" placeholder="Course Code" class="input-field course-name"></td>
+    <td><input type="number" value="3" min="1" max="6" class="input-field course-units"></td>
+    <td><input type="number" value="85" min="0" max="100" class="input-field course-grade"></td>
+    <td><button class="btn-danger-sm" onclick="removeGpaRow(this)">Remove</button></td>
+  `;
+  tbody.appendChild(tr);
+}
+
+function removeGpaRow(btn) {
+  const row = btn.closest('tr');
+  if (document.querySelectorAll('#gpa-course-rows tr').length > 1) {
+    row.remove();
+  }
+}
+
+function calculateGPA() {
+  const units = document.querySelectorAll('.course-units');
+  const grades = document.querySelectorAll('.course-grade');
+
+  let totalUnits = 0;
+  let weightedSum = 0;
+
+  for (let i = 0; i < units.length; i++) {
+    const u = parseFloat(units[i].value) || 0;
+    const g = parseFloat(grades[i].value) || 0;
+    totalUnits += u;
+    weightedSum += (u * g);
+  }
+
+  const resultBox = document.getElementById('gpa-result-box');
+  if (totalUnits === 0) {
+    resultBox.style.display = 'block';
+    resultBox.textContent = 'Please enter valid unit values.';
+    return;
+  }
+
+  const gpaPercent = (weightedSum / totalUnits).toFixed(2);
+  resultBox.style.display = 'block';
+  resultBox.innerHTML = `Weighted Percentage Average: <strong>${gpaPercent}%</strong> (Total Units: ${totalUnits})`;
+}
+
+// 3. SCHEDULE PLANNER LOGIC
+function addScheduleEntry(e) {
+  e.preventDefault();
+  const subject = document.getElementById('sched-subject').value;
+  const day = document.getElementById('sched-day').value;
+  const start = document.getElementById('sched-time-start').value;
+  const end = document.getElementById('sched-time-end').value;
+  const room = document.getElementById('sched-room').value;
+
+  const schedules = JSON.parse(localStorage.getItem('vmc_schedules') || '[]');
+  schedules.push({ id: Date.now(), subject, day, start, end, room });
+  localStorage.setItem('vmc_schedules', JSON.stringify(schedules));
+
+  document.getElementById('schedule-form').reset();
+  renderSchedule();
+}
+
+function renderSchedule() {
+  const container = document.getElementById('schedule-list');
+  if (!container) return;
+  const schedules = JSON.parse(localStorage.getItem('vmc_schedules') || '[]');
+
+  if (schedules.length === 0) {
+    container.innerHTML = '<p>No classes added yet.</p>';
+    return;
+  }
+
+  container.innerHTML = schedules.map(item => `
+    <div class="lf-card">
+      <span class="badge badge-found">${escapeHTML(item.day)}</span>
+      <h4>${escapeHTML(item.subject)}</h4>
+      <p>🕒 ${escapeHTML(item.start)} - ${escapeHTML(item.end)}</p>
+      <p>📍 Room: ${escapeHTML(item.room)}</p>
+      <button class="btn-danger-sm" style="margin-top:8px;" onclick="deleteSchedule(${item.id})">Delete</button>
+    </div>
+  `).join('');
+}
+
+function deleteSchedule(id) {
+  let schedules = JSON.parse(localStorage.getItem('vmc_schedules') || '[]');
+  schedules = schedules.filter(s => s.id !== id);
+  localStorage.setItem('vmc_schedules', JSON.stringify(schedules));
+  renderSchedule();
+}
+
+// 4. LOST AND FOUND HUB LOGIC
+let activeLfFilter = 'ALL';
+
+function openLostFoundModal() { document.getElementById('lostfound-modal').style.display = 'flex'; }
+function closeLostFoundModal() { document.getElementById('lostfound-modal').style.display = 'none'; }
+
+function submitLostFoundItem(e) {
+  e.preventDefault();
+  const type = document.getElementById('lf-type').value;
+  const title = document.getElementById('lf-title').value;
+  const location = document.getElementById('lf-location').value;
+  const contact = document.getElementById('lf-contact').value;
+  const desc = document.getElementById('lf-desc').value;
+
+  const newItem = {
+    id: Date.now(),
+    type,
+    title,
+    location,
+    contact,
+    desc,
+    datePosted: new Date().toLocaleDateString()
+  };
+
+  const items = JSON.parse(localStorage.getItem('vmc_lostfound_items') || '[]');
+  items.unshift(newItem);
+  localStorage.setItem('vmc_lostfound_items', JSON.stringify(items));
+
+  closeLostFoundModal();
+  renderLostFoundItems();
+
+  // Notify backend if socket exists (so Admin monitoring log receives live updates)
+  if (typeof socket !== 'undefined' && socket) {
+    socket.emit('send_group_message', {
+      room: 'Admin-Audit',
+      sender: 'SYSTEM',
+      text: `[Lost & Found] New ${type} post: ${title}`
+    });
+  }
+}
+
+function filterLostFound(type, btn) {
+  activeLfFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLostFoundItems();
+}
+
+function renderLostFoundItems() {
+  const container = document.getElementById('lostfound-items-container');
+  if (!container) return;
+
+  let items = JSON.parse(localStorage.getItem('vmc_lostfound_items') || '[]');
+
+  if (activeLfFilter !== 'ALL') {
+    items = items.filter(item => item.type === activeLfFilter);
+  }
+
+  if (items.length === 0) {
+    container.innerHTML = '<p>No items posted under this view.</p>';
+    return;
+  }
+
+  container.innerHTML = items.map(item => `
+    <div class="lf-card">
+      <span class="badge ${item.type === 'LOST' ? 'badge-lost' : 'badge-found'}">${item.type}</span>
+      <small style="float:right; color:#718096;">${item.datePosted}</small>
+      <h4 style="margin: 6px 0;">${escapeHTML(item.title)}</h4>
+      <p style="font-size:13px;">📍 <strong>Location:</strong> ${escapeHTML(item.location)}</p>
+      <p style="font-size:13px; color:#4a5568; margin: 8px 0;">${escapeHTML(item.desc)}</p>
+      <p style="font-size:12px; color:#2b6cb0;">📞 <strong>Contact:</strong> ${escapeHTML(item.contact)}</p>
+    </div>
+  `).join('');
+}
+
+function escapeHTML(str) {
+  return str ? str.replace(/[&<>'"]/g, 
+    tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+  ) : '';
+}
