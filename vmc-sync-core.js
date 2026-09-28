@@ -299,3 +299,104 @@ document.addEventListener('DOMContentLoaded', () => {
   seedDefaultData();
   refreshAllViews();
 });
+
+/* ==========================================================================
+   COMMUNITY CHAT, LOST & FOUND, AND WEBRTC VIDEO ENGINE
+   (Requires socket.io CDN included in index.html)
+   ========================================================================== */
+
+// 1. SOCKET.IO REAL-TIME CONNECTIVITY
+let socket;
+if (typeof io !== 'undefined') {
+  socket = io('http://localhost:3000'); // Replace with your Node server URL
+
+  socket.on('receive_group_message', (data) => {
+    appendChatMessage(data);
+  });
+
+  socket.on('incoming_video_call', (data) => {
+    handleIncomingCall(data);
+  });
+
+  socket.on('admin_audit_event', (eventData) => {
+    logAdminAudit(eventData);
+  });
+}
+
+// 2. CHAT FUNCTIONS
+function joinChatRoom(roomName) {
+  if (!socket) return;
+  socket.emit('join_room', { room: roomName, user: getCurrentUser() });
+}
+
+function sendGroupMessage() {
+  const input = document.getElementById('chat-message-input');
+  if (!input || !input.value.trim()) return;
+
+  const msgData = {
+    sender: getCurrentUser(),
+    room: 'General-Student-Lounge',
+    text: input.value.trim(),
+    timestamp: new Date().toLocaleTimeString()
+  };
+
+  socket.emit('send_group_message', msgData);
+  input.value = '';
+}
+
+function appendChatMessage(data) {
+  const chatWindow = document.getElementById('chat-window-messages');
+  if (!chatWindow) return;
+
+  const msgDiv = document.createElement('div');
+  msgDiv.className = 'chat-bubble';
+  msgDiv.innerHTML = `<strong>${escapeHTML(data.sender)}:</strong> ${escapeHTML(data.text)} <small>${data.timestamp}</small>`;
+  chatWindow.appendChild(msgDiv);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+// 3. WEBRTC VIDEO CALL SIGNALLING
+let localStream;
+let peerConnection;
+const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+async function startVideoCall(targetUser) {
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    document.getElementById('local-video').srcObject = localStream;
+
+    peerConnection = new RTCPeerConnection(rtcConfig);
+    localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+    peerConnection.onicecandidate = (event) => {
+      if (event.candidate) {
+        socket.emit('ice_candidate', { target: targetUser, candidate: event.candidate });
+      }
+    };
+
+    peerConnection.ontrack = (event) => {
+      document.getElementById('remote-video').srcObject = event.streams[0];
+    };
+
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+
+    socket.emit('video_call_offer', { target: targetUser, offer: offer, caller: getCurrentUser() });
+    alert(`Calling ${targetUser}...`);
+  } catch (err) {
+    console.error('Failed to access camera/microphone:', err);
+  }
+}
+
+function getCurrentUser() {
+  return localStorage.getItem('vmc_student_name') || 'Student_' + Math.floor(Math.random() * 1000);
+}
+
+function logAdminAudit(event) {
+  const auditLog = document.getElementById('admin-chat-audit-log');
+  if (auditLog) {
+    const entry = document.createElement('div');
+    entry.textContent = `[${new Date().toLocaleTimeString()}] ${event.type}: ${event.details}`;
+    auditLog.appendChild(entry);
+  }
+}
