@@ -591,3 +591,155 @@ function escapeHTML(str) {
     tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
   ) : '';
 }
+
+/* ==========================================================================
+   STUDENT TOOLKIT - CREATIVE & PRODUCTIVITY APPS DIRECTORY
+   ========================================================================== */
+
+const studentAppsData = [
+  // DOCUMENT TOOLS
+  {
+    id: 'google-docs',
+    title: 'Google Docs',
+    category: 'DOCS',
+    categoryLabel: 'Documents',
+    badgeClass: 'badge-doc',
+    icon: '📄',
+    desc: 'Real-time collaborative word processor for essays, reports, and assignments.',
+    url: 'https://docs.google.com'
+  },
+  {
+    id: 'word-online',
+    title: 'Microsoft Word',
+    category: 'DOCS',
+    categoryLabel: 'Documents',
+    badgeClass: 'badge-doc',
+    icon: '📝',
+    desc: 'Free web version of MS Word for academic writing and document formatting.',
+    url: 'https://www.microsoft365.com/launch/word'
+  },
+
+  // PRESENTATION TOOLS
+  {
+    id: 'google-slides',
+    title: 'Google Slides',
+    category: 'SLIDES',
+    categoryLabel: 'Presentations',
+    badgeClass: 'badge-slides',
+    icon: '📊',
+    desc: 'Build team slide decks and online presentations for class projects.',
+    url: 'https://slides.google.com'
+  },
+  {
+    id: 'canva-slides',
+    title: 'Canva Presentations',
+    category: 'SLIDES',
+    categoryLabel: 'Presentations',
+    badgeClass: 'badge-slides',
+    icon: '✨',
+    desc: 'Design polished, professional pitch decks with thousands of ready templates.',
+    url: 'https://www.canva.com/presentations/'
+  },
+
+  // PHOTO EDITING TOOLS
+  {
+    id: 'photopea',
+    title: 'Photopea Editor',
+    category: 'PHOTO',
+    categoryLabel: 'Photo Editing',
+    badgeClass: 'badge-photo',
+    icon: '🎨',
+    desc: 'Advanced web-based image editor supporting PSD, AI, and Sketch formats.',
+    url: 'https://www.photopea.com'
+  },
+  {
+    id: 'pixlr-express',
+    title: 'Pixlr Express',
+    category: 'PHOTO',
+    categoryLabel: 'Photo Editing',
+    badgeClass: 'badge-photo',
+    icon: '🖼️',
+    desc: 'Quick online photo editing, filters, background removal, and touch-ups.',
+    url: 'https://pixlr.com'
+  },
+
+  // VIDEO EDITING TOOLS
+  {
+    id: 'capcut-web',
+    title: 'CapCut Web',
+    category: 'VIDEO',
+    categoryLabel: 'Video Editing',
+    badgeClass: 'badge-video',
+    icon: '🎬',
+    desc: 'Online video editor with automatic captions, transitions, and filters.',
+    url: 'https://www.capcut.com/editor'
+  },
+  {
+    id: 'clipchamp',
+    title: 'Clipchamp',
+    category: 'VIDEO',
+    categoryLabel: 'Video Editing',
+    badgeClass: 'badge-video',
+    icon: '🎥',
+    desc: 'Easy-to-use video creator with screen recording and timeline editing.',
+    url: 'https://clipchamp.com'
+  }
+];
+
+let activeAppFilter = 'ALL';
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderAppHub();
+});
+
+function switchToolkitTab(tabId, btnElement) {
+  document.querySelectorAll('.toolkit-tab-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.toolkit-tab-btn').forEach(btn => btn.classList.remove('active'));
+
+  document.getElementById(`tab-${tabId}`).style.display = 'block';
+  if (btnElement) {
+    btnElement.classList.add('active');
+  }
+}
+
+function filterApps(category, btnElement) {
+  activeAppFilter = category;
+  document.querySelectorAll('.app-chip').forEach(chip => chip.classList.remove('active'));
+  if (btnElement) {
+    btnElement.classList.add('active');
+  }
+  renderAppHub();
+}
+
+function renderAppHub() {
+  const container = document.getElementById('apps-grid-container');
+  if (!container) return;
+
+  let apps = studentAppsData;
+  if (activeAppFilter !== 'ALL') {
+    apps = studentAppsData.filter(app => app.category === activeAppFilter);
+  }
+
+  if (apps.length === 0) {
+    container.innerHTML = '<p style="color:#718096;">No tools available under this category.</p>';
+    return;
+  }
+
+  container.innerHTML = apps.map(app => `
+    <div class="app-card">
+      <div>
+        <div class="app-card-header">
+          <div class="app-icon-wrapper">${app.icon}</div>
+          <div>
+            <h4 class="app-card-title">${escapeHTML(app.title)}</h4>
+            <span class="app-badge ${app.badgeClass}">${app.categoryLabel}</span>
+          </div>
+        </div>
+        <p class="app-card-desc">${escapeHTML(app.desc)}</p>
+      </div>
+      <a href="${app.url}" target="_blank" rel="noopener noreferrer" class="btn-launch-app">
+        Open Tool ↗
+      </a>
+    </div>
+  `).join('');
+}
