@@ -10,7 +10,8 @@
 
   <!-- TOP NAVIGATION BAR -->
   <header class="fb-topbar">
-    <div class="topbar-brand">
+    <!-- Clickable Brand Header Leading Back to Home -->
+    <div class="topbar-brand" onclick="resetFeedToHome()" role="button" tabindex="0" title="Go to VMC SYNC Home">
       <span class="brand-logo">🎓</span>
       <h1 class="brand-title">VMC SYNC</h1>
     </div>
@@ -126,9 +127,9 @@
 
       <!-- Feed Category Filters -->
       <div class="feed-filter-bar">
-        <button class="feed-filter-btn active" onclick="filterMainFeed('ALL', this)">All Posts</button>
-        <button class="feed-filter-btn" onclick="filterMainFeed('DISCUSSION', this)">Discussions</button>
-        <button class="feed-filter-btn" onclick="filterMainFeed('LOSTFOUND', this)">Lost & Found</button>
+        <button id="feed-filter-all" class="feed-filter-btn active" onclick="filterMainFeed('ALL', this)">All Posts</button>
+        <button id="feed-filter-discussion" class="feed-filter-btn" onclick="filterMainFeed('DISCUSSION', this)">Discussions</button>
+        <button id="feed-filter-lostfound" class="feed-filter-btn" onclick="filterMainFeed('LOSTFOUND', this)">Lost & Found</button>
       </div>
 
       <!-- Dynamic Campus Feed Stream -->
