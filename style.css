@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FACEBOOK-STYLE CAMPUS HUB STYLES
+   VMC SYNC - STYLESHEET
    ========================================================================== */
 
 * {
@@ -36,7 +36,7 @@ body {
 }
 
 .brand-logo { font-size: 24px; }
-.brand-title { font-size: 20px; color: #1877f2; margin: 0; font-weight: 800; }
+.brand-title { font-size: 20px; color: #1877f2; margin: 0; font-weight: 800; letter-spacing: -0.5px; }
 
 .topbar-search { flex: 1; max-width: 400px; margin: 0 20px; }
 .search-input {
