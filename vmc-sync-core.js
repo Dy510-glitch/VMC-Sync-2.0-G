@@ -23,7 +23,40 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMainFeed();
 });
 
-// 2. TOOLKIT TABS SWITCHER
+// 2. NAVIGATION: HOME RESET FUNCTION
+function resetFeedToHome() {
+  // Close any open modals
+  closePostModal();
+
+  // Reset feed filter state to 'ALL'
+  activeFeedFilter = 'ALL';
+
+  // Update filter UI buttons state
+  const filterBtns = document.querySelectorAll('.feed-filter-btn');
+  filterBtns.forEach(btn => btn.classList.remove('active'));
+  
+  const allBtn = document.getElementById('feed-filter-all');
+  if (allBtn) {
+    allBtn.classList.add('active');
+  }
+
+  // Clear search input if present
+  const searchInput = document.querySelector('.search-input');
+  if (searchInput) {
+    searchInput.value = '';
+  }
+
+  // Re-render feed stream
+  renderMainFeed();
+
+  // Smooth scroll to top of page/feed
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+}
+
+// 3. TOOLKIT TABS SWITCHER
 function switchToolkitTab(tabId, btnElement) {
   document.querySelectorAll('.toolkit-tab-content').forEach(el => el.style.display = 'none');
   document.querySelectorAll('.toolkit-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -32,7 +65,7 @@ function switchToolkitTab(tabId, btnElement) {
   if (btnElement) btnElement.classList.add('active');
 }
 
-// 3. APPS DIRECTORY RENDERER
+// 4. APPS DIRECTORY RENDERER
 function filterApps(category, btnElement) {
   activeAppFilter = category;
   document.querySelectorAll('.app-chip').forEach(c => c.classList.remove('active'));
@@ -63,7 +96,7 @@ function renderAppHub() {
   `).join('');
 }
 
-// 4. GPA CALCULATOR LOGIC
+// 5. GPA CALCULATOR LOGIC
 function addGpaRow() {
   const tbody = document.getElementById('gpa-course-rows');
   const tr = document.createElement('tr');
@@ -109,7 +142,7 @@ function calculateGPA() {
   resultBox.innerHTML = `Average: <strong>${gpa}%</strong> (${totalUnits} Units)`;
 }
 
-// 5. SCHEDULE PLANNER LOGIC
+// 6. SCHEDULE PLANNER LOGIC
 function addScheduleEntry(e) {
   e.preventDefault();
   const subject = document.getElementById('sched-subject').value;
@@ -152,7 +185,7 @@ function deleteSchedule(id) {
   renderSchedule();
 }
 
-// 6. MAIN POST CREATOR & FEED SYSTEM
+// 7. MAIN POST CREATOR & FEED SYSTEM
 function openPostModal(defaultType = 'DISCUSSION') {
   document.getElementById('create-post-modal').style.display = 'flex';
   const typeSelect = document.getElementById('post-type');
@@ -205,7 +238,7 @@ function handleCreatePost(e) {
 function filterMainFeed(filter, btn) {
   activeFeedFilter = filter;
   document.querySelectorAll('.feed-filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
   renderMainFeed();
 }
 
