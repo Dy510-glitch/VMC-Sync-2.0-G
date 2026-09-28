@@ -166,23 +166,46 @@
   <!-- ==========================================================================
      MAIN STUDENT HUB: TOOLKIT & LOST AND FOUND
      ========================================================================== -->
-
-<!-- 1. STUDENT TOOLKIT SECTION -->
+<!-- ==========================================================================
+     STUDENT TOOLKIT SECTION (WITH APPS DIRECTORY)
+     ========================================================================== -->
 <section id="student-toolkit-section" class="hub-card">
   <div class="card-header">
-    <h2>🧰 Student Toolkit</h2>
-    <p>Academic tools to manage your grades, class schedules, and deadlines.</p>
+    <h2>🧰 Student Toolkit & App Suite</h2>
+    <p>Academic calculators, class scheduling, and essential creation tools.</p>
   </div>
 
   <!-- Toolkit Navigation Tabs -->
   <div class="toolkit-tabs">
-    <button class="toolkit-tab-btn active" onclick="switchToolkitTab('gpa-calc')">GPA Calculator</button>
-    <button class="toolkit-tab-btn" onclick="switchToolkitTab('schedule-planner')">Schedule Planner</button>
-    <button class="toolkit-tab-btn" onclick="switchToolkitTab('exam-countdown')">Exam & Task Countdown</button>
+    <button class="toolkit-tab-btn active" onclick="switchToolkitTab('apps-hub', this)">Creative & Docs Apps</button>
+    <button class="toolkit-tab-btn" onclick="switchToolkitTab('gpa-calc', this)">GPA Calculator</button>
+    <button class="toolkit-tab-btn" onclick="switchToolkitTab('schedule-planner', this)">Schedule Planner</button>
   </div>
 
-  <!-- Tab 1: GPA Calculator -->
-  <div id="tab-gpa-calc" class="toolkit-tab-content active">
+  <!-- Tab 1: App Suite / Creation Tools -->
+  <div id="tab-apps-hub" class="toolkit-tab-content active">
+    <h3>Student Productivity & Design Suite</h3>
+    <p style="color:#718096; font-size:14px; margin-bottom: 16px;">
+      Quick access to essential web tools for editing media and completing course projects.
+    </p>
+
+    <!-- App Category Filter -->
+    <div class="app-filter-bar">
+      <button class="app-chip active" onclick="filterApps('ALL', this)">All Apps</button>
+      <button class="app-chip" onclick="filterApps('DOCS', this)">📄 Documents</button>
+      <button class="app-chip" onclick="filterApps('SLIDES', this)">📊 Presentations</button>
+      <button class="app-chip" onclick="filterApps('PHOTO', this)">🎨 Photo Editing</button>
+      <button class="app-chip" onclick="filterApps('VIDEO', this)">🎬 Video Editing</button>
+    </div>
+
+    <!-- App Cards Grid -->
+    <div id="apps-grid-container" class="apps-grid">
+      <!-- Populated dynamically via JS -->
+    </div>
+  </div>
+
+  <!-- Tab 2: GPA Calculator -->
+  <div id="tab-gpa-calc" class="toolkit-tab-content" style="display:none;">
     <h3>Semester GPA Calculator</h3>
     <table id="gpa-table" class="toolkit-table">
       <thead>
@@ -209,7 +232,7 @@
     <div id="gpa-result-box" class="result-box" style="display:none;"></div>
   </div>
 
-  <!-- Tab 2: Schedule Planner -->
+  <!-- Tab 3: Schedule Planner -->
   <div id="tab-schedule-planner" class="toolkit-tab-content" style="display:none;">
     <h3>Class Schedule Manager</h3>
     <form id="schedule-form" onsubmit="addScheduleEntry(event)" class="inline-form">
@@ -228,17 +251,6 @@
       <button type="submit" class="btn-primary">Add Class</button>
     </form>
     <div id="schedule-list" class="schedule-grid"></div>
-  </div>
-
-  <!-- Tab 3: Exam & Task Countdown -->
-  <div id="tab-exam-countdown" class="toolkit-tab-content" style="display:none;">
-    <h3>Upcoming Exams & Deadlines</h3>
-    <form id="task-form" onsubmit="addCountdownTask(event)" class="inline-form">
-      <input type="text" id="task-title" placeholder="Exam or Project Title" required class="input-field">
-      <input type="datetime-local" id="task-datetime" required class="input-field">
-      <button type="submit" class="btn-primary">Set Reminder</button>
-    </form>
-    <div id="countdown-list" class="countdown-card-list"></div>
   </div>
 </section>
 
