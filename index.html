@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Campus Student Hub & Social Feed</title>
+  <title>VMC SYNC - Student Hub & Social Feed</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,10 +12,10 @@
   <header class="fb-topbar">
     <div class="topbar-brand">
       <span class="brand-logo">🎓</span>
-      <h1 class="brand-title">CampusHub</h1>
+      <h1 class="brand-title">VMC SYNC</h1>
     </div>
     <div class="topbar-search">
-      <input type="text" placeholder="Search campus posts, tools, or lost items..." class="search-input">
+      <input type="text" placeholder="Search VMC SYNC posts, tools, or lost items..." class="search-input">
     </div>
     <div class="topbar-user">
       <div class="avatar-placeholder">👤</div>
@@ -116,7 +116,7 @@
       <div class="fb-card post-creator-card">
         <div class="creator-header">
           <div class="avatar-placeholder">👤</div>
-          <input type="text" id="post-input-trigger" placeholder="What's on your mind, student?" readonly onclick="openPostModal()">
+          <input type="text" id="post-input-trigger" placeholder="What's on your mind? Share to VMC SYNC..." readonly onclick="openPostModal()">
         </div>
         <div class="creator-actions">
           <button class="action-btn" onclick="openPostModal('LOSTFOUND')">🔍 Post Lost/Found</button>
@@ -139,13 +139,13 @@
     <aside class="fb-sidebar-right">
       <div class="sidebar-card">
         <div class="card-header-sm">
-          <h3 class="sidebar-title">📢 Campus Announcements</h3>
+          <h3 class="sidebar-title">📢 VMC Announcements</h3>
         </div>
         <div id="announcement-list" class="announcement-stream">
           <div class="announcement-item">
             <span class="announcement-badge">ACADEMICS</span>
             <h4>Midterm Examination Schedule</h4>
-            <p>Check your portal for room assignments and schedule details for next week.</p>
+            <p>Check your student portal for room assignments and schedule details for next week.</p>
             <small class="announcement-time">2 hours ago</small>
           </div>
           <div class="announcement-item">
@@ -164,7 +164,7 @@
   <div id="create-post-modal" class="modal-overlay" style="display:none;">
     <div class="modal-box fb-modal">
       <div class="modal-header">
-        <h3>Create Campus Post</h3>
+        <h3>Create VMC SYNC Post</h3>
         <button class="close-btn" onclick="closePostModal()">✕</button>
       </div>
       <form onsubmit="handleCreatePost(event)">
