@@ -275,6 +275,62 @@ function loadUpcomingEvents() {
 // Update the global refresh function to load the new modules
 function refreshAllViews() {
   if (typeof loadUserBanner === 'function') loadUserBanner();
+
+  // ==========================================
+// CAMPUS STATUS MODULE
+// ==========================================
+
+function updateCampusStatus() {
+  const selectEl = document.getElementById('campus-status-select');
+  const noteEl = document.getElementById('campus-status-note');
+
+  if (!selectEl) {
+    alert('Error: Could not find campus-status-select element on this page.');
+    return;
+  }
+
+  const status = selectEl.value;
+  const note = noteEl ? noteEl.value.trim() : '';
+
+  const statusData = {
+    status: status,
+    note: note || 'No additional notes provided.',
+    updatedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  };
+
+  // Save data to localStorage
+  localStorage.setItem('vmc_campus_status', JSON.stringify(statusData));
+  
+  // Notify other windows/tabs to update
+  if (typeof notifyDataChanged === 'function') {
+    notifyDataChanged();
+  } else {
+    window.dispatchEvent(new Event('vmcDataUpdated'));
+  }
+
+  alert('Campus Status Updated Successfully!');
+}
+
+function loadCampusStatus() {
+  const savedData = localStorage.getItem('vmc_campus_status');
+  if (!savedData) return;
+
+  const statusData = JSON.parse(savedData);
+  const titleEl = document.getElementById('status-title');
+  const noteEl = document.getElementById('status-note');
+  const dotEl = document.getElementById('status-dot');
+
+  // Update elements if present on the page (index.html)
+  if (titleEl) titleEl.textContent = statusData.status;
+  if (noteEl) noteEl.textContent = statusData.note;
+
+  if (dotEl) {
+    if (statusData.status.includes('Suspended')) dotEl.textContent = '🔴';
+    else if (statusData.status.includes('Online')) dotEl.textContent = '🟡';
+    else if (statusData.status.includes('Exam')) dotEl.textContent = '🔵';
+    else dotEl.textContent = '🟢';
+  }
+}
   if (typeof loadUserAnnouncements === 'function') loadUserAnnouncements();
   loadCampusStatus();
   loadUpcomingEvents();
