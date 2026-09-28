@@ -162,6 +162,37 @@
     <a href="index.html" class="nav-link">← Return to Student View</a>
   </div>
 
+  <!-- Inside admin.html -->
+
+<!-- Lost & Found Moderation -->
+<div class="admin-card">
+  <h3>Lost & Found Moderation</h3>
+  <div id="admin-lostfound-list">
+    <p>Loading reported items...</p>
+  </div>
+</div>
+
+<!-- Live Community Feed Audit & Flags -->
+<div class="admin-card">
+  <h3>Community Post Moderation</h3>
+  <div id="admin-community-posts">
+    <p>Loading community posts...</p>
+  </div>
+</div>
+
+<!-- Live Group Chat & Call Monitoring Panel -->
+<div class="admin-card">
+  <h3>Active Group Chats & Video Sessions</h3>
+  <div class="admin-item-row">
+    <span><strong>Active Video Rooms:</strong> <span id="admin-active-calls-count">0</span></span>
+    <span><strong>Total Messages Today:</strong> <span id="admin-msg-count">0</span></span>
+  </div>
+  <h4 style="margin-top: 15px;">System Audit & Flagged Chat Log</h4>
+  <div id="admin-chat-audit-log" style="max-height: 200px; overflow-y: auto; background: #fafafa; padding: 10px; border: 1px solid #ddd; font-family: monospace; font-size: 12px;">
+    [System Log Initialized] Monitoring socket rooms...
+  </div>
+</div>
+
   <script src="vmc-sync-core.js"></script>
 </body>
 </html>
