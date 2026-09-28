@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CAMPUS HUB CORE JAVASCRIPT ENGINE
+   VMC SYNC - CORE ENGINE
    ========================================================================== */
 
 // 1. PRODUCTIVITY & CREATIVE APPS DATASET
@@ -222,7 +222,7 @@ function renderMainFeed() {
   if (posts.length === 0) {
     container.innerHTML = `
       <div class="post-card" style="text-align:center; color:#65676b;">
-        <p>No campus posts yet. Be the first to start a conversation!</p>
+        <p>No VMC SYNC posts yet. Be the first to start a conversation!</p>
       </div>`;
     return;
   }
