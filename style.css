@@ -29,14 +29,16 @@ body {
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
+/* CLICKABLE BRAND HEADER WITH GOLD GRADIENT */
 .topbar-brand {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 6px;
-  transition: background-color 0.2s ease;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.1s ease;
   user-select: none;
 }
 
@@ -45,11 +47,31 @@ body {
 }
 
 .topbar-brand:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
-.brand-logo { font-size: 24px; }
-.brand-title { font-size: 20px; color: #1877f2; margin: 0; font-weight: 800; letter-spacing: -0.5px; }
+.brand-logo-img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* GOLD GRADIENT TEXT FOR LOGO */
+.brand-title {
+  font-size: 22px;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  
+  /* Metallic Gold Gradient Background */
+  background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+  
+  /* Clip Gradient Background to Text */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
 
 .topbar-search { flex: 1; max-width: 400px; margin: 0 20px; }
 .search-input {
