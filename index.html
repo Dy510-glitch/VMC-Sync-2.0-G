@@ -3,310 +3,208 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VMC SYNC - Student View</title>
-  <style>
-    :root {
-      --primary: #1e3a8a;
-      --accent: #d97706;
-      --bg: #f3f4f6;
-      --card: #ffffff;
-      --text: #1f2937;
-    }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: var(--primary);
-      color: white;
-      padding: 16px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 { margin: 0; font-size: 22px; }
-    header a {
-      color: #fef08a;
-      text-decoration: none;
-      font-weight: bold;
-      border: 1px solid #fef08a;
-      padding: 6px 12px;
-      border-radius: 4px;
-    }
-    header a:hover { background: rgba(255,255,255,0.1); }
-    
-    /* Urgent Banner */
-    .urgent-banner {
-      background-color: #dc2626;
-      color: white;
-      padding: 12px 20px;
-      font-weight: bold;
-      text-align: center;
-      display: none;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: 20px auto;
-      padding: 0 16px;
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 20px;
-    }
-
-    /* Cards */
-    .card {
-      background: var(--card);
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .card h2 { margin-top: 0; color: var(--primary); font-size: 18px; border-bottom: 2px solid #f3f4f6; padding-bottom: 8px; }
-
-    /* Campus Status Card */
-    .status-box {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 18px;
-      font-weight: bold;
-    }
-    .status-note { color: #4b5563; font-size: 14px; margin-top: 8px; }
-
-    /* Announcements Feed */
-    .feed-card {
-      background: #fafafa;
-      border-left: 4px solid var(--primary);
-      padding: 14px;
-      margin-bottom: 12px;
-      border-radius: 0 6px 6px 0;
-    }
-    .feed-card h3 { margin: 6px 0; font-size: 16px; color: #111827; }
-    .feed-card p { margin: 0; color: #4b5563; font-size: 14px; line-height: 1.4; }
-    .card-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
-    .badge {
-      background: #e0e7ff;
-      color: var(--primary);
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-weight: bold;
-      text-transform: uppercase;
-    }
-    .badge.academics { background: #dbeafe; color: #1e40af; }
-    .badge.events { background: #fef3c7; color: #92400e; }
-    .post-date { color: #9ca3af; }
-
-    /* Events List */
-    .event-card {
-      border-bottom: 1px solid #f3f4f6;
-      padding-bottom: 10px;
-      margin-bottom: 10px;
-    }
-    .event-card:last-child { border-bottom: none; }
-    .event-card h3 { margin: 4px 0; font-size: 15px; color: var(--primary); }
-    .event-card p { margin: 2px 0; font-size: 13px; color: #6b7280; }
-    .event-date-badge { font-weight: bold; color: var(--accent); font-size: 12px; }
-
-    .empty-msg { color: #9ca3af; font-style: italic; font-size: 14px; }
-
-    @media (max-width: 768px) {
-      .container { grid-template-columns: 1fr; }
-    }
-  </style>
+  <title>Campus Student Hub & Social Feed</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <header>
-    <h1>VMC SYNC - Campus Student Portal</h1>
-    <a href="admin.html">Admin Portal Login</a>
+  <!-- TOP NAVIGATION BAR -->
+  <header class="fb-topbar">
+    <div class="topbar-brand">
+      <span class="brand-logo">🎓</span>
+      <h1 class="brand-title">CampusHub</h1>
+    </div>
+    <div class="topbar-search">
+      <input type="text" placeholder="Search campus posts, tools, or lost items..." class="search-input">
+    </div>
+    <div class="topbar-user">
+      <div class="avatar-placeholder">👤</div>
+      <span class="user-name">Student Account</span>
+    </div>
   </header>
 
-  <!-- Urgent Banner Container -->
-  <div id="admin-banner-container" class="urgent-banner">
-    🚨 <span id="banner-text">Loading broadcast...</span>
-  </div>
+  <!-- FACEBOOK-STYLE 3-COLUMN LAYOUT -->
+  <div class="fb-container">
 
-  <div class="container">
-    <!-- Main Column: Feed -->
-    <main>
-      <div class="card">
-        <h2>📢 Campus Announcements</h2>
-        <div id="announcements-list">
-          <p class="empty-msg">Loading announcements...</p>
+    <!-- LEFT SIDEBAR: STUDENT TOOLKIT & APPS -->
+    <aside class="fb-sidebar-left">
+      <div class="sidebar-card">
+        <h3 class="sidebar-title">🧰 Student Toolkit</h3>
+        
+        <!-- Toolkit Navigation Tabs -->
+        <div class="toolkit-mini-tabs">
+          <button class="toolkit-tab-btn active" onclick="switchToolkitTab('apps-hub', this)">Apps</button>
+          <button class="toolkit-tab-btn" onclick="switchToolkitTab('gpa-calc', this)">GPA</button>
+          <button class="toolkit-tab-btn" onclick="switchToolkitTab('schedule-planner', this)">Schedule</button>
+        </div>
+
+        <!-- Tab 1: App Suite / Creation Directory -->
+        <div id="tab-apps-hub" class="toolkit-tab-content active">
+          <p class="tab-subtitle">Productivity & Design Tools</p>
+          
+          <div class="app-filter-bar">
+            <button class="app-chip active" onclick="filterApps('ALL', this)">All</button>
+            <button class="app-chip" onclick="filterApps('DOCS', this)">📄 Docs</button>
+            <button class="app-chip" onclick="filterApps('SLIDES', this)">📊 Slides</button>
+            <button class="app-chip" onclick="filterApps('PHOTO', this)">🎨 Photo</button>
+            <button class="app-chip" onclick="filterApps('VIDEO', this)">🎬 Video</button>
+          </div>
+
+          <div id="apps-grid-container" class="apps-mini-list"></div>
+        </div>
+
+        <!-- Tab 2: Semester GPA Calculator -->
+        <div id="tab-gpa-calc" class="toolkit-tab-content" style="display:none;">
+          <p class="tab-subtitle">Semester GPA Calculator</p>
+          <table id="gpa-table" class="toolkit-table">
+            <thead>
+              <tr>
+                <th>Course</th>
+                <th>Units</th>
+                <th>Grade (%)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="gpa-course-rows">
+              <tr>
+                <td><input type="text" placeholder="IS 101" class="input-field course-name"></td>
+                <td><input type="number" value="3" min="1" max="6" class="input-field course-units"></td>
+                <td><input type="number" value="88" min="0" max="100" class="input-field course-grade"></td>
+                <td><button class="btn-danger-xs" onclick="removeGpaRow(this)">✕</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="toolkit-action-row">
+            <button class="btn-secondary-sm" onclick="addGpaRow()">+ Row</button>
+            <button class="btn-primary-sm" onclick="calculateGPA()">Calculate</button>
+          </div>
+          <div id="gpa-result-box" class="result-box-sm" style="display:none;"></div>
+        </div>
+
+        <!-- Tab 3: Class Schedule Planner -->
+        <div id="tab-schedule-planner" class="toolkit-tab-content" style="display:none;">
+          <p class="tab-subtitle">Class Schedule Manager</p>
+          <form id="schedule-form" onsubmit="addScheduleEntry(event)" class="stacked-form">
+            <input type="text" id="sched-subject" placeholder="Subject Name" required class="input-field">
+            <div class="form-row">
+              <select id="sched-day" class="input-field">
+                <option value="Mon">Mon</option>
+                <option value="Tue">Tue</option>
+                <option value="Wed">Wed</option>
+                <option value="Thu">Thu</option>
+                <option value="Fri">Fri</option>
+                <option value="Sat">Sat</option>
+              </select>
+              <input type="text" id="sched-room" placeholder="Room" required class="input-field">
+            </div>
+            <div class="form-row">
+              <input type="time" id="sched-time-start" required class="input-field">
+              <input type="time" id="sched-time-end" required class="input-field">
+            </div>
+            <button type="submit" class="btn-primary-sm" style="width: 100%;">Add Class</button>
+          </form>
+          <div id="schedule-list" class="schedule-mini-list"></div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- CENTER FEED: POST CREATOR & MAIN INTERACTIVE FEED -->
+    <main class="fb-main-feed">
+      
+      <!-- Student Post Creator Card -->
+      <div class="fb-card post-creator-card">
+        <div class="creator-header">
+          <div class="avatar-placeholder">👤</div>
+          <input type="text" id="post-input-trigger" placeholder="What's on your mind, student?" readonly onclick="openPostModal()">
+        </div>
+        <div class="creator-actions">
+          <button class="action-btn" onclick="openPostModal('LOSTFOUND')">🔍 Post Lost/Found</button>
+          <button class="action-btn" onclick="openPostModal('DISCUSSION')">💬 Start Discussion</button>
         </div>
       </div>
+
+      <!-- Feed Category Filters -->
+      <div class="feed-filter-bar">
+        <button class="feed-filter-btn active" onclick="filterMainFeed('ALL', this)">All Posts</button>
+        <button class="feed-filter-btn" onclick="filterMainFeed('DISCUSSION', this)">Discussions</button>
+        <button class="feed-filter-btn" onclick="filterMainFeed('LOSTFOUND', this)">Lost & Found</button>
+      </div>
+
+      <!-- Dynamic Campus Feed Stream -->
+      <div id="campus-main-feed" class="feed-stream"></div>
     </main>
 
-    <!-- Sidebar: Status & Events -->
-    <aside>
-      <!-- Campus Status -->
-      <div class="card">
-        <h2>🏫 Campus Operating Status</h2>
-        <div class="status-box">
-          <span id="status-dot">🟢</span>
-          <span id="status-title">Normal Operations</span>
+    <!-- RIGHT SIDEBAR: ANNOUNCEMENTS & EVENTS -->
+    <aside class="fb-sidebar-right">
+      <div class="sidebar-card">
+        <div class="card-header-sm">
+          <h3 class="sidebar-title">📢 Campus Announcements</h3>
         </div>
-        <p id="status-note" class="status-note">Loading status notes...</p>
-      </div>
-
-      <!-- Upcoming Events -->
-      <div class="card">
-        <h2>📅 Upcoming Events</h2>
-        <div id="upcoming-events-container">
-          <p class="empty-msg">Loading upcoming events...</p>
+        <div id="announcement-list" class="announcement-stream">
+          <div class="announcement-item">
+            <span class="announcement-badge">ACADEMICS</span>
+            <h4>Midterm Examination Schedule</h4>
+            <p>Check your portal for room assignments and schedule details for next week.</p>
+            <small class="announcement-time">2 hours ago</small>
+          </div>
+          <div class="announcement-item">
+            <span class="announcement-badge warning">ADMIN</span>
+            <h4>Campus Wi-Fi Maintenance</h4>
+            <p>Scheduled maintenance will occur on Sunday from 12:00 AM to 4:00 AM.</p>
+            <small class="announcement-time">1 day ago</small>
+          </div>
         </div>
       </div>
     </aside>
+
   </div>
 
-  <!-- ==========================================================================
-     MAIN STUDENT HUB: TOOLKIT & LOST AND FOUND
-     ========================================================================== -->
-<!-- ==========================================================================
-     STUDENT TOOLKIT SECTION (WITH APPS DIRECTORY)
-     ========================================================================== -->
-<section id="student-toolkit-section" class="hub-card">
-  <div class="card-header">
-    <h2>🧰 Student Toolkit & App Suite</h2>
-    <p>Academic calculators, class scheduling, and essential creation tools.</p>
-  </div>
-
-  <!-- Toolkit Navigation Tabs -->
-  <div class="toolkit-tabs">
-    <button class="toolkit-tab-btn active" onclick="switchToolkitTab('apps-hub', this)">Creative & Docs Apps</button>
-    <button class="toolkit-tab-btn" onclick="switchToolkitTab('gpa-calc', this)">GPA Calculator</button>
-    <button class="toolkit-tab-btn" onclick="switchToolkitTab('schedule-planner', this)">Schedule Planner</button>
-  </div>
-
-  <!-- Tab 1: App Suite / Creation Tools -->
-  <div id="tab-apps-hub" class="toolkit-tab-content active">
-    <h3>Student Productivity & Design Suite</h3>
-    <p style="color:#718096; font-size:14px; margin-bottom: 16px;">
-      Quick access to essential web tools for editing media and completing course projects.
-    </p>
-
-    <!-- App Category Filter -->
-    <div class="app-filter-bar">
-      <button class="app-chip active" onclick="filterApps('ALL', this)">All Apps</button>
-      <button class="app-chip" onclick="filterApps('DOCS', this)">📄 Documents</button>
-      <button class="app-chip" onclick="filterApps('SLIDES', this)">📊 Presentations</button>
-      <button class="app-chip" onclick="filterApps('PHOTO', this)">🎨 Photo Editing</button>
-      <button class="app-chip" onclick="filterApps('VIDEO', this)">🎬 Video Editing</button>
-    </div>
-
-    <!-- App Cards Grid -->
-    <div id="apps-grid-container" class="apps-grid">
-      <!-- Populated dynamically via JS -->
-    </div>
-  </div>
-
-  <!-- Tab 2: GPA Calculator -->
-  <div id="tab-gpa-calc" class="toolkit-tab-content" style="display:none;">
-    <h3>Semester GPA Calculator</h3>
-    <table id="gpa-table" class="toolkit-table">
-      <thead>
-        <tr>
-          <th>Course Code</th>
-          <th>Units / Credits</th>
-          <th>Grade (%)</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="gpa-course-rows">
-        <tr>
-          <td><input type="text" placeholder="e.g. IS 101" class="input-field course-name"></td>
-          <td><input type="number" value="3" min="1" max="6" class="input-field course-units"></td>
-          <td><input type="number" value="88" min="0" max="100" class="input-field course-grade"></td>
-          <td><button class="btn-danger-sm" onclick="removeGpaRow(this)">Remove</button></td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="toolkit-action-row">
-      <button class="btn-secondary" onclick="addGpaRow()">+ Add Course</button>
-      <button class="btn-primary" onclick="calculateGPA()">Calculate GPA</button>
-    </div>
-    <div id="gpa-result-box" class="result-box" style="display:none;"></div>
-  </div>
-
-  <!-- Tab 3: Schedule Planner -->
-  <div id="tab-schedule-planner" class="toolkit-tab-content" style="display:none;">
-    <h3>Class Schedule Manager</h3>
-    <form id="schedule-form" onsubmit="addScheduleEntry(event)" class="inline-form">
-      <input type="text" id="sched-subject" placeholder="Subject / Class" required class="input-field">
-      <select id="sched-day" class="input-field">
-        <option value="Monday">Monday</option>
-        <option value="Tuesday">Tuesday</option>
-        <option value="Wednesday">Wednesday</option>
-        <option value="Thursday">Thursday</option>
-        <option value="Friday">Friday</option>
-        <option value="Saturday">Saturday</option>
-      </select>
-      <input type="time" id="sched-time-start" required class="input-field">
-      <input type="time" id="sched-time-end" required class="input-field">
-      <input type="text" id="sched-room" placeholder="Room / Bldg" required class="input-field">
-      <button type="submit" class="btn-primary">Add Class</button>
-    </form>
-    <div id="schedule-list" class="schedule-grid"></div>
-  </div>
-</section>
-
-<!-- 2. LOST AND FOUND SECTION -->
-<section id="lost-and-found-section" class="hub-card">
-  <div class="card-header flex-between">
-    <div>
-      <h2>🔍 Campus Lost & Found</h2>
-      <p>Report misplaced personal items or view found items across campus.</p>
-    </div>
-    <button class="btn-primary" onclick="openLostFoundModal()">+ Post Item</button>
-  </div>
-
-  <!-- Filter & Search Bar -->
-  <div class="filter-bar">
-    <button class="filter-btn active" onclick="filterLostFound('ALL', this)">All Items</button>
-    <button class="filter-btn" onclick="filterLostFound('LOST', this)">Lost</button>
-    <button class="filter-btn" onclick="filterLostFound('FOUND', this)">Found</button>
-  </div>
-
-  <!-- Item Cards Feed -->
-  <div id="lostfound-items-container" class="items-grid">
-    <!-- Populated dynamically via JS -->
-  </div>
-</section>
-
-<!-- Lost & Found Modal Form -->
-<div id="lostfound-modal" class="modal-overlay" style="display:none;">
-  <div class="modal-box">
-    <h3>Report Lost or Found Item</h3>
-    <form onsubmit="submitLostFoundItem(event)">
-      <label>Report Type:</label>
-      <select id="lf-type" class="input-field">
-        <option value="LOST">Lost Item</option>
-        <option value="FOUND">Found Item</option>
-      </select>
-
-      <label>Item Name:</label>
-      <input type="text" id="lf-title" placeholder="e.g. Black Leather Wallet" required class="input-field">
-
-      <label>Location (where lost/found):</label>
-      <input type="text" id="lf-location" placeholder="e.g. Main Library 2nd Floor" required class="input-field">
-
-      <label>Contact Email / Phone:</label>
-      <input type="text" id="lf-contact" placeholder="e.g. student@school.edu" required class="input-field">
-
-      <label>Description & Notes:</label>
-      <textarea id="lf-desc" rows="3" placeholder="Provide details like brand, color, or distinguishing features..." required class="input-field"></textarea>
-
-      <div class="modal-actions">
-        <button type="button" class="btn-secondary" onclick="closeLostFoundModal()">Cancel</button>
-        <button type="submit" class="btn-primary">Publish Entry</button>
+  <!-- POST CREATION MODAL -->
+  <div id="create-post-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box fb-modal">
+      <div class="modal-header">
+        <h3>Create Campus Post</h3>
+        <button class="close-btn" onclick="closePostModal()">✕</button>
       </div>
-    </form>
+      <form onsubmit="handleCreatePost(event)">
+        <div class="form-group">
+          <label class="form-label">Post Type:</label>
+          <select id="post-type" class="input-field" onchange="togglePostTypeFields(this.value)">
+            <option value="DISCUSSION">Campus Discussion</option>
+            <option value="LOSTFOUND">Lost & Found Item</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <input type="text" id="post-title" placeholder="Title or Subject" required class="input-field">
+        </div>
+
+        <!-- Conditional Lost & Found Fields -->
+        <div id="lostfound-extra-fields" style="display: none;">
+          <div class="form-row">
+            <select id="post-lf-status" class="input-field">
+              <option value="LOST">Lost Item</option>
+              <option value="FOUND">Found Item</option>
+            </select>
+            <input type="text" id="post-lf-location" placeholder="Location (e.g., Library 2nd Flr)" class="input-field">
+          </div>
+          <input type="text" id="post-lf-contact" placeholder="Contact Info (Email/Phone)" class="input-field">
+        </div>
+
+        <div class="form-group">
+          <textarea id="post-content" rows="4" placeholder="Share your question, discussion topic, or details..." required class="input-field"></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary-sm" onclick="closePostModal()">Cancel</button>
+          <button type="submit" class="btn-primary-sm" style="padding: 10px 20px;">Publish Post</button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
+
+  <!-- CORE APP LOGIC -->
   <script src="vmc-sync-core.js"></script>
 </body>
 </html>
