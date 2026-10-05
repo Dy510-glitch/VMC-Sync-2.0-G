@@ -10,19 +10,29 @@
 
   <!-- TOP NAVIGATION BAR -->
   <header class="fb-topbar">
-    <!-- Clickable Brand Header with Tooltip -->
+    <!-- Brand Header -->
     <a href="javascript:void(0);" class="topbar-brand tooltip-bottom" data-tooltip="Click to Reset & Go Home" onclick="resetFeedToHome()" role="button" tabindex="0">
-      <img src="logo3.png" alt="" class="brand-logo-img">
+      <img src="Logo3.png" alt="VMC SYNC Logo" class="brand-logo-img">
       <h1 class="brand-title">VMC SYNC</h1>
     </a>
 
+    <!-- Topbar Search -->
     <div class="topbar-search tooltip-bottom" data-tooltip="Search posts, tools, or lost items">
       <input type="text" placeholder="Search VMC SYNC posts, tools, or lost items..." class="search-input">
     </div>
 
-    <div class="topbar-user tooltip-bottom" data-tooltip="View your profile settings">
-      <div class="avatar-placeholder">👤</div>
-      <span class="user-name">Student Account</span>
+    <!-- Right Topbar Controls -->
+    <div class="topbar-actions">
+      <!-- Theme Switcher Toggle -->
+      <button id="theme-toggle-btn" class="theme-btn tooltip-bottom" data-tooltip="Toggle Dark/Light Mode" onclick="toggleThemeMode()">
+        <span id="theme-icon">🌙</span>
+      </button>
+
+      <!-- User Account -->
+      <div class="topbar-user tooltip-bottom" data-tooltip="View your profile settings">
+        <div class="avatar-placeholder">👤</div>
+        <span class="user-name">Student Account</span>
+      </div>
     </div>
   </header>
 
@@ -31,10 +41,10 @@
 
     <!-- LEFT SIDEBAR: STUDENT TOOLKIT & APPS -->
     <aside class="fb-sidebar-left">
-      <div class="sidebar-card">
+      <div class="sidebar-card tooltip-right" data-tooltip="Access productivity apps, GPA calculation, and class schedules">
         <h3 class="sidebar-title">🧰 Student Toolkit</h3>
         
-        <!-- Toolkit Navigation Tabs with Tooltips -->
+        <!-- Toolkit Navigation Tabs -->
         <div class="toolkit-mini-tabs">
           <button class="toolkit-tab-btn active tooltip-top" data-tooltip="Open Student App Suite" onclick="switchToolkitTab('apps-hub', this)">Apps</button>
           <button class="toolkit-tab-btn tooltip-top" data-tooltip="Calculate Semester GPA" onclick="switchToolkitTab('gpa-calc', this)">GPA</button>
@@ -46,11 +56,11 @@
           <p class="tab-subtitle">Productivity & Design Tools</p>
           
           <div class="app-filter-bar">
-            <button class="app-chip active" onclick="filterApps('ALL', this)">All</button>
-            <button class="app-chip" onclick="filterApps('DOCS', this)">📄 Docs</button>
-            <button class="app-chip" onclick="filterApps('SLIDES', this)">📊 Slides</button>
-            <button class="app-chip" onclick="filterApps('PHOTO', this)">🎨 Photo</button>
-            <button class="app-chip" onclick="filterApps('VIDEO', this)">🎬 Video</button>
+            <button class="app-chip active tooltip-top" data-tooltip="Show all web apps" onclick="filterApps('ALL', this)">All</button>
+            <button class="app-chip tooltip-top" data-tooltip="Filter document editors" onclick="filterApps('DOCS', this)">📄 Docs</button>
+            <button class="app-chip tooltip-top" data-tooltip="Filter presentation builders" onclick="filterApps('SLIDES', this)">📊 Slides</button>
+            <button class="app-chip tooltip-top" data-tooltip="Filter photo editors" onclick="filterApps('PHOTO', this)">🎨 Photo</button>
+            <button class="app-chip tooltip-top" data-tooltip="Filter video suites" onclick="filterApps('VIDEO', this)">🎬 Video</button>
           </div>
 
           <div id="apps-grid-container" class="apps-mini-list"></div>
@@ -88,9 +98,9 @@
         <div id="tab-schedule-planner" class="toolkit-tab-content" style="display:none;">
           <p class="tab-subtitle">Class Schedule Manager</p>
           <form id="schedule-form" onsubmit="addScheduleEntry(event)" class="stacked-form">
-            <input type="text" id="sched-subject" placeholder="Subject Name" required class="input-field">
+            <input type="text" id="sched-subject" placeholder="Subject Name" required class="input-field tooltip-top" data-tooltip="Enter subject code or title">
             <div class="form-row">
-              <select id="sched-day" class="input-field">
+              <select id="sched-day" class="input-field tooltip-top" data-tooltip="Select day of the week">
                 <option value="Mon">Mon</option>
                 <option value="Tue">Tue</option>
                 <option value="Wed">Wed</option>
@@ -98,13 +108,13 @@
                 <option value="Fri">Fri</option>
                 <option value="Sat">Sat</option>
               </select>
-              <input type="text" id="sched-room" placeholder="Room" required class="input-field">
+              <input type="text" id="sched-room" placeholder="Room" required class="input-field tooltip-top" data-tooltip="Enter room or building number">
             </div>
             <div class="form-row">
-              <input type="time" id="sched-time-start" required class="input-field">
-              <input type="time" id="sched-time-end" required class="input-field">
+              <input type="time" id="sched-time-start" required class="input-field tooltip-top" data-tooltip="Class start time">
+              <input type="time" id="sched-time-end" required class="input-field tooltip-top" data-tooltip="Class end time">
             </div>
-            <button type="submit" class="btn-primary-sm tooltip-top" data-tooltip="Save class schedule to local list" style="width: 100%;">Add Class</button>
+            <button type="submit" class="btn-primary-sm tooltip-top" data-tooltip="Save class schedule to local storage" style="width: 100%;">Add Class</button>
           </form>
           <div id="schedule-list" class="schedule-mini-list"></div>
         </div>
@@ -116,10 +126,10 @@
     <main class="fb-main-feed">
       
       <!-- Student Post Creator Card -->
-      <div class="fb-card post-creator-card">
+      <div class="fb-card post-creator-card tooltip-bottom" data-tooltip="Compose a new campus updates or lost & found notice">
         <div class="creator-header">
           <div class="avatar-placeholder">👤</div>
-          <input type="text" id="post-input-trigger" placeholder="What's on your mind? Share to VMC SYNC..." readonly onclick="openPostModal()" class="tooltip-top" data-tooltip="Click to compose a new post">
+          <input type="text" id="post-input-trigger" placeholder="What's on your mind? Share to VMC SYNC..." readonly onclick="openPostModal()" class="tooltip-top" data-tooltip="Click to open post composer">
         </div>
         <div class="creator-actions">
           <button class="action-btn tooltip-top" data-tooltip="Report lost or found campus items" onclick="openPostModal('LOSTFOUND')">🔍 Post Lost/Found</button>
@@ -140,18 +150,18 @@
 
     <!-- RIGHT SIDEBAR: ANNOUNCEMENTS -->
     <aside class="fb-sidebar-right">
-      <div class="sidebar-card">
+      <div class="sidebar-card tooltip-left" data-tooltip="Official administrative and academic announcements">
         <div class="card-header-sm">
           <h3 class="sidebar-title">📢 VMC Announcements</h3>
         </div>
         <div id="announcement-list" class="announcement-stream">
-          <div class="announcement-item">
+          <div class="announcement-item tooltip-left" data-tooltip="Academic bulletin detail">
             <span class="announcement-badge">ACADEMICS</span>
             <h4>Midterm Examination Schedule</h4>
             <p>Check your student portal for room assignments and schedule details for next week.</p>
             <small class="announcement-time">2 hours ago</small>
           </div>
-          <div class="announcement-item">
+          <div class="announcement-item tooltip-left" data-tooltip="IT & System alert detail">
             <span class="announcement-badge warning">ADMIN</span>
             <h4>Campus Wi-Fi Maintenance</h4>
             <p>Scheduled maintenance will occur on Sunday from 12:00 AM to 4:00 AM.</p>
@@ -173,14 +183,14 @@
       <form onsubmit="handleCreatePost(event)">
         <div class="form-group">
           <label class="form-label">Post Type:</label>
-          <select id="post-type" class="input-field" onchange="togglePostTypeFields(this.value)">
+          <select id="post-type" class="input-field tooltip-top" data-tooltip="Select post classification" onchange="togglePostTypeFields(this.value)">
             <option value="DISCUSSION">Campus Discussion</option>
             <option value="LOSTFOUND">Lost & Found Item</option>
           </select>
         </div>
 
         <div class="form-group">
-          <input type="text" id="post-title" placeholder="Title or Subject" required class="input-field">
+          <input type="text" id="post-title" placeholder="Title or Subject" required class="input-field tooltip-top" data-tooltip="Enter post headline">
         </div>
 
         <div id="lostfound-extra-fields" style="display: none;">
@@ -195,12 +205,12 @@
         </div>
 
         <div class="form-group">
-          <textarea id="post-content" rows="4" placeholder="Share your question, discussion topic, or details..." required class="input-field"></textarea>
+          <textarea id="post-content" rows="4" placeholder="Share your question, discussion topic, or details..." required class="input-field tooltip-top" data-tooltip="Type post details here"></textarea>
         </div>
 
         <div class="modal-actions">
-          <button type="button" class="btn-secondary-sm" onclick="closePostModal()">Cancel</button>
-          <button type="submit" class="btn-primary-sm" style="padding: 10px 20px;">Publish Post</button>
+          <button type="button" class="btn-secondary-sm tooltip-top" data-tooltip="Discard post draft" onclick="closePostModal()">Cancel</button>
+          <button type="submit" class="btn-primary-sm tooltip-top" data-tooltip="Publish to main campus feed" style="padding: 10px 20px;">Publish Post</button>
         </div>
       </form>
     </div>
