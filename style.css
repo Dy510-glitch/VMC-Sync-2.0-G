@@ -1,5 +1,5 @@
 /* ==========================================================================
-   VMC SYNC - STYLESHEET
+   VMC SYNC - STYLESHEET WITH TOOLTIPS & DEEP BLUE HEADER
    ========================================================================== */
 
 * {
@@ -14,12 +14,12 @@ body {
   color: #1c1e21;
 }
 
-/* TOPBAR - Updated to Deep Blue */
+/* DEEP BLUE TOPBAR */
 .fb-topbar {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 56px;
-  background: #002244; /* Deep Blue background */
+  background: #002244; /* Deep Blue */
   border-bottom: 1px solid #00172e;
   display: flex;
   align-items: center;
@@ -29,37 +29,7 @@ body {
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* BRAND LINK - Dark mode hover state */
-.topbar-brand:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* Subtle highlight on dark header */
-}
-
-/* USER ACCOUNT - Updated to White Text */
-.topbar-user { 
-  display: flex; 
-  align-items: center; 
-  gap: 8px; 
-  font-weight: 600; 
-  font-size: 14px; 
-  color: #ffffff; /* White text for Student Account */
-}
-
-.user-name {
-  color: #ffffff; /* Explicitly set user name text to white */
-}
-
-.avatar-placeholder {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2); /* Slightly transparent white avatar circle */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: #ffffff;
-}
-/* CLICKABLE BRAND HEADER WITH GOLD GRADIENT */
+/* BRAND LOGO & GOLD GRADIENT TEXT */
 .topbar-brand {
   display: flex;
   align-items: center;
@@ -73,7 +43,7 @@ body {
 }
 
 .topbar-brand:hover {
-  background-color: #f0f2f5;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .topbar-brand:active {
@@ -86,17 +56,12 @@ body {
   object-fit: contain;
 }
 
-/* GOLD GRADIENT TEXT FOR LOGO */
 .brand-title {
   font-size: 22px;
   margin: 0;
   font-weight: 800;
   letter-spacing: -0.5px;
-  
-  /* Metallic Gold Gradient Background */
   background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
-  
-  /* Clip Gradient Background to Text */
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -113,9 +78,130 @@ body {
   font-size: 14px;
 }
 
-.topbar-user { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
+/* WHITE STUDENT ACCOUNT TEXT */
+.topbar-user { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  font-weight: 600; 
+  font-size: 14px; 
+  color: #ffffff;
+  cursor: pointer;
+}
 
-/* 3-COLUMN GRID LAYOUT */
+.user-name {
+  color: #ffffff;
+}
+
+.avatar-placeholder {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   HOVER POPUP TOOLTIP SYSTEM (CSS-ONLY)
+   ========================================================================== */
+
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::before,
+[data-tooltip]::after {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 1000;
+}
+
+/* Tooltip Arrow */
+[data-tooltip]::before {
+  content: '';
+  border: 5px solid transparent;
+}
+
+/* Tooltip Text Bubble */
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  background: #1c1e21;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 9px;
+  border-radius: 5px;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Top Hover Position (Default) */
+.tooltip-top::before {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  border-top-color: #1c1e21;
+}
+.tooltip-top::after {
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/* Bottom Hover Position (Ideal for Topbar) */
+.tooltip-bottom::before {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(2px);
+  border-bottom-color: #1c1e21;
+}
+.tooltip-bottom::after {
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(2px);
+}
+
+/* Left Hover Position */
+.tooltip-left::before {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%) translateX(-2px);
+  border-left-color: #1c1e21;
+}
+.tooltip-left::after {
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-2px);
+}
+
+/* Hover Trigger States */
+[data-tooltip]:hover::before,
+[data-tooltip]:hover::after {
+  opacity: 1;
+}
+
+.tooltip-top:hover::before, .tooltip-top:hover::after {
+  transform: translateX(-50%) translateY(0);
+}
+
+.tooltip-bottom:hover::before, .tooltip-bottom:hover::after {
+  transform: translateX(-50%) translateY(0);
+}
+
+.tooltip-left:hover::before, .tooltip-left:hover::after {
+  transform: translateY(-50%) translateX(0);
+}
+
+/* ==========================================================================
+   LAYOUT, FEED & TOOLKIT STYLES
+   ========================================================================== */
+
 .fb-container {
   display: grid;
   grid-template-columns: 320px 1fr 300px;
@@ -125,7 +211,6 @@ body {
   padding: 0 16px;
 }
 
-/* CARDS & SIDEBARS */
 .sidebar-card, .fb-card {
   background: #ffffff;
   border-radius: 8px;
@@ -151,20 +236,8 @@ body {
   margin: 0 0 10px 0;
 }
 
-/* POST CREATOR BOX */
 .post-creator-card { display: flex; flex-direction: column; gap: 12px; }
 .creator-header { display: flex; align-items: center; gap: 10px; }
-
-.avatar-placeholder {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #e4e6eb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
 
 #post-input-trigger {
   flex: 1;
@@ -200,7 +273,6 @@ body {
 
 .action-btn:hover { background: #f0f2f5; }
 
-/* FEED POST CARDS */
 .post-card {
   background: #ffffff;
   border-radius: 8px;
@@ -241,7 +313,6 @@ body {
 
 .post-action-btn:hover { background: #f0f2f5; }
 
-/* APPS MINI DIRECTORY */
 .app-filter-bar { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
 .app-chip {
   padding: 4px 8px;
@@ -280,7 +351,6 @@ body {
   border-radius: 4px;
 }
 
-/* MINI TOOLKIT FORM & TABLES */
 .toolkit-mini-tabs { display: flex; gap: 4px; margin-bottom: 12px; }
 .toolkit-mini-tabs .toolkit-tab-btn {
   flex: 1;
@@ -317,7 +387,6 @@ body {
 
 .result-box-sm { background: #e7f3ff; padding: 8px; border-radius: 4px; font-size: 12px; color: #1877f2; font-weight: bold; }
 
-/* FEED FILTERS & ANNOUNCEMENTS */
 .feed-filter-bar { display: flex; gap: 8px; margin-bottom: 16px; }
 .feed-filter-btn {
   padding: 6px 16px;
@@ -345,7 +414,6 @@ body {
 .announcement-item p { margin: 0; font-size: 12px; color: #65676b; }
 .announcement-time { font-size: 10px; color: #8a8d91; }
 
-/* MODALS */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -359,7 +427,6 @@ body {
 .form-label { font-size: 12px; font-weight: bold; display: block; margin-bottom: 4px; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
 
-/* RESPONSIVE */
 @media (max-width: 1024px) {
   .fb-container { grid-template-columns: 280px 1fr; }
   .fb-sidebar-right { display: none; }
