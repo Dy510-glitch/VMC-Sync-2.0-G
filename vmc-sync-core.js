@@ -1,5 +1,5 @@
 /* ==========================================================================
-   VMC SYNC - CORE ENGINE, THEME MANAGEMENT & TOOLTIP HELPERS
+   VMC SYNC - CORE ENGINE, THEME MANAGEMENT, REACTIONS, COMMENTS & DELETE
    ========================================================================== */
 
 const studentAppsData = [
@@ -188,6 +188,20 @@ function deleteSchedule(id) {
   renderSchedule();
 }
 
+/* EMOJI HELPER FOR FORM INPUTS */
+function insertEmojiTo(elementId, emoji) {
+  const field = document.getElementById(elementId);
+  if (!field) return;
+
+  const start = field.selectionStart || field.value.length;
+  const end = field.selectionEnd || field.value.length;
+  const text = field.value;
+
+  field.value = text.substring(0, start) + emoji + text.substring(end);
+  field.focus();
+  field.selectionStart = field.selectionEnd = start + emoji.length;
+}
+
 function openPostModal(defaultType = 'DISCUSSION') {
   document.getElementById('create-post-modal').style.display = 'flex';
   const typeSelect = document.getElementById('post-type');
@@ -220,7 +234,9 @@ function handleCreatePost(e) {
     timestamp: 'Just now',
     title: title,
     content: content,
-    likes: 0
+    userReaction: null, // Strictly holds 1 active reaction per post
+    comments: [],
+    showComments: false
   };
 
   if (type === 'LOSTFOUND') {
@@ -233,7 +249,85 @@ function handleCreatePost(e) {
   posts.unshift(newPost);
   localStorage.setItem('vmc_campus_posts', JSON.stringify(posts));
 
+  document.getElementById('post-title').value = '';
+  document.getElementById('post-content').value = '';
+
   closePostModal();
+  renderMainFeed();
+}
+
+/* POST DELETION */
+function deletePost(postId) {
+  if (confirm('Are you sure you want to delete this post?')) {
+    let posts = JSON.parse(localStorage.getItem('vmc_campus_posts') || '[]');
+    posts = posts.filter(p => p.id !== postId);
+    localStorage.setItem('vmc_campus_posts', JSON.stringify(posts));
+    renderMainFeed();
+  }
+}
+
+/* STRICT 1-REACTION LIMIT PER POST */
+function handleSingleReaction(postId, emoji) {
+  let posts = JSON.parse(localStorage.getItem('vmc_campus_posts') || '[]');
+  posts = posts.map(p => {
+    if (p.id === postId) {
+      // Toggle reaction off if clicking active reaction, otherwise overwrite existing reaction
+      p.userReaction = (p.userReaction === emoji) ? null : emoji;
+    }
+    return p;
+  });
+  localStorage.setItem('vmc_campus_posts', JSON.stringify(posts));
+  renderMainFeed();
+}
+
+/* FUNCTIONAL COMMENTS SYSTEM */
+function toggleCommentsSection(postId) {
+  let posts = JSON.parse(localStorage.getItem('vmc_campus_posts') || '[]');
+  posts = posts.map(p => {
+    if (p.id === postId) {
+      p.showComments = !p.showComments;
+    }
+    return p;
+  });
+  localStorage.setItem('vmc_campus_posts', JSON.stringify(posts));
+  renderMainFeed();
+}
+
+function submitComment(e, postId) {
+  e.preventDefault();
+  const input = document.getElementById(`comment-input-${postId}`);
+  if (!input || !input.value.trim()) return;
+
+  const commentText = input.value.trim();
+  let posts = JSON.parse(localStorage.getItem('vmc_campus_posts') || '[]');
+
+  posts = posts.map(p => {
+    if (p.id === postId) {
+      if (!p.comments) p.comments = [];
+      p.comments.push({
+        id: Date.now(),
+        author: 'Student Account',
+        text: commentText,
+        time: 'Just now'
+      });
+      p.showComments = true;
+    }
+    return p;
+  });
+
+  localStorage.setItem('vmc_campus_posts', JSON.stringify(posts));
+  renderMainFeed();
+}
+
+function deleteComment(postId, commentId) {
+  let posts = JSON.parse(localStorage.getItem('vmc_campus_posts') || '[]');
+  posts = posts.map(p => {
+    if (p.id === postId && p.comments) {
+      p.comments = p.comments.filter(c => c.id !== commentId);
+    }
+    return p;
+  });
+  localStorage.setItem('vmc_campus_posts', JSON.stringify(posts));
   renderMainFeed();
 }
 
@@ -262,54 +356,103 @@ function renderMainFeed() {
     return;
   }
 
-  container.innerHTML = posts.map(post => `
-    <div class="post-card tooltip-top" data-tooltip="Post by ${escapeHTML(post.author)}">
-      <div class="post-header">
-        <div class="creator-header">
-          <div class="avatar-placeholder">🎓</div>
-          <div class="post-author-info">
-            <h4>${escapeHTML(post.author)}</h4>
-            <span class="post-time">${post.timestamp}</span>
+  const reactionsList = ['👍', '❤️', '😂', '😮', '😢', '😡'];
+
+  container.innerHTML = posts.map(post => {
+    const activeReaction = post.userReaction || null;
+    const commentsList = post.comments || [];
+    const showComments = post.showComments || false;
+
+    return `
+      <div class="post-card">
+        <div class="post-header">
+          <div class="post-header-left">
+            <div class="avatar-placeholder">🎓</div>
+            <div class="post-author-info">
+              <h4>${escapeHTML(post.author)}</h4>
+              <span class="post-time">${post.timestamp}</span>
+            </div>
+          </div>
+          
+          <div class="post-header-right">
+            <span class="announcement-badge ${post.type === 'LOSTFOUND' ? 'warning' : ''}">
+              ${post.type}
+            </span>
+            <button class="btn-delete-post tooltip-left" data-tooltip="Delete Post" onclick="deletePost(${post.id})">🗑️</button>
           </div>
         </div>
-        <span class="announcement-badge ${post.type === 'LOSTFOUND' ? 'warning' : ''}">
-          ${post.type}
-        </span>
-      </div>
 
-      <div class="post-body">
-        <h4 style="margin: 4px 0;">${escapeHTML(post.title)}</h4>
-        <p>${escapeHTML(post.content)}</p>
-        
-        ${post.type === 'LOSTFOUND' ? `
-          <div style="background:var(--bg-primary); padding:8px; border-radius:6px; margin-top:8px; font-size:12px;">
-            <p style="margin:2px 0;">📍 <strong>Location:</strong> ${escapeHTML(post.location || 'N/A')}</p>
-            <p style="margin:2px 0;">📞 <strong>Contact:</strong> ${escapeHTML(post.contact || 'N/A')}</p>
-            <p style="margin:2px 0;">🏷️ <strong>Status:</strong> ${post.status}</p>
+        <div class="post-body">
+          <h4 style="margin: 4px 0; color:var(--text-main);">${escapeHTML(post.title)}</h4>
+          <p>${escapeHTML(post.content)}</p>
+          
+          ${post.type === 'LOSTFOUND' ? `
+            <div style="background:var(--bg-primary); padding:8px; border-radius:6px; margin-top:8px; font-size:12px;">
+              <p style="margin:2px 0;">📍 <strong>Location:</strong> ${escapeHTML(post.location || 'N/A')}</p>
+              <p style="margin:2px 0;">📞 <strong>Contact:</strong> ${escapeHTML(post.contact || 'N/A')}</p>
+              <p style="margin:2px 0;">🏷️ <strong>Status:</strong> ${post.status}</p>
+            </div>
+          ` : ''}
+        </div>
+
+        <!-- REACTION SELECTION (STRICT 1-REACTION LIMIT) -->
+        <div class="post-reaction-bar">
+          <div class="reaction-picker">
+            ${reactionsList.map(emoji => `
+              <button class="reaction-btn ${activeReaction === emoji ? 'active' : ''} tooltip-top" 
+                      data-tooltip="${activeReaction === emoji ? 'Remove Reaction' : 'React with ' + emoji}"
+                      onclick="handleSingleReaction(${post.id}, '${emoji}')">
+                ${emoji}
+              </button>
+            `).join('')}
+          </div>
+          
+          <div>
+            ${activeReaction ? `<span class="reaction-summary-badge">Your Reaction: ${activeReaction}</span>` : ''}
+          </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="post-footer-actions">
+          <button class="post-action-btn tooltip-top" data-tooltip="Toggle comments section" onclick="toggleCommentsSection(${post.id})">
+            💬 Comments (${commentsList.length})
+          </button>
+        </div>
+
+        <!-- COMMENTS SECTION -->
+        ${showComments ? `
+          <div class="comments-section">
+            <form onsubmit="submitComment(event, ${post.id})" class="comment-input-row">
+              <input type="text" id="comment-input-${post.id}" placeholder="Write a comment..." class="comment-input" required>
+              <button type="submit" class="btn-primary-sm">Send</button>
+            </form>
+
+            <div class="emoji-picker-bar" style="margin-bottom: 10px;">
+              <span class="emoji-picker-label">Comment Emojis:</span>
+              <button type="button" class="emoji-chip" onclick="insertEmojiTo('comment-input-${post.id}', '👍')">👍</button>
+              <button type="button" class="emoji-chip" onclick="insertEmojiTo('comment-input-${post.id}', '❤️')">❤️</button>
+              <button type="button" class="emoji-chip" onclick="insertEmojiTo('comment-input-${post.id}', '🙌')">🙌</button>
+              <button type="button" class="emoji-chip" onclick="insertEmojiTo('comment-input-${post.id}', '🔥')">🔥</button>
+            </div>
+
+            <div class="comments-list">
+              ${commentsList.length === 0 ? '<p style="font-size:11px; color:var(--text-muted); margin:0;">No comments yet.</p>' : ''}
+              ${commentsList.map(c => `
+                <div class="comment-item">
+                  <div class="avatar-placeholder" style="width:28px; height:28px; font-size:14px;">👤</div>
+                  <div class="comment-bubble">
+                    <button class="btn-delete-comment tooltip-left" data-tooltip="Delete comment" onclick="deleteComment(${post.id}, ${c.id})">✕</button>
+                    <div class="comment-author">${escapeHTML(c.author)}</div>
+                    <div class="comment-text">${escapeHTML(c.text)}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
           </div>
         ` : ''}
       </div>
-
-      <div class="post-footer-actions">
-        <button class="post-action-btn tooltip-top" data-tooltip="Like this post" onclick="likePost(${post.id})">👍 Like (${post.likes || 0})</button>
-        <button class="post-action-btn tooltip-top" data-tooltip="Comment on this post" onclick="commentPost(${post.id})">💬 Comment</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function likePost(postId) {
-  let posts = JSON.parse(localStorage.getItem('vmc_campus_posts') || '[]');
-  posts = posts.map(p => {
-    if (p.id === postId) p.likes = (p.likes || 0) + 1;
-    return p;
-  });
-  localStorage.setItem('vmc_campus_posts', JSON.stringify(posts));
-  renderMainFeed();
-}
-
-function commentPost(postId) {
-  alert('Commenting system active for Post #' + postId);
+    `;
+  }).join('');
 }
 
 function escapeHTML(str) {
