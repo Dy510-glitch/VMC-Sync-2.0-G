@@ -1,8 +1,7 @@
 /* ==========================================================================
-   VMC SYNC - CORE ENGINE
+   VMC SYNC - CORE ENGINE WITH DYNAMIC TOOLTIPS
    ========================================================================== */
 
-// 1. PRODUCTIVITY & CREATIVE APPS DATASET
 const studentAppsData = [
   { id: 'gdocs', title: 'Google Docs', category: 'DOCS', icon: '📄', url: 'https://docs.google.com' },
   { id: 'msword', title: 'MS Word Web', category: 'DOCS', icon: '📝', url: 'https://www.microsoft365.com/launch/word' },
@@ -23,40 +22,23 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMainFeed();
 });
 
-// 2. NAVIGATION: HOME RESET FUNCTION
 function resetFeedToHome() {
-  // Close any open modals
   closePostModal();
-
-  // Reset feed filter state to 'ALL'
   activeFeedFilter = 'ALL';
 
-  // Update filter UI buttons state
   const filterBtns = document.querySelectorAll('.feed-filter-btn');
   filterBtns.forEach(btn => btn.classList.remove('active'));
   
   const allBtn = document.getElementById('feed-filter-all');
-  if (allBtn) {
-    allBtn.classList.add('active');
-  }
+  if (allBtn) allBtn.classList.add('active');
 
-  // Clear search input if present
   const searchInput = document.querySelector('.search-input');
-  if (searchInput) {
-    searchInput.value = '';
-  }
+  if (searchInput) searchInput.value = '';
 
-  // Re-render feed stream
   renderMainFeed();
-
-  // Smooth scroll to top of page/feed
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// 3. TOOLKIT TABS SWITCHER
 function switchToolkitTab(tabId, btnElement) {
   document.querySelectorAll('.toolkit-tab-content').forEach(el => el.style.display = 'none');
   document.querySelectorAll('.toolkit-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -65,7 +47,6 @@ function switchToolkitTab(tabId, btnElement) {
   if (btnElement) btnElement.classList.add('active');
 }
 
-// 4. APPS DIRECTORY RENDERER
 function filterApps(category, btnElement) {
   activeAppFilter = category;
   document.querySelectorAll('.app-chip').forEach(c => c.classList.remove('active'));
@@ -91,12 +72,11 @@ function renderAppHub() {
           <span class="app-category">${app.category}</span>
         </div>
       </div>
-      <a href="${app.url}" target="_blank" rel="noopener noreferrer" class="btn-app-launch">Open ↗</a>
+      <a href="${app.url}" target="_blank" rel="noopener noreferrer" class="btn-app-launch tooltip-left" data-tooltip="Open ${escapeHTML(app.title)} in new tab">Open ↗</a>
     </div>
   `).join('');
 }
 
-// 5. GPA CALCULATOR LOGIC
 function addGpaRow() {
   const tbody = document.getElementById('gpa-course-rows');
   const tr = document.createElement('tr');
@@ -104,7 +84,7 @@ function addGpaRow() {
     <td><input type="text" placeholder="Course" class="input-field course-name"></td>
     <td><input type="number" value="3" min="1" max="6" class="input-field course-units"></td>
     <td><input type="number" value="85" min="0" max="100" class="input-field course-grade"></td>
-    <td><button class="btn-danger-xs" onclick="removeGpaRow(this)">✕</button></td>
+    <td><button class="btn-danger-xs tooltip-top" data-tooltip="Delete course row" onclick="removeGpaRow(this)">✕</button></td>
   `;
   tbody.appendChild(tr);
 }
@@ -142,7 +122,6 @@ function calculateGPA() {
   resultBox.innerHTML = `Average: <strong>${gpa}%</strong> (${totalUnits} Units)`;
 }
 
-// 6. SCHEDULE PLANNER LOGIC
 function addScheduleEntry(e) {
   e.preventDefault();
   const subject = document.getElementById('sched-subject').value;
@@ -173,7 +152,7 @@ function renderSchedule() {
     <div style="background:#f0f2f5; padding:6px; border-radius:4px; margin-top:6px; font-size:11px;">
       <strong>${escapeHTML(s.subject)}</strong> (${s.day})
       <br>🕒 ${escapeHTML(s.start)} - ${escapeHTML(s.end)} | 📍 ${escapeHTML(s.room)}
-      <button class="btn-danger-xs" style="float:right;" onclick="deleteSchedule(${s.id})">✕</button>
+      <button class="btn-danger-xs tooltip-left" data-tooltip="Remove class" style="float:right;" onclick="deleteSchedule(${s.id})">✕</button>
     </div>
   `).join('');
 }
@@ -185,7 +164,6 @@ function deleteSchedule(id) {
   renderSchedule();
 }
 
-// 7. MAIN POST CREATOR & FEED SYSTEM
 function openPostModal(defaultType = 'DISCUSSION') {
   document.getElementById('create-post-modal').style.display = 'flex';
   const typeSelect = document.getElementById('post-type');
@@ -289,8 +267,8 @@ function renderMainFeed() {
       </div>
 
       <div class="post-footer-actions">
-        <button class="post-action-btn" onclick="likePost(${post.id})">👍 Like (${post.likes || 0})</button>
-        <button class="post-action-btn" onclick="commentPost(${post.id})">💬 Comment</button>
+        <button class="post-action-btn tooltip-top" data-tooltip="Like this post" onclick="likePost(${post.id})">👍 Like (${post.likes || 0})</button>
+        <button class="post-action-btn tooltip-top" data-tooltip="Comment on this post" onclick="commentPost(${post.id})">💬 Comment</button>
       </div>
     </div>
   `).join('');
