@@ -1,5 +1,5 @@
 /* ==========================================================================
-   VMC SYNC - CORE ENGINE WITH DYNAMIC TOOLTIPS
+   VMC SYNC - CORE ENGINE, THEME MANAGEMENT & TOOLTIP HELPERS
    ========================================================================== */
 
 const studentAppsData = [
@@ -17,10 +17,34 @@ let activeAppFilter = 'ALL';
 let activeFeedFilter = 'ALL';
 
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   renderAppHub();
   renderSchedule();
   renderMainFeed();
 });
+
+/* DARK / LIGHT MODE SWITCHER */
+function initTheme() {
+  const savedTheme = localStorage.getItem('vmc_theme_mode') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+}
+
+function toggleThemeMode() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+  document.documentElement.setAttribute('data-theme', targetTheme);
+  localStorage.setItem('vmc_theme_mode', targetTheme);
+  updateThemeIcon(targetTheme);
+}
+
+function updateThemeIcon(theme) {
+  const iconSpan = document.getElementById('theme-icon');
+  if (iconSpan) {
+    iconSpan.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
 
 function resetFeedToHome() {
   closePostModal();
@@ -64,7 +88,7 @@ function renderAppHub() {
   }
 
   container.innerHTML = apps.map(app => `
-    <div class="app-card-mini">
+    <div class="app-card-mini tooltip-right" data-tooltip="${escapeHTML(app.title)} (${app.category})">
       <div class="app-card-left">
         <span class="app-icon">${app.icon}</span>
         <div>
@@ -72,7 +96,7 @@ function renderAppHub() {
           <span class="app-category">${app.category}</span>
         </div>
       </div>
-      <a href="${app.url}" target="_blank" rel="noopener noreferrer" class="btn-app-launch tooltip-left" data-tooltip="Open ${escapeHTML(app.title)} in new tab">Open ↗</a>
+      <a href="${app.url}" target="_blank" rel="noopener noreferrer" class="btn-app-launch tooltip-left" data-tooltip="Open in external tab">Open ↗</a>
     </div>
   `).join('');
 }
@@ -144,12 +168,12 @@ function renderSchedule() {
 
   const schedules = JSON.parse(localStorage.getItem('vmc_schedules') || '[]');
   if (schedules.length === 0) {
-    container.innerHTML = '<p style="font-size:11px; color:#65676b;">No classes added yet.</p>';
+    container.innerHTML = '<p style="font-size:11px; color:var(--text-muted);">No classes added yet.</p>';
     return;
   }
 
   container.innerHTML = schedules.map(s => `
-    <div style="background:#f0f2f5; padding:6px; border-radius:4px; margin-top:6px; font-size:11px;">
+    <div class="tooltip-right" data-tooltip="${escapeHTML(s.subject)} at ${escapeHTML(s.room)}" style="background:var(--bg-primary); padding:6px; border-radius:4px; margin-top:6px; font-size:11px; color:var(--text-main);">
       <strong>${escapeHTML(s.subject)}</strong> (${s.day})
       <br>🕒 ${escapeHTML(s.start)} - ${escapeHTML(s.end)} | 📍 ${escapeHTML(s.room)}
       <button class="btn-danger-xs tooltip-left" data-tooltip="Remove class" style="float:right;" onclick="deleteSchedule(${s.id})">✕</button>
@@ -232,14 +256,14 @@ function renderMainFeed() {
 
   if (posts.length === 0) {
     container.innerHTML = `
-      <div class="post-card" style="text-align:center; color:#65676b;">
+      <div class="post-card" style="text-align:center; color:var(--text-muted);">
         <p>No VMC SYNC posts yet. Be the first to start a conversation!</p>
       </div>`;
     return;
   }
 
   container.innerHTML = posts.map(post => `
-    <div class="post-card">
+    <div class="post-card tooltip-top" data-tooltip="Post by ${escapeHTML(post.author)}">
       <div class="post-header">
         <div class="creator-header">
           <div class="avatar-placeholder">🎓</div>
@@ -258,7 +282,7 @@ function renderMainFeed() {
         <p>${escapeHTML(post.content)}</p>
         
         ${post.type === 'LOSTFOUND' ? `
-          <div style="background:#f0f2f5; padding:8px; border-radius:6px; margin-top:8px; font-size:12px;">
+          <div style="background:var(--bg-primary); padding:8px; border-radius:6px; margin-top:8px; font-size:12px;">
             <p style="margin:2px 0;">📍 <strong>Location:</strong> ${escapeHTML(post.location || 'N/A')}</p>
             <p style="margin:2px 0;">📞 <strong>Contact:</strong> ${escapeHTML(post.contact || 'N/A')}</p>
             <p style="margin:2px 0;">🏷️ <strong>Status:</strong> ${post.status}</p>
