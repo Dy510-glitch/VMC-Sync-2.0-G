@@ -3,195 +3,222 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VMC SYNC - Admin Portal</title>
-  <style>
-    :root {
-      --primary: #1e3a8a;
-      --accent: #d97706;
-      --bg: #f3f4f6;
-      --card-bg: #ffffff;
-      --danger: #dc2626;
-    }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg);
-      margin: 0;
-      padding: 20px;
-    }
-    .admin-container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    header {
-      background-color: var(--primary);
-      color: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .admin-card {
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-    }
-    h1 { margin: 0; font-size: 24px; }
-    h2, h3, h4 { margin-top: 0; color: var(--primary); }
-    label { font-weight: bold; display: block; margin-top: 10px; color: #374151; }
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0 16px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-      font-family: inherit;
-    }
-    button {
-      background-color: var(--primary);
-      color: white;
-      padding: 10px 18px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button.btn-danger { background-color: var(--danger); }
-    button:hover { opacity: 0.9; }
-    .admin-item-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid #eee;
-    }
-    .nav-link {
-      display: inline-block;
-      margin-top: 10px;
-      color: var(--primary);
-      font-weight: bold;
-      text-decoration: none;
-    }
-    .nav-link:hover { text-decoration: underline; }
-  </style>
+  <title>VMC SYNC - Student Hub & Social Feed</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="admin-container">
-    <header>
-      <h1>VMC SYNC Admin Portal</h1>
-      <span>Role: Administrator</span>
-    </header>
+  <!-- TOP NAVIGATION BAR -->
+  <header class="fb-topbar">
+    <a href="javascript:void(0);" class="topbar-brand tooltip-bottom" data-tooltip="Click to Reset & Go Home" onclick="resetFeedToHome()" role="button" tabindex="0">
+      <img src="Logo3.png" alt="VMC SYNC Logo" class="brand-logo-img">
+      <h1 class="brand-title">VMC SYNC</h1>
+    </a>
 
-    <!-- 1. Urgent Broadcast Control -->
-    <div class="admin-card">
-      <h3>Broadcast Urgent Alert Banner</h3>
-      <input type="text" id="admin-banner-input" placeholder="Type urgent announcement or alert message..." />
-      <button onclick="publishBanner()">Update Banner</button>
-      <button onclick="clearBanner()" class="btn-danger">Clear Banner</button>
+    <div class="topbar-search tooltip-bottom" data-tooltip="Search posts, tools, or lost items">
+      <input type="text" placeholder="Search VMC SYNC posts, tools, or lost items..." class="search-input">
     </div>
 
-    <!-- 2. Campus Operating Status -->
-    <div class="admin-card">
-      <h3>Campus Status Control</h3>
-      <label for="campus-status-select">Current Operating Status:</label>
-      <select id="campus-status-select">
-        <option value="🟢 Normal Operations">🟢 Normal Operations</option>
-        <option value="🔴 Classes Suspended">🔴 Classes Suspended</option>
-        <option value="🟡 Online / Asynchronous">🟡 Online / Asynchronous Classes</option>
-        <option value="🔵 Exam Week Mode">🔵 Exam Week in Progress</option>
-      </select>
+    <div class="topbar-actions">
+      <button id="theme-toggle-btn" class="theme-btn tooltip-bottom" data-tooltip="Toggle Dark/Light Mode" onclick="toggleThemeMode()">
+        <span id="theme-icon">🌙</span>
+      </button>
 
-      <label for="campus-status-note">Status Note / Detail:</label>
-      <input type="text" id="campus-status-note" placeholder="e.g. Heavy rainfall advisory — Stay safe!" />
-
-      <button onclick="updateCampusStatus()">Update Campus Status</button>
-    </div>
-
-    <!-- 3. Announcement Publisher -->
-    <div class="admin-card">
-      <h3>Publish Campus Announcement</h3>
-      <form id="admin-announcement-form" onsubmit="handleAnnouncementSubmit(event)">
-        <label for="announcement-title">Title</label>
-        <input type="text" id="announcement-title" placeholder="e.g. Midterm Examination Schedule" required />
-
-        <label for="announcement-category">Category</label>
-        <select id="announcement-category">
-          <option value="General">General</option>
-          <option value="Academics">Academics</option>
-          <option value="Events">Events</option>
-        </select>
-
-        <label for="announcement-content">Content</label>
-        <textarea id="announcement-content" rows="4" placeholder="Announcement details..." required></textarea>
-
-        <button type="submit">Publish to Student UI</button>
-      </form>
-    </div>
-
-    <!-- 4. Posts Management -->
-    <div class="admin-card">
-      <h3>Manage Published Announcements</h3>
-      <div id="admin-posts-list">
-        <p>Loading published posts...</p>
+      <div class="topbar-user tooltip-bottom" data-tooltip="View your profile settings">
+        <div class="avatar-placeholder">👤</div>
+        <span class="user-name">Student Account</span>
       </div>
     </div>
+  </header>
 
-    <!-- 5. Upcoming VMC Events Management -->
-    <div class="admin-card">
-      <h3>Add Upcoming VMC Event</h3>
-      <form id="admin-event-form" onsubmit="handleEventSubmit(event)">
-        <input type="text" id="event-title" placeholder="Event Title (e.g., VMC Sports Fest 2026)" required />
-        <input type="date" id="event-date" required />
-        <input type="text" id="event-location" placeholder="Location (e.g., Main Gymnasium / Quadrangle)" required />
-        <textarea id="event-description" placeholder="Brief event description..."></textarea>
+  <!-- FACEBOOK-STYLE 3-COLUMN LAYOUT -->
+  <div class="fb-container">
+
+    <!-- LEFT SIDEBAR: STUDENT TOOLKIT & APPS -->
+    <aside class="fb-sidebar-left">
+      <div class="sidebar-card tooltip-right" data-tooltip="Access productivity apps, GPA calculation, and class schedules">
+        <h3 class="sidebar-title">🧰 Student Toolkit</h3>
         
-        <button type="submit">Add Event</button>
-      </form>
+        <div class="toolkit-mini-tabs">
+          <button class="toolkit-tab-btn active tooltip-top" data-tooltip="Open Student App Suite" onclick="switchToolkitTab('apps-hub', this)">Apps</button>
+          <button class="toolkit-tab-btn tooltip-top" data-tooltip="Calculate Semester GPA" onclick="switchToolkitTab('gpa-calc', this)">GPA</button>
+          <button class="toolkit-tab-btn tooltip-top" data-tooltip="Manage Weekly Class Schedule" onclick="switchToolkitTab('schedule-planner', this)">Schedule</button>
+        </div>
 
-      <h4 style="margin-top: 20px;">Manage Upcoming Events</h4>
-      <div id="admin-events-list">
-        <p>Loading events...</p>
+        <!-- Tab 1: App Suite -->
+        <div id="tab-apps-hub" class="toolkit-tab-content active">
+          <p class="tab-subtitle">Productivity & Design Tools</p>
+          <div class="app-filter-bar">
+            <button class="app-chip active tooltip-top" data-tooltip="Show all web apps" onclick="filterApps('ALL', this)">All</button>
+            <button class="app-chip tooltip-top" data-tooltip="Filter document editors" onclick="filterApps('DOCS', this)">📄 Docs</button>
+            <button class="app-chip tooltip-top" data-tooltip="Filter presentation builders" onclick="filterApps('SLIDES', this)">📊 Slides</button>
+            <button class="app-chip tooltip-top" data-tooltip="Filter photo editors" onclick="filterApps('PHOTO', this)">🎨 Photo</button>
+            <button class="app-chip tooltip-top" data-tooltip="Filter video suites" onclick="filterApps('VIDEO', this)">🎬 Video</button>
+          </div>
+          <div id="apps-grid-container" class="apps-mini-list"></div>
+        </div>
+
+        <!-- Tab 2: GPA Calculator -->
+        <div id="tab-gpa-calc" class="toolkit-tab-content" style="display:none;">
+          <p class="tab-subtitle">Semester GPA Calculator</p>
+          <table id="gpa-table" class="toolkit-table">
+            <thead>
+              <tr>
+                <th>Course</th>
+                <th>Units</th>
+                <th>Grade (%)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="gpa-course-rows">
+              <tr>
+                <td><input type="text" placeholder="IS 101" class="input-field course-name"></td>
+                <td><input type="number" value="3" min="1" max="6" class="input-field course-units"></td>
+                <td><input type="number" value="88" min="0" max="100" class="input-field course-grade"></td>
+                <td><button class="btn-danger-xs tooltip-top" data-tooltip="Delete course row" onclick="removeGpaRow(this)">✕</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="toolkit-action-row">
+            <button class="btn-secondary-sm tooltip-top" data-tooltip="Add another course row" onclick="addGpaRow()">+ Row</button>
+            <button class="btn-primary-sm tooltip-top" data-tooltip="Compute total weighted average" onclick="calculateGPA()">Calculate</button>
+          </div>
+          <div id="gpa-result-box" class="result-box-sm" style="display:none;"></div>
+        </div>
+
+        <!-- Tab 3: Schedule Planner -->
+        <div id="tab-schedule-planner" class="toolkit-tab-content" style="display:none;">
+          <p class="tab-subtitle">Class Schedule Manager</p>
+          <form id="schedule-form" onsubmit="addScheduleEntry(event)" class="stacked-form">
+            <input type="text" id="sched-subject" placeholder="Subject Name" required class="input-field tooltip-top" data-tooltip="Enter subject code or title">
+            <div class="form-row">
+              <select id="sched-day" class="input-field tooltip-top" data-tooltip="Select day of the week">
+                <option value="Mon">Mon</option>
+                <option value="Tue">Tue</option>
+                <option value="Wed">Wed</option>
+                <option value="Thu">Thu</option>
+                <option value="Fri">Fri</option>
+                <option value="Sat">Sat</option>
+              </select>
+              <input type="text" id="sched-room" placeholder="Room" required class="input-field tooltip-top" data-tooltip="Enter room or building number">
+            </div>
+            <div class="form-row">
+              <input type="time" id="sched-time-start" required class="input-field tooltip-top" data-tooltip="Class start time">
+              <input type="time" id="sched-time-end" required class="input-field tooltip-top" data-tooltip="Class end time">
+            </div>
+            <button type="submit" class="btn-primary-sm tooltip-top" data-tooltip="Save class schedule to local storage" style="width: 100%;">Add Class</button>
+          </form>
+          <div id="schedule-list" class="schedule-mini-list"></div>
+        </div>
+
       </div>
+    </aside>
+
+    <!-- CENTER FEED: POST CREATOR & MAIN FEED -->
+    <main class="fb-main-feed">
+      
+      <!-- Student Post Creator Card -->
+      <div class="fb-card post-creator-card tooltip-bottom" data-tooltip="Compose a new campus update or lost & found notice">
+        <div class="creator-header">
+          <div class="avatar-placeholder">👤</div>
+          <input type="text" id="post-input-trigger" placeholder="What's on your mind? Share to VMC SYNC..." readonly onclick="openPostModal()" class="tooltip-top" data-tooltip="Click to open post composer">
+        </div>
+        <div class="creator-actions">
+          <button class="action-btn tooltip-top" data-tooltip="Report lost or found campus items" onclick="openPostModal('LOSTFOUND')">🔍 Post Lost/Found</button>
+          <button class="action-btn tooltip-top" data-tooltip="Start a campus topic or question" onclick="openPostModal('DISCUSSION')">💬 Start Discussion</button>
+        </div>
+      </div>
+
+      <!-- Feed Category Filters -->
+      <div class="feed-filter-bar">
+        <button id="feed-filter-all" class="feed-filter-btn active tooltip-top" data-tooltip="Show all campus posts" onclick="filterMainFeed('ALL', this)">All Posts</button>
+        <button id="feed-filter-discussion" class="feed-filter-btn tooltip-top" data-tooltip="Filter discussion threads" onclick="filterMainFeed('DISCUSSION', this)">Discussions</button>
+        <button id="feed-filter-lostfound" class="feed-filter-btn tooltip-top" data-tooltip="Filter lost & found posts" onclick="filterMainFeed('LOSTFOUND', this)">Lost & Found</button>
+      </div>
+
+      <!-- Dynamic Campus Feed Stream -->
+      <div id="campus-main-feed" class="feed-stream"></div>
+    </main>
+
+    <!-- RIGHT SIDEBAR: ANNOUNCEMENTS -->
+    <aside class="fb-sidebar-right">
+      <div class="sidebar-card tooltip-left" data-tooltip="Official administrative and academic announcements">
+        <div class="card-header-sm">
+          <h3 class="sidebar-title">📢 VMC Announcements</h3>
+        </div>
+        <div id="announcement-list" class="announcement-stream">
+          <div class="announcement-item tooltip-left" data-tooltip="Academic bulletin detail">
+            <span class="announcement-badge">ACADEMICS</span>
+            <h4>Midterm Examination Schedule</h4>
+            <p>Check your student portal for room assignments and schedule details for next week.</p>
+            <small class="announcement-time">2 hours ago</small>
+          </div>
+          <div class="announcement-item tooltip-left" data-tooltip="IT & System alert detail">
+            <span class="announcement-badge warning">ADMIN</span>
+            <h4>Campus Wi-Fi Maintenance</h4>
+            <p>Scheduled maintenance will occur on Sunday from 12:00 AM to 4:00 AM.</p>
+            <small class="announcement-time">1 day ago</small>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- POST CREATION MODAL WITH EMOJI PICKER -->
+  <div id="create-post-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box fb-modal">
+      <div class="modal-header">
+        <h3>Create VMC SYNC Post</h3>
+        <button class="close-btn tooltip-left" data-tooltip="Close post editor" onclick="closePostModal()">✕</button>
+      </div>
+      <form onsubmit="handleCreatePost(event)">
+        <div class="form-group">
+          <label class="form-label">Post Type:</label>
+          <select id="post-type" class="input-field tooltip-top" data-tooltip="Select post classification" onchange="togglePostTypeFields(this.value)">
+            <option value="DISCUSSION">Campus Discussion</option>
+            <option value="LOSTFOUND">Lost & Found Item</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <input type="text" id="post-title" placeholder="Title or Subject" required class="input-field tooltip-top" data-tooltip="Enter post headline">
+        </div>
+
+        <div id="lostfound-extra-fields" style="display: none;">
+          <div class="form-row">
+            <select id="post-lf-status" class="input-field">
+              <option value="LOST">Lost Item</option>
+              <option value="FOUND">Found Item</option>
+            </select>
+            <input type="text" id="post-lf-location" placeholder="Location (e.g., Library 2nd Flr)" class="input-field">
+          </div>
+          <input type="text" id="post-lf-contact" placeholder="Contact Info (Email/Phone)" class="input-field">
+        </div>
+
+        <div class="form-group">
+          <textarea id="post-content" rows="4" placeholder="Share your question, discussion topic, or details..." required class="input-field tooltip-top" data-tooltip="Type post details here"></textarea>
+          <!-- Custom Emoji Selector Bar -->
+          <div class="emoji-picker-bar">
+            <span class="emoji-picker-label">Quick Emojis:</span>
+            <button type="button" class="emoji-chip" onclick="insertEmojiTo('post-content', '👍')">👍</button>
+            <button type="button" class="emoji-chip" onclick="insertEmojiTo('post-content', '❤️')">❤️️</button>
+            <button type="button" class="emoji-chip" onclick="insertEmojiTo('post-content', '😂')">😂</button>
+            <button type="button" class="emoji-chip" onclick="insertEmojiTo('post-content', '😮')">😮</button>
+            <button type="button" class="emoji-chip" onclick="insertEmojiTo('post-content', '😢')">😢</button>
+            <button type="button" class="emoji-chip" onclick="insertEmojiTo('post-content', '🔥')">🔥</button>
+            <button type="button" class="emoji-chip" onclick="insertEmojiTo('post-content', '🎓')">🎓</button>
+            <button type="button" class="emoji-chip" onclick="insertEmojiTo('post-content', '📢')">📢</button>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary-sm tooltip-top" data-tooltip="Discard post draft" onclick="closePostModal()">Cancel</button>
+          <button type="submit" class="btn-primary-sm tooltip-top" data-tooltip="Publish to main campus feed" style="padding: 10px 20px;">Publish Post</button>
+        </div>
+      </form>
     </div>
-
-    <a href="index.html" class="nav-link">← Return to Student View</a>
   </div>
-
-  <!-- Inside admin.html -->
-
-<!-- Lost & Found Moderation -->
-<div class="admin-card">
-  <h3>Lost & Found Moderation</h3>
-  <div id="admin-lostfound-list">
-    <p>Loading reported items...</p>
-  </div>
-</div>
-
-<!-- Live Community Feed Audit & Flags -->
-<div class="admin-card">
-  <h3>Community Post Moderation</h3>
-  <div id="admin-community-posts">
-    <p>Loading community posts...</p>
-  </div>
-</div>
-
-<!-- Live Group Chat & Call Monitoring Panel -->
-<div class="admin-card">
-  <h3>Active Group Chats & Video Sessions</h3>
-  <div class="admin-item-row">
-    <span><strong>Active Video Rooms:</strong> <span id="admin-active-calls-count">0</span></span>
-    <span><strong>Total Messages Today:</strong> <span id="admin-msg-count">0</span></span>
-  </div>
-  <h4 style="margin-top: 15px;">System Audit & Flagged Chat Log</h4>
-  <div id="admin-chat-audit-log" style="max-height: 200px; overflow-y: auto; background: #fafafa; padding: 10px; border: 1px solid #ddd; font-family: monospace; font-size: 12px;">
-    [System Log Initialized] Monitoring socket rooms...
-  </div>
-</div>
 
   <script src="vmc-sync-core.js"></script>
 </body>
