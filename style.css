@@ -11,8 +11,9 @@
   --text-main: #1c1e21;
   --text-muted: #65676b;
   --border-color: #ced0d4;
-  --topbar-bg: #002244; /* Deep Blue Header */
+  --topbar-bg: #002244; /* DEEP BLUE IN LIGHT MODE */
   --topbar-border: #00172e;
+  --topbar-text: #ffffff;
   --tooltip-bg: #1c1e21;
   --tooltip-text: #ffffff;
   --accent-blue: #1877f2;
@@ -27,8 +28,9 @@
   --text-main: #e4e6eb;
   --text-muted: #b0b3b8;
   --border-color: #393a3b;
-  --topbar-bg: #00172e; /* Darker Deep Blue */
-  --topbar-border: #000d1a;
+  --topbar-bg: #38b6ff; /* LIGHT BLUE IN DARK MODE */
+  --topbar-border: #2ba2e6;
+  --topbar-text: #002244; /* DARK TEXT FOR CONTRAST AGAINST LIGHT BLUE HEADER */
   --tooltip-bg: #3a3b3c;
   --tooltip-text: #ffffff;
   --accent-blue: #2d88ff;
@@ -60,7 +62,7 @@ body {
   padding: 0 16px;
   z-index: 900;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .topbar-brand {
@@ -76,7 +78,7 @@ body {
 }
 
 .topbar-brand:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .brand-logo-img {
@@ -90,11 +92,8 @@ body {
   margin: 0;
   font-weight: 800;
   letter-spacing: -0.5px;
-  background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  color: var(--topbar-text);
+  transition: color 0.3s ease;
 }
 
 .topbar-search { flex: 1; max-width: 400px; margin: 0 20px; }
@@ -115,9 +114,9 @@ body {
 }
 
 .theme-btn {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.12);
   border: none;
-  color: #ffffff;
+  color: var(--topbar-text);
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -130,7 +129,7 @@ body {
 }
 
 .theme-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.22);
   transform: scale(1.05);
 }
 
@@ -140,22 +139,23 @@ body {
   gap: 8px; 
   font-weight: 600; 
   font-size: 14px; 
-  color: #ffffff;
+  color: var(--topbar-text);
   cursor: pointer;
+  transition: color 0.3s ease;
 }
 
-.user-name { color: #ffffff; }
+.user-name { color: inherit; }
 
 .avatar-placeholder {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
-  color: #ffffff;
+  color: inherit;
 }
 
 /* ==========================================================================
