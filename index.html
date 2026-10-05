@@ -10,25 +10,20 @@
 
   <!-- TOP NAVIGATION BAR -->
   <header class="fb-topbar">
-    <!-- Brand Header -->
     <a href="javascript:void(0);" class="topbar-brand tooltip-bottom" data-tooltip="Click to Reset & Go Home" onclick="resetFeedToHome()" role="button" tabindex="0">
       <img src="Logo3.png" alt="VMC SYNC Logo" class="brand-logo-img">
       <h1 class="brand-title">VMC SYNC</h1>
     </a>
 
-    <!-- Topbar Search -->
     <div class="topbar-search tooltip-bottom" data-tooltip="Search posts, tools, or lost items">
       <input type="text" placeholder="Search VMC SYNC posts, tools, or lost items..." class="search-input">
     </div>
 
-    <!-- Right Topbar Controls -->
     <div class="topbar-actions">
-      <!-- Theme Switcher Toggle -->
       <button id="theme-toggle-btn" class="theme-btn tooltip-bottom" data-tooltip="Toggle Dark/Light Mode" onclick="toggleThemeMode()">
         <span id="theme-icon">🌙</span>
       </button>
 
-      <!-- User Account -->
       <div class="topbar-user tooltip-bottom" data-tooltip="View your profile settings">
         <div class="avatar-placeholder">👤</div>
         <span class="user-name">Student Account</span>
@@ -44,7 +39,6 @@
       <div class="sidebar-card tooltip-right" data-tooltip="Access productivity apps, GPA calculation, and class schedules">
         <h3 class="sidebar-title">🧰 Student Toolkit</h3>
         
-        <!-- Toolkit Navigation Tabs -->
         <div class="toolkit-mini-tabs">
           <button class="toolkit-tab-btn active tooltip-top" data-tooltip="Open Student App Suite" onclick="switchToolkitTab('apps-hub', this)">Apps</button>
           <button class="toolkit-tab-btn tooltip-top" data-tooltip="Calculate Semester GPA" onclick="switchToolkitTab('gpa-calc', this)">GPA</button>
@@ -54,7 +48,6 @@
         <!-- Tab 1: App Suite -->
         <div id="tab-apps-hub" class="toolkit-tab-content active">
           <p class="tab-subtitle">Productivity & Design Tools</p>
-          
           <div class="app-filter-bar">
             <button class="app-chip active tooltip-top" data-tooltip="Show all web apps" onclick="filterApps('ALL', this)">All</button>
             <button class="app-chip tooltip-top" data-tooltip="Filter document editors" onclick="filterApps('DOCS', this)">📄 Docs</button>
@@ -62,7 +55,6 @@
             <button class="app-chip tooltip-top" data-tooltip="Filter photo editors" onclick="filterApps('PHOTO', this)">🎨 Photo</button>
             <button class="app-chip tooltip-top" data-tooltip="Filter video suites" onclick="filterApps('VIDEO', this)">🎬 Video</button>
           </div>
-
           <div id="apps-grid-container" class="apps-mini-list"></div>
         </div>
 
@@ -173,7 +165,7 @@
 
   </div>
 
-  <!-- POST CREATION MODAL -->
+  <!-- POST CREATION MODAL WITH EMOJI PICKER -->
   <div id="create-post-modal" class="modal-overlay" style="display:none;">
     <div class="modal-box fb-modal">
       <div class="modal-header">
@@ -206,6 +198,18 @@
 
         <div class="form-group">
           <textarea id="post-content" rows="4" placeholder="Share your question, discussion topic, or details..." required class="input-field tooltip-top" data-tooltip="Type post details here"></textarea>
+          <!-- Custom Emoji Selector Bar -->
+          <div class="emoji-picker-bar">
+            <span class="emoji-picker-label">Quick Emojis:</span>
+            <button type="button" class="emoji-chip" onclick="insertEmojiTo('post-content', '👍')">👍</button>
+            <button type="button" class="emoji-chip" onclick="insertEmojiTo('post-content', '❤️')">❤️️</button>
+            <button type="button" class="emoji-chip" onclick="insertEmojiTo('post-content', '😂')">😂</button>
+            <button type="button" class="emoji-chip" onclick="insertEmojiTo('post-content', '😮')">😮</button>
+            <button type="button" class="emoji-chip" onclick="insertEmojiTo('post-content', '😢')">😢</button>
+            <button type="button" class="emoji-chip" onclick="insertEmojiTo('post-content', '🔥')">🔥</button>
+            <button type="button" class="emoji-chip" onclick="insertEmojiTo('post-content', '🎓')">🎓</button>
+            <button type="button" class="emoji-chip" onclick="insertEmojiTo('post-content', '📢')">📢</button>
+          </div>
         </div>
 
         <div class="modal-actions">
