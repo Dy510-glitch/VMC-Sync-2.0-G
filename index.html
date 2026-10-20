@@ -64,19 +64,19 @@
         <div class="sidebar-card post-creator-card">
           <div class="creator-header">
             <div class="avatar-placeholder" style="width:32px; height:32px; font-size:14px;">R</div>
-            <button id="post-input-trigger" onclick="openPostModal('General')">Share an update, academic note, or question...</button>
+            <button id="post-input-trigger" onclick="openPostModal('General')">Share an update, image, video, audio note, or question...</button>
           </div>
           <div class="creator-actions">
-            <button class="action-btn" onclick="openPostModal('General')"><i class="fa-solid fa-pen-to-square" style="color:#2d88ff;"></i> General Post</button>
-            <button class="action-btn" onclick="openPostModal('Academic')"><i class="fa-solid fa-book" style="color:#31a24c;"></i> Academic</button>
-            <button class="action-btn" onclick="openPostModal('Urgent')"><i class="fa-solid fa-triangle-exclamation" style="color:#e41e3f;"></i> Urgent Note</button>
+            <button class="action-btn" onclick="openPostModal('General')"><i class="fa-solid fa-pen-to-square" style="color:#2d88ff;"></i> Text Post</button>
+            <button class="action-btn" onclick="openPostModal('General')"><i class="fa-solid fa-image" style="color:#45bd62;"></i> Photo/Video</button>
+            <button class="action-btn" onclick="openPostModal('General')"><i class="fa-solid fa-music" style="color:#f7b928;"></i> Audio</button>
           </div>
         </div>
 
         <div class="feed-filter-bar">
           <button class="feed-filter-btn active" onclick="filterFeed('All', this)">All Posts</button>
+          <button class="feed-filter-btn" onclick="filterFeed('General', this)">General</button>
           <button class="feed-filter-btn" onclick="filterFeed('Academic', this)">Academic</button>
-          <button class="feed-filter-btn" onclick="filterFeed('Urgent', this)">Urgent</button>
         </div>
 
         <div id="feed-posts-container"></div>
@@ -184,7 +184,7 @@
 
   </div>
 
-  <!-- MODALS -->
+  <!-- POST CREATION MODAL WITH MULTIMEDIA ATTACHMENTS -->
   <div id="post-modal" class="modal-overlay" style="display: none;">
     <div class="fb-modal">
       <div class="modal-header">
@@ -193,8 +193,25 @@
       </div>
       <form id="create-post-form">
         <input type="hidden" id="modal-post-type" value="General">
+        <label class="form-label">Post Category</label>
+        <select id="post-category-select" class="input-field">
+          <option value="General">General</option>
+          <option value="Academic">Academic</option>
+        </select>
+        
         <label class="form-label">What's on your mind?</label>
-        <textarea id="modal-post-text" class="input-field" rows="4" placeholder="Share with VMC students..." required></textarea>
+        <textarea id="modal-post-text" class="input-field" rows="3" placeholder="Share with VMC students..." required></textarea>
+        
+        <!-- MULTIMEDIA ATTACHMENT OPTIONS -->
+        <div style="border: 1px dashed var(--border-color); padding: 10px; border-radius: 6px; margin-bottom: 12px; background: var(--bg-primary);">
+          <label class="form-label" style="margin-bottom:6px;"><i class="fa-solid fa-paperclip"></i> Attach Media (Optional)</label>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <input type="file" id="media-image-input" accept="image/*" class="input-field" style="margin-bottom:0; font-size:11px;">
+            <input type="file" id="media-video-input" accept="video/*" class="input-field" style="margin-bottom:0; font-size:11px;">
+            <input type="file" id="media-audio-input" accept="audio/*" class="input-field" style="margin-bottom:0; font-size:11px;">
+          </div>
+        </div>
+
         <div class="modal-actions">
           <button type="button" class="btn-secondary-sm" onclick="closePostModal()">Cancel</button>
           <button type="submit" class="btn-primary-sm">Post to Feed</button>
