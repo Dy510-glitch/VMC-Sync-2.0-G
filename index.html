@@ -64,12 +64,12 @@
         <div class="sidebar-card post-creator-card">
           <div class="creator-header">
             <div class="avatar-placeholder" style="width:32px; height:32px; font-size:14px;">R</div>
-            <button id="post-input-trigger" onclick="openPostModal('General')">Share an update, image, video, audio note, or question...</button>
+            <button id="post-input-trigger" onclick="openPostModal('General')">Share updates, photos, videos, audio notes, or questions...</button>
           </div>
           <div class="creator-actions">
             <button class="action-btn" onclick="openPostModal('General')"><i class="fa-solid fa-pen-to-square" style="color:#2d88ff;"></i> Text Post</button>
-            <button class="action-btn" onclick="openPostModal('General')"><i class="fa-solid fa-image" style="color:#45bd62;"></i> Photo/Video</button>
-            <button class="action-btn" onclick="openPostModal('General')"><i class="fa-solid fa-music" style="color:#f7b928;"></i> Audio</button>
+            <button class="action-btn" onclick="openPostModal('General')"><i class="fa-solid fa-image" style="color:#45bd62;"></i> Photos/Videos</button>
+            <button class="action-btn" onclick="openPostModal('General')"><i class="fa-solid fa-music" style="color:#f7b928;"></i> Audio Tracks</button>
           </div>
         </div>
 
@@ -148,8 +148,6 @@
           <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Curated web applications to help you complete slide presentations, video editing, graphic design, and research tasks.</p>
 
           <div id="built-in-apps-grid" style="display: flex; flex-direction: column; gap: 14px;">
-            
-            <!-- Category 1: Presentations -->
             <div>
               <h4 style="font-size:13px; color:var(--accent-blue); margin-bottom:6px;"><i class="fa-solid fa-file-powerpoint"></i> Slide Presentations & Pitch Decks</h4>
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
@@ -166,7 +164,6 @@
               </div>
             </div>
 
-            <!-- Category 2: Video Editing -->
             <div>
               <h4 style="font-size:13px; color:var(--accent-blue); margin-bottom:6px;"><i class="fa-solid fa-video"></i> Video Editors for Project Reports</h4>
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
@@ -183,7 +180,6 @@
               </div>
             </div>
 
-            <!-- Category 3: Image Editing & Design -->
             <div>
               <h4 style="font-size:13px; color:var(--accent-blue); margin-bottom:6px;"><i class="fa-solid fa-image"></i> Photo & Image Editors</h4>
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
@@ -200,7 +196,6 @@
               </div>
             </div>
 
-            <!-- Category 4: Documents & Writing -->
             <div>
               <h4 style="font-size:13px; color:var(--accent-blue); margin-bottom:6px;"><i class="fa-solid fa-file-lines"></i> Document Editors & Citation Tools</h4>
               <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
@@ -216,7 +211,6 @@
                 </div>
               </div>
             </div>
-
           </div>
         </div>
 
@@ -274,7 +268,7 @@
 
   </div>
 
-  <!-- MODALS -->
+  <!-- POST CREATION MODAL WITH MULTIPLE FILE ATTACHMENTS -->
   <div id="post-modal" class="modal-overlay" style="display: none;">
     <div class="fb-modal">
       <div class="modal-header">
@@ -292,13 +286,22 @@
         <label class="form-label">What's on your mind?</label>
         <textarea id="modal-post-text" class="input-field" rows="3" placeholder="Share with VMC students..." required></textarea>
         
-        <!-- MULTIMEDIA ATTACHMENT OPTIONS -->
+        <!-- MULTIPLE ATTACHMENT INPUTS -->
         <div style="border: 1px dashed var(--border-color); padding: 10px; border-radius: 6px; margin-bottom: 12px; background: var(--bg-primary);">
-          <label class="form-label" style="margin-bottom:6px;"><i class="fa-solid fa-paperclip"></i> Attach Media (Optional)</label>
+          <label class="form-label" style="margin-bottom:6px;"><i class="fa-solid fa-paperclip"></i> Attach Media (Multiple Allowed)</label>
           <div style="display: flex; flex-direction: column; gap: 6px;">
-            <input type="file" id="media-image-input" accept="image/*" class="input-field" style="margin-bottom:0; font-size:11px;">
-            <input type="file" id="media-video-input" accept="video/*" class="input-field" style="margin-bottom:0; font-size:11px;">
-            <input type="file" id="media-audio-input" accept="audio/*" class="input-field" style="margin-bottom:0; font-size:11px;">
+            <div>
+              <span style="font-size:10px; color:var(--text-muted);">Photos:</span>
+              <input type="file" id="media-image-input" accept="image/*" multiple class="input-field" style="margin-bottom:0; font-size:11px;">
+            </div>
+            <div>
+              <span style="font-size:10px; color:var(--text-muted);">Videos:</span>
+              <input type="file" id="media-video-input" accept="video/*" multiple class="input-field" style="margin-bottom:0; font-size:11px;">
+            </div>
+            <div>
+              <span style="font-size:10px; color:var(--text-muted);">Audio Tracks:</span>
+              <input type="file" id="media-audio-input" accept="audio/*" multiple class="input-field" style="margin-bottom:0; font-size:11px;">
+            </div>
           </div>
         </div>
 
