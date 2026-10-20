@@ -1,462 +1,453 @@
-/* ==========================================================================
-   VMC SYNC - CORE ENGINE, THEME MANAGEMENT, REACTIONS, COMMENTS & DELETE
-   ========================================================================== */
+/**
+ * VMC SYNC - CORE JAVASCRIPT ENGINE
+ * Handles multi-tab sync, theme management, assignment tracking, toolkit suggestions, and admin controls.
+ */
 
-const studentAppsData = [
-  { id: 'gdocs', title: 'Google Docs', category: 'DOCS', icon: '📄', url: 'https://docs.google.com' },
-  { id: 'msword', title: 'MS Word Web', category: 'DOCS', icon: '📝', url: 'https://www.microsoft365.com/launch/word' },
-  { id: 'gslides', title: 'Google Slides', category: 'SLIDES', icon: '📊', url: 'https://slides.google.com' },
-  { id: 'canva', title: 'Canva Presentations', category: 'SLIDES', icon: '✨', url: 'https://www.canva.com' },
-  { id: 'photopea', title: 'Photopea Editor', category: 'PHOTO', icon: '🎨', url: 'https://www.photopea.com' },
-  { id: 'pixlr', title: 'Pixlr Express', category: 'PHOTO', icon: '🖼️', url: 'https://pixlr.com' },
-  { id: 'capcut', title: 'CapCut Web', category: 'VIDEO', icon: '🎬', url: 'https://www.capcut.com/editor' },
-  { id: 'clipchamp', title: 'Clipchamp', category: 'VIDEO', icon: '🎥', url: 'https://clipchamp.com' }
-];
+const DEFAULT_STATE = {
+  theme: "light",
+  currentFilter: "All",
+  campusStatus: "Campus Open",
+  posts: [
+    { id: 1, author: "Randy T.", type: "Academic", time: "10 mins ago", text: "Welcome to VMC Sync! Don't forget to submit your Information Systems project.", reactions: { "👍": 1 }, comments: [] }
+  ],
+  tasks: [
+    { id: 201, title: "System Integration Module", course: "IS302", due: "2026-10-30", priority: "High", completed: false }
+  ],
+  lostFound: [
+    { id: 301, title: "Black Umbrella", type: "Lost", location: "Canteen Area", desc: "Left near table 4 during lunch break." }
+  ],
+  announcements: [
+    { id: 401, title: "Midterm Exams Schedule", text: "Midterms will start next week. Check your student portals for room assignments." }
+  ],
+  toolkitSuggestions: [
+    { id: 501, name: "GitHub Student Developer Pack", link: "https://education.github.com/pack", desc: "Free developer tools and software licenses for college students." }
+  ],
+  events: [
+    { id: 601, title: "VMC IT & Systems Colloquium 2026", date: "Nov 15, 2026 • 1:00 PM", location: "Audio-Visual Room", desc: "Annual gathering showcasing student software prototypes and tech talks." }
+  ]
+};
 
-let activeAppFilter = 'ALL';
-let activeFeedFilter = 'ALL';
+function getState() {
+  const data = localStorage.getItem("VMC_SYNC_DATA");
+  return data ? JSON.parse(data) : DEFAULT_STATE;
+}
 
-document.addEventListener('DOMContentLoaded', () => {
+function saveState(state) {
+  localStorage.setItem("VMC_SYNC_DATA", JSON.stringify(state));
+  window.dispatchEvent(new Event("vmc_state_changed"));
+}
+
+if (!localStorage.getItem("VMC_SYNC_DATA")) {
+  saveState(DEFAULT_STATE);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
   initTheme();
-  renderAppHub();
-  renderSchedule();
-  renderMainFeed();
+  if (document.querySelector(".app-filter-bar")) initNavigation();
+  renderApp();
+
+  window.addEventListener("vmc_state_changed", renderApp);
+  window.addEventListener("storage", renderApp);
 });
 
-/* DARK / LIGHT MODE SWITCHER */
+/* THEME TOGGLE */
 function initTheme() {
-  const savedTheme = localStorage.getItem('vmc_theme_mode') || 'light';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  updateThemeIcon(savedTheme);
-}
+  const state = getState();
+  document.documentElement.setAttribute("data-theme", state.theme);
+  const icon = document.getElementById("theme-icon");
+  if (icon) icon.className = state.theme === "dark" ? "fa-solid fa-sun" : "fa-solid fa-moon";
 
-function toggleThemeMode() {
-  const currentTheme = document.documentElement.getAttribute('data-theme');
-  const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-  document.documentElement.setAttribute('data-theme', targetTheme);
-  localStorage.setItem('vmc_theme_mode', targetTheme);
-  updateThemeIcon(targetTheme);
-}
-
-function updateThemeIcon(theme) {
-  const iconSpan = document.getElementById('theme-icon');
-  if (iconSpan) {
-    iconSpan.textContent = theme === 'dark' ? '☀️' : '🌙';
+  const toggleBtn = document.getElementById("theme-toggle-btn");
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      if (icon) icon.className = next === "dark" ? "fa-solid fa-sun" : "fa-solid fa-moon";
+      
+      const state = getState();
+      state.theme = next;
+      saveState(state);
+    });
   }
 }
 
-function resetFeedToHome() {
-  closePostModal();
-  activeFeedFilter = 'ALL';
+/* NAVIGATION */
+function initNavigation() {
+  document.querySelectorAll(".app-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      document.querySelectorAll(".app-chip").forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
 
-  const filterBtns = document.querySelectorAll('.feed-filter-btn');
-  filterBtns.forEach(btn => btn.classList.remove('active'));
+      const view = chip.getAttribute("data-view");
+      document.querySelectorAll(".portal-view").forEach(v => v.style.display = "none");
+      const target = document.getElementById(`view-${view}`);
+      if (target) target.style.display = "block";
+    });
+  });
+}
+
+function renderApp() {
+  const state = getState();
+  const statusEl = document.getElementById("display-campus-status");
+  if (statusEl) statusEl.innerText = state.campusStatus;
   
-  const allBtn = document.getElementById('feed-filter-all');
-  if (allBtn) allBtn.classList.add('active');
+  if (document.getElementById("feed-posts-container")) renderFeed(state.posts, state.currentFilter);
+  if (document.getElementById("task-table-body")) renderTasks(state.tasks);
+  if (document.getElementById("lostfound-grid")) renderLostFound(state.lostFound);
+  if (document.getElementById("announcements-container")) renderAnnouncements(state.announcements);
+  if (document.getElementById("toolkit-suggestions-list")) renderToolkitSuggestions(state.toolkitSuggestions);
+  if (document.getElementById("events-list-container")) renderEvents(state.events);
 
-  const searchInput = document.querySelector('.search-input');
-  if (searchInput) searchInput.value = '';
-
-  renderMainFeed();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Admin Renderers
+  if (document.getElementById("admin-feed-moderation")) renderAdminFeed(state.posts);
+  if (document.getElementById("admin-toolkit-moderation")) renderAdminToolkit(state.toolkitSuggestions);
 }
 
-function switchToolkitTab(tabId, btnElement) {
-  document.querySelectorAll('.toolkit-tab-content').forEach(el => el.style.display = 'none');
-  document.querySelectorAll('.toolkit-tab-btn').forEach(btn => btn.classList.remove('active'));
+/* 1. CAMPUS FEED */
+window.filterFeed = function(filter, btn) {
+  document.querySelectorAll(".feed-filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  const state = getState();
+  state.currentFilter = filter;
+  renderFeed(state.posts, filter);
+};
 
-  document.getElementById(`tab-${tabId}`).style.display = 'block';
-  if (btnElement) btnElement.classList.add('active');
-}
+function renderFeed(posts, filter) {
+  const container = document.getElementById("feed-posts-container");
+  const filtered = filter === "All" ? posts : posts.filter(p => p.type === filter);
 
-function filterApps(category, btnElement) {
-  activeAppFilter = category;
-  document.querySelectorAll('.app-chip').forEach(c => c.classList.remove('active'));
-  if (btnElement) btnElement.classList.add('active');
-  renderAppHub();
-}
-
-function renderAppHub() {
-  const container = document.getElementById('apps-grid-container');
-  if (!container) return;
-
-  let apps = studentAppsData;
-  if (activeAppFilter !== 'ALL') {
-    apps = studentAppsData.filter(app => app.category === activeAppFilter);
-  }
-
-  container.innerHTML = apps.map(app => `
-    <div class="app-card-mini tooltip-right" data-tooltip="${escapeHTML(app.title)} (${app.category})">
-      <div class="app-card-left">
-        <span class="app-icon">${app.icon}</span>
-        <div>
-          <h5 class="app-title">${escapeHTML(app.title)}</h5>
-          <span class="app-category">${app.category}</span>
-        </div>
-      </div>
-      <a href="${app.url}" target="_blank" rel="noopener noreferrer" class="btn-app-launch tooltip-left" data-tooltip="Open in external tab">Open ↗</a>
-    </div>
-  `).join('');
-}
-
-function addGpaRow() {
-  const tbody = document.getElementById('gpa-course-rows');
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td><input type="text" placeholder="Course" class="input-field course-name"></td>
-    <td><input type="number" value="3" min="1" max="6" class="input-field course-units"></td>
-    <td><input type="number" value="85" min="0" max="100" class="input-field course-grade"></td>
-    <td><button class="btn-danger-xs tooltip-top" data-tooltip="Delete course row" onclick="removeGpaRow(this)">✕</button></td>
-  `;
-  tbody.appendChild(tr);
-}
-
-function removeGpaRow(btn) {
-  const row = btn.closest('tr');
-  if (document.querySelectorAll('#gpa-course-rows tr').length > 1) {
-    row.remove();
-  }
-}
-
-function calculateGPA() {
-  const units = document.querySelectorAll('.course-units');
-  const grades = document.querySelectorAll('.course-grade');
-
-  let totalUnits = 0;
-  let weightedSum = 0;
-
-  for (let i = 0; i < units.length; i++) {
-    const u = parseFloat(units[i].value) || 0;
-    const g = parseFloat(grades[i].value) || 0;
-    totalUnits += u;
-    weightedSum += (u * g);
-  }
-
-  const resultBox = document.getElementById('gpa-result-box');
-  if (totalUnits === 0) {
-    resultBox.style.display = 'block';
-    resultBox.textContent = 'Please enter valid course units.';
-    return;
-  }
-
-  const gpa = (weightedSum / totalUnits).toFixed(2);
-  resultBox.style.display = 'block';
-  resultBox.innerHTML = `Average: <strong>${gpa}%</strong> (${totalUnits} Units)`;
-}
-
-function addScheduleEntry(e) {
-  e.preventDefault();
-  const subject = document.getElementById('sched-subject').value;
-  const day = document.getElementById('sched-day').value;
-  const start = document.getElementById('sched-time-start').value;
-  const end = document.getElementById('sched-time-end').value;
-  const room = document.getElementById('sched-room').value;
-
-  const schedules = JSON.parse(localStorage.getItem('vmc_schedules') || '[]');
-  schedules.push({ id: Date.now(), subject, day, start, end, room });
-  localStorage.setItem('vmc_schedules', JSON.stringify(schedules));
-
-  document.getElementById('schedule-form').reset();
-  renderSchedule();
-}
-
-function renderSchedule() {
-  const container = document.getElementById('schedule-list');
-  if (!container) return;
-
-  const schedules = JSON.parse(localStorage.getItem('vmc_schedules') || '[]');
-  if (schedules.length === 0) {
-    container.innerHTML = '<p style="font-size:11px; color:var(--text-muted);">No classes added yet.</p>';
-    return;
-  }
-
-  container.innerHTML = schedules.map(s => `
-    <div class="tooltip-right" data-tooltip="${escapeHTML(s.subject)} at ${escapeHTML(s.room)}" style="background:var(--bg-primary); padding:6px; border-radius:4px; margin-top:6px; font-size:11px; color:var(--text-main);">
-      <strong>${escapeHTML(s.subject)}</strong> (${s.day})
-      <br>🕒 ${escapeHTML(s.start)} - ${escapeHTML(s.end)} | 📍 ${escapeHTML(s.room)}
-      <button class="btn-danger-xs tooltip-left" data-tooltip="Remove class" style="float:right;" onclick="deleteSchedule(${s.id})">✕</button>
-    </div>
-  `).join('');
-}
-
-function deleteSchedule(id) {
-  let schedules = JSON.parse(localStorage.getItem('vmc_schedules') || '[]');
-  schedules = schedules.filter(s => s.id !== id);
-  localStorage.setItem('vmc_schedules', JSON.stringify(schedules));
-  renderSchedule();
-}
-
-/* EMOJI HELPER FOR FORM INPUTS */
-function insertEmojiTo(elementId, emoji) {
-  const field = document.getElementById(elementId);
-  if (!field) return;
-
-  const start = field.selectionStart || field.value.length;
-  const end = field.selectionEnd || field.value.length;
-  const text = field.value;
-
-  field.value = text.substring(0, start) + emoji + text.substring(end);
-  field.focus();
-  field.selectionStart = field.selectionEnd = start + emoji.length;
-}
-
-function openPostModal(defaultType = 'DISCUSSION') {
-  document.getElementById('create-post-modal').style.display = 'flex';
-  const typeSelect = document.getElementById('post-type');
-  if (typeSelect) {
-    typeSelect.value = defaultType;
-    togglePostTypeFields(defaultType);
-  }
-}
-
-function closePostModal() {
-  document.getElementById('create-post-modal').style.display = 'none';
-}
-
-function togglePostTypeFields(type) {
-  const extra = document.getElementById('lostfound-extra-fields');
-  if (extra) extra.style.display = type === 'LOSTFOUND' ? 'block' : 'none';
-}
-
-function handleCreatePost(e) {
-  e.preventDefault();
-
-  const type = document.getElementById('post-type').value;
-  const title = document.getElementById('post-title').value;
-  const content = document.getElementById('post-content').value;
-
-  const newPost = {
-    id: Date.now(),
-    type: type,
-    author: 'Student Account',
-    timestamp: 'Just now',
-    title: title,
-    content: content,
-    userReaction: null, // Strictly holds 1 active reaction per post
-    comments: [],
-    showComments: false
-  };
-
-  if (type === 'LOSTFOUND') {
-    newPost.status = document.getElementById('post-lf-status').value;
-    newPost.location = document.getElementById('post-lf-location').value;
-    newPost.contact = document.getElementById('post-lf-contact').value;
-  }
-
-  const posts = JSON.parse(localStorage.getItem('vmc_campus_posts') || '[]');
-  posts.unshift(newPost);
-  localStorage.setItem('vmc_campus_posts', JSON.stringify(posts));
-
-  document.getElementById('post-title').value = '';
-  document.getElementById('post-content').value = '';
-
-  closePostModal();
-  renderMainFeed();
-}
-
-/* POST DELETION */
-function deletePost(postId) {
-  if (confirm('Are you sure you want to delete this post?')) {
-    let posts = JSON.parse(localStorage.getItem('vmc_campus_posts') || '[]');
-    posts = posts.filter(p => p.id !== postId);
-    localStorage.setItem('vmc_campus_posts', JSON.stringify(posts));
-    renderMainFeed();
-  }
-}
-
-/* STRICT 1-REACTION LIMIT PER POST */
-function handleSingleReaction(postId, emoji) {
-  let posts = JSON.parse(localStorage.getItem('vmc_campus_posts') || '[]');
-  posts = posts.map(p => {
-    if (p.id === postId) {
-      // Toggle reaction off if clicking active reaction, otherwise overwrite existing reaction
-      p.userReaction = (p.userReaction === emoji) ? null : emoji;
-    }
-    return p;
-  });
-  localStorage.setItem('vmc_campus_posts', JSON.stringify(posts));
-  renderMainFeed();
-}
-
-/* FUNCTIONAL COMMENTS SYSTEM */
-function toggleCommentsSection(postId) {
-  let posts = JSON.parse(localStorage.getItem('vmc_campus_posts') || '[]');
-  posts = posts.map(p => {
-    if (p.id === postId) {
-      p.showComments = !p.showComments;
-    }
-    return p;
-  });
-  localStorage.setItem('vmc_campus_posts', JSON.stringify(posts));
-  renderMainFeed();
-}
-
-function submitComment(e, postId) {
-  e.preventDefault();
-  const input = document.getElementById(`comment-input-${postId}`);
-  if (!input || !input.value.trim()) return;
-
-  const commentText = input.value.trim();
-  let posts = JSON.parse(localStorage.getItem('vmc_campus_posts') || '[]');
-
-  posts = posts.map(p => {
-    if (p.id === postId) {
-      if (!p.comments) p.comments = [];
-      p.comments.push({
-        id: Date.now(),
-        author: 'Student Account',
-        text: commentText,
-        time: 'Just now'
-      });
-      p.showComments = true;
-    }
-    return p;
-  });
-
-  localStorage.setItem('vmc_campus_posts', JSON.stringify(posts));
-  renderMainFeed();
-}
-
-function deleteComment(postId, commentId) {
-  let posts = JSON.parse(localStorage.getItem('vmc_campus_posts') || '[]');
-  posts = posts.map(p => {
-    if (p.id === postId && p.comments) {
-      p.comments = p.comments.filter(c => c.id !== commentId);
-    }
-    return p;
-  });
-  localStorage.setItem('vmc_campus_posts', JSON.stringify(posts));
-  renderMainFeed();
-}
-
-function filterMainFeed(filter, btn) {
-  activeFeedFilter = filter;
-  document.querySelectorAll('.feed-filter-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  renderMainFeed();
-}
-
-function renderMainFeed() {
-  const container = document.getElementById('campus-main-feed');
-  if (!container) return;
-
-  let posts = JSON.parse(localStorage.getItem('vmc_campus_posts') || '[]');
-
-  if (activeFeedFilter !== 'ALL') {
-    posts = posts.filter(p => p.type === activeFeedFilter);
-  }
-
-  if (posts.length === 0) {
-    container.innerHTML = `
-      <div class="post-card" style="text-align:center; color:var(--text-muted);">
-        <p>No VMC SYNC posts yet. Be the first to start a conversation!</p>
-      </div>`;
-    return;
-  }
-
-  const reactionsList = ['👍', '❤️', '😂', '😮', '😢', '😡'];
-
-  container.innerHTML = posts.map(post => {
-    const activeReaction = post.userReaction || null;
-    const commentsList = post.comments || [];
-    const showComments = post.showComments || false;
-
-    return `
-      <div class="post-card">
-        <div class="post-header">
-          <div class="post-header-left">
-            <div class="avatar-placeholder">🎓</div>
-            <div class="post-author-info">
-              <h4>${escapeHTML(post.author)}</h4>
-              <span class="post-time">${post.timestamp}</span>
-            </div>
-          </div>
-          
-          <div class="post-header-right">
-            <span class="announcement-badge ${post.type === 'LOSTFOUND' ? 'warning' : ''}">
-              ${post.type}
-            </span>
-            <button class="btn-delete-post tooltip-left" data-tooltip="Delete Post" onclick="deletePost(${post.id})">🗑️</button>
-          </div>
-        </div>
-
-        <div class="post-body">
-          <h4 style="margin: 4px 0; color:var(--text-main);">${escapeHTML(post.title)}</h4>
-          <p>${escapeHTML(post.content)}</p>
-          
-          ${post.type === 'LOSTFOUND' ? `
-            <div style="background:var(--bg-primary); padding:8px; border-radius:6px; margin-top:8px; font-size:12px;">
-              <p style="margin:2px 0;">📍 <strong>Location:</strong> ${escapeHTML(post.location || 'N/A')}</p>
-              <p style="margin:2px 0;">📞 <strong>Contact:</strong> ${escapeHTML(post.contact || 'N/A')}</p>
-              <p style="margin:2px 0;">🏷️ <strong>Status:</strong> ${post.status}</p>
-            </div>
-          ` : ''}
-        </div>
-
-        <!-- REACTION SELECTION (STRICT 1-REACTION LIMIT) -->
-        <div class="post-reaction-bar">
-          <div class="reaction-picker">
-            ${reactionsList.map(emoji => `
-              <button class="reaction-btn ${activeReaction === emoji ? 'active' : ''} tooltip-top" 
-                      data-tooltip="${activeReaction === emoji ? 'Remove Reaction' : 'React with ' + emoji}"
-                      onclick="handleSingleReaction(${post.id}, '${emoji}')">
-                ${emoji}
-              </button>
-            `).join('')}
-          </div>
-          
+  container.innerHTML = filtered.map(p => `
+    <div class="post-card">
+      <div class="post-header">
+        <div style="display:flex; gap:10px; align-items:center;">
+          <div class="avatar-placeholder" style="width:32px; height:32px; font-size:14px;">${p.author[0]}</div>
           <div>
-            ${activeReaction ? `<span class="reaction-summary-badge">Your Reaction: ${activeReaction}</span>` : ''}
+            <h4>${p.author} <span style="font-size:11px; font-weight:normal; color:var(--accent-blue);">[${p.type}]</span></h4>
+            <span class="post-time">${p.time}</span>
           </div>
         </div>
-
-        <!-- ACTION BUTTONS -->
-        <div class="post-footer-actions">
-          <button class="post-action-btn tooltip-top" data-tooltip="Toggle comments section" onclick="toggleCommentsSection(${post.id})">
-            💬 Comments (${commentsList.length})
-          </button>
-        </div>
-
-        <!-- COMMENTS SECTION -->
-        ${showComments ? `
-          <div class="comments-section">
-            <form onsubmit="submitComment(event, ${post.id})" class="comment-input-row">
-              <input type="text" id="comment-input-${post.id}" placeholder="Write a comment..." class="comment-input" required>
-              <button type="submit" class="btn-primary-sm">Send</button>
-            </form>
-
-            <div class="emoji-picker-bar" style="margin-bottom: 10px;">
-              <span class="emoji-picker-label">Comment Emojis:</span>
-              <button type="button" class="emoji-chip" onclick="insertEmojiTo('comment-input-${post.id}', '👍')">👍</button>
-              <button type="button" class="emoji-chip" onclick="insertEmojiTo('comment-input-${post.id}', '❤️')">❤️</button>
-              <button type="button" class="emoji-chip" onclick="insertEmojiTo('comment-input-${post.id}', '🙌')">🙌</button>
-              <button type="button" class="emoji-chip" onclick="insertEmojiTo('comment-input-${post.id}', '🔥')">🔥</button>
-            </div>
-
-            <div class="comments-list">
-              ${commentsList.length === 0 ? '<p style="font-size:11px; color:var(--text-muted); margin:0;">No comments yet.</p>' : ''}
-              ${commentsList.map(c => `
-                <div class="comment-item">
-                  <div class="avatar-placeholder" style="width:28px; height:28px; font-size:14px;">👤</div>
-                  <div class="comment-bubble">
-                    <button class="btn-delete-comment tooltip-left" data-tooltip="Delete comment" onclick="deleteComment(${post.id}, ${c.id})">✕</button>
-                    <div class="comment-author">${escapeHTML(c.author)}</div>
-                    <div class="comment-text">${escapeHTML(c.text)}</div>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        ` : ''}
       </div>
-    `;
-  }).join('');
+      <div class="post-body"><p>${p.text}</p></div>
+      <div class="post-reaction-bar">
+        <button class="reaction-btn ${p.userReacted ? 'active' : ''}" onclick="toggleReaction(${p.id})">👍 Like</button>
+        <div class="reaction-summary-badge">👍 ${Object.values(p.reactions).reduce((a,b)=>a+b, 0)} • ${p.comments.length} Comments</div>
+      </div>
+      <div class="comments-section">
+        <div class="comment-input-row">
+          <input type="text" class="comment-input" placeholder="Write a comment..." onkeypress="handleCommentKey(event, ${p.id})">
+        </div>
+        <div class="comments-list">
+          ${p.comments.map(c => `
+            <div class="comment-item">
+              <div class="comment-bubble">
+                <div class="comment-author">${c.author} <button class="btn-delete-comment" onclick="deleteComment(${p.id},${c.id})">Del</button></div>
+                <div class="comment-text">${c.text}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `).join('');
 }
 
-function escapeHTML(str) {
-  return str ? str.replace(/[&<>'"]/g, 
-    tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-  ) : '';
+window.openPostModal = function(type) {
+  const modal = document.getElementById("post-modal");
+  if (modal) {
+    document.getElementById("modal-post-type").value = type;
+    modal.style.display = "flex";
+  }
+};
+window.closePostModal = function() {
+  const modal = document.getElementById("post-modal");
+  if (modal) modal.style.display = "none";
+};
+
+const postForm = document.getElementById("create-post-form");
+if (postForm) {
+  postForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const state = getState();
+    state.posts.unshift({
+      id: Date.now(), author: "Randy T.",
+      type: document.getElementById("modal-post-type").value,
+      time: "Just now", text: document.getElementById("modal-post-text").value,
+      reactions: { "👍": 0 }, comments: []
+    });
+    saveState(state);
+    postForm.reset();
+    closePostModal();
+  });
 }
+
+window.toggleReaction = function(id) {
+  const state = getState();
+  const post = state.posts.find(p => p.id === id);
+  if (post) {
+    post.userReacted = !post.userReacted;
+    post.reactions["👍"] += post.userReacted ? 1 : -1;
+    saveState(state);
+  }
+};
+
+window.handleCommentKey = function(e, postId) {
+  if (e.key === "Enter" && e.target.value.trim() !== "") {
+    const state = getState();
+    const post = state.posts.find(p => p.id === postId);
+    if (post) {
+      post.comments.push({ id: Date.now(), author: "Randy T.", text: e.target.value.trim() });
+      saveState(state);
+      e.target.value = "";
+    }
+  }
+};
+
+window.deleteComment = function(postId, commentId) {
+  const state = getState();
+  const post = state.posts.find(p => p.id === postId);
+  if (post) {
+    post.comments = post.comments.filter(c => c.id !== commentId);
+    saveState(state);
+  }
+};
+
+/* 2. ASSIGNMENT TRACKER */
+const taskForm = document.getElementById("add-task-form");
+if (taskForm) {
+  taskForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const state = getState();
+    state.tasks.push({
+      id: Date.now(),
+      title: document.getElementById("task-title").value,
+      course: document.getElementById("task-course").value,
+      due: document.getElementById("task-due").value,
+      priority: document.getElementById("task-priority").value,
+      completed: false
+    });
+    saveState(state);
+    taskForm.reset();
+  });
+}
+
+function renderTasks(tasks) {
+  const tbody = document.getElementById("task-table-body");
+  if (!tbody) return;
+  tbody.innerHTML = tasks.map(t => `
+    <tr>
+      <td><input type="checkbox" ${t.completed ? "checked" : ""} onchange="toggleTask(${t.id})"></td>
+      <td style="${t.completed ? 'text-decoration: line-through; color: var(--text-muted);' : ''}">${t.title}</td>
+      <td>${t.course}</td>
+      <td>${t.due}</td>
+      <td>${t.priority}</td>
+      <td><button class="btn-secondary-sm" style="color:var(--accent-blue);" onclick="deleteTask(${t.id})">Del</button></td>
+    </tr>
+  `).join('');
+}
+
+window.toggleTask = function(id) {
+  const state = getState();
+  const task = state.tasks.find(t => t.id === id);
+  if (task) { task.completed = !task.completed; saveState(state); }
+};
+
+window.deleteTask = function(id) {
+  const state = getState();
+  state.tasks = state.tasks.filter(t => t.id !== id);
+  saveState(state);
+};
+
+/* 3. GPA & TOOLKIT SUGGESTIONS */
+const addGpaBtn = document.getElementById("add-gpa-row");
+if (addGpaBtn) {
+  addGpaBtn.addEventListener("click", () => {
+    const container = document.getElementById("gpa-rows-container");
+    const row = document.createElement("div");
+    row.className = "form-row gpa-row";
+    row.innerHTML = `
+      <input type="text" placeholder="Subject" class="input-field gpa-subject">
+      <input type="number" placeholder="Units" class="input-field gpa-units" min="1" max="6" value="3">
+      <select class="input-field gpa-grade">
+        <option value="1.0">1.00</option><option value="1.25">1.25</option><option value="1.5">1.50</option>
+        <option value="1.75">1.75</option><option value="2.0">2.00</option><option value="2.25">2.25</option>
+        <option value="2.5">2.50</option><option value="3.0">3.00</option><option value="5.0">5.00</option>
+      </select>
+    `;
+    container.appendChild(row);
+  });
+}
+
+const calcGpaBtn = document.getElementById("calc-gpa-btn");
+if (calcGpaBtn) {
+  calcGpaBtn.addEventListener("click", () => {
+    const units = document.querySelectorAll(".gpa-units");
+    const grades = document.querySelectorAll(".gpa-grade");
+    let totalUnits = 0, weightedPoints = 0;
+    units.forEach((uInput, idx) => {
+      const u = parseFloat(uInput.value) || 0;
+      const g = parseFloat(grades[idx].value) || 0;
+      totalUnits += u;
+      weightedPoints += (u * g);
+    });
+    if (totalUnits > 0) {
+      document.getElementById("gpa-score").innerText = (weightedPoints / totalUnits).toFixed(2);
+      document.getElementById("gpa-result-display").style.display = "block";
+    }
+  });
+}
+
+const suggestForm = document.getElementById("suggest-tool-form");
+if (suggestForm) {
+  suggestForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const state = getState();
+    state.toolkitSuggestions.push({
+      id: Date.now(),
+      name: document.getElementById("tool-name").value,
+      link: document.getElementById("tool-link").value,
+      desc: document.getElementById("tool-desc").value
+    });
+    saveState(state);
+    suggestForm.reset();
+    alert("Toolkit suggestion submitted!");
+  });
+}
+
+function renderToolkitSuggestions(suggestions) {
+  const container = document.getElementById("toolkit-suggestions-list");
+  if (!container) return;
+  container.innerHTML = suggestions.map(s => `
+    <div style="padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-primary);">
+      <a href="${s.link}" target="_blank" style="font-weight: bold; font-size: 13px; color: var(--accent-blue); text-decoration: none;">${s.name} <i class="fa-solid fa-external-link-alt" style="font-size:10px;"></i></a>
+      <p style="font-size: 11px; margin: 4px 0 0 0; color: var(--text-main);">${s.desc}</p>
+    </div>
+  `).join('');
+}
+
+/* 4. LOST & FOUND */
+window.openLostModal = function() { document.getElementById("lost-modal").style.display = "flex"; };
+window.closeLostModal = function() { document.getElementById("lost-modal").style.display = "none"; };
+
+const lostForm = document.getElementById("report-lost-form");
+if (lostForm) {
+  lostForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const state = getState();
+    state.lostFound.push({
+      id: Date.now(), title: document.getElementById("lost-title").value,
+      type: document.getElementById("lost-type").value, location: document.getElementById("lost-location").value,
+      desc: document.getElementById("lost-desc").value
+    });
+    saveState(state);
+    lostForm.reset();
+    closeLostModal();
+  });
+}
+
+function renderLostFound(items) {
+  const grid = document.getElementById("lostfound-grid");
+  if (!grid) return;
+  grid.innerHTML = items.map(i => `
+    <div class="sidebar-card" style="margin-bottom:0;">
+      <span style="font-size:10px; font-weight:bold; padding:2px 6px; border-radius:4px; background:${i.type==='Lost'?'#ffebe9':'#e6f4ea'}; color:${i.type==='Lost'?'#d93025':'#137333'};">${i.type}</span>
+      <h4 style="margin:6px 0 2px 0; font-size:13px;">${i.title}</h4>
+      <p style="font-size:11px; color:var(--text-muted); margin:0;">📍 ${i.location}</p>
+      <p style="font-size:11px; margin:4px 0 0 0;">${i.desc}</p>
+    </div>
+  `).join('');
+}
+
+/* 5. EVENT MANAGEMENT */
+function renderEvents(events) {
+  const container = document.getElementById("events-list-container");
+  if (!container) return;
+  container.innerHTML = events.map(e => `
+    <div class="sidebar-card" style="margin-bottom:0;">
+      <h4 style="margin:0 0 4px 0; font-size:14px; color:var(--accent-blue);">${e.title}</h4>
+      <p style="font-size:12px; font-weight:bold; color:var(--text-muted); margin:0 0 4px 0;"><i class="fa-regular fa-clock"></i> ${e.date} | 📍 ${e.location}</p>
+      <p style="font-size:12px; margin:0;">${e.desc}</p>
+    </div>
+  `).join('');
+}
+
+function renderAnnouncements(announcements) {
+  const container = document.getElementById("announcements-container");
+  if (!container) return;
+  container.innerHTML = announcements.map(a => `
+    <div class="announcement-item">
+      <h4>${a.title}</h4>
+      <p>${a.text}</p>
+    </div>
+  `).join('');
+}
+
+/* 6. ADMIN CONTROLS */
+const adminControlsForm = document.getElementById("admin-controls-form");
+if (adminControlsForm) {
+  adminControlsForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const state = getState();
+    state.campusStatus = document.getElementById("admin-campus-status").value;
+    state.announcements.unshift({
+      id: Date.now(),
+      title: document.getElementById("admin-announcement-title").value,
+      text: document.getElementById("admin-announcement-text").value
+    });
+    saveState(state);
+    adminControlsForm.reset();
+    alert("Campus settings and announcement broadcasted successfully!");
+  });
+}
+
+const adminEventForm = document.getElementById("admin-event-form");
+if (adminEventForm) {
+  adminEventForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const state = getState();
+    state.events.push({
+      id: Date.now(),
+      title: document.getElementById("event-title").value,
+      date: document.getElementById("event-date").value,
+      location: document.getElementById("event-location").value,
+      desc: document.getElementById("event-desc").value
+    });
+    saveState(state);
+    adminEventForm.reset();
+    alert("Campus event published!");
+  });
+}
+
+function renderAdminFeed(posts) {
+  const container = document.getElementById("admin-feed-moderation");
+  if (!container) return;
+  container.innerHTML = posts.map(p => `
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-primary);">
+      <span style="font-size:12px;"><strong>${p.author}:</strong> ${p.text.substring(0,35)}...</span>
+      <button class="btn-secondary-sm" style="background:#ffebe9; color:#d93025;" onclick="adminDeletePost(${p.id})">Delete</button>
+    </div>
+  `).join('');
+}
+
+window.adminDeletePost = function(id) {
+  const state = getState();
+  state.posts = state.posts.filter(p => p.id !== id);
+  saveState(state);
+};
+
+function renderAdminToolkit(suggestions) {
+  const container = document.getElementById("admin-toolkit-moderation");
+  if (!container) return;
+  container.innerHTML = suggestions.map(s => `
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-primary);">
+      <span style="font-size:12px;"><strong>${s.name}</strong></span>
+      <button class="btn-secondary-sm" style="background:#ffebe9; color:#d93025;" onclick="adminDeleteSuggestion(${s.id})">Remove</button>
+    </div>
+  `).join('');
+}
+
+window.adminDeleteSuggestion = function(id) {
+  const state = getState();
+  state.toolkitSuggestions = state.toolkitSuggestions.filter(s => s.id !== id);
+  saveState(state);
+};
