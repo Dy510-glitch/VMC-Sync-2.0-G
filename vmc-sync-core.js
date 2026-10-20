@@ -1,6 +1,6 @@
 /**
  * VMC SYNC - CORE JAVASCRIPT ENGINE
- * Handles multi-tab sync, theme management, assignment tracking, toolkit suggestions, and admin controls.
+ * Handles multi-tab sync, theme management, assignment tracking, toolkit suggestions, admin controls, and media posts.
  */
 
 const DEFAULT_STATE = {
@@ -8,7 +8,16 @@ const DEFAULT_STATE = {
   currentFilter: "All",
   campusStatus: "Campus Open",
   posts: [
-    { id: 1, author: "Randy T.", type: "Academic", time: "10 mins ago", text: "Welcome to VMC Sync! Don't forget to submit your Information Systems project.", reactions: { "👍": 1 }, comments: [] }
+    { 
+      id: 1, 
+      author: "Randy T.", 
+      type: "Academic", 
+      time: "10 mins ago", 
+      text: "Welcome to VMC Sync! Don't forget to submit your Information Systems project.", 
+      reactions: { "👍": 1 }, 
+      comments: [],
+      media: { image: null, video: null, audio: null }
+    }
   ],
   tasks: [
     { id: 201, title: "System Integration Module", course: "IS302", due: "2026-10-30", priority: "High", completed: false }
@@ -104,7 +113,7 @@ function renderApp() {
   if (document.getElementById("admin-toolkit-moderation")) renderAdminToolkit(state.toolkitSuggestions);
 }
 
-/* 1. CAMPUS FEED */
+/* 1. CAMPUS FEED & MULTIMEDIA RENDERER */
 window.filterFeed = function(filter, btn) {
   document.querySelectorAll(".feed-filter-btn").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
@@ -128,7 +137,16 @@ function renderFeed(posts, filter) {
           </div>
         </div>
       </div>
-      <div class="post-body"><p>${p.text}</p></div>
+      
+      <div class="post-body">
+        <p>${p.text}</p>
+        
+        <!-- EMBEDDED MEDIA RENDERERS -->
+        ${p.media && p.media.image ? `<div style="margin-top:10px;"><img src="${p.media.image}" style="max-width:100%; max-height:350px; border-radius:8px; object-fit:cover;"></div>` : ''}
+        ${p.media && p.media.video ? `<div style="margin-top:10px;"><video src="${p.media.video}" controls style="width:100%; max-height:300px; border-radius:8px;"></video></div>` : ''}
+        ${p.media && p.media.audio ? `<div style="margin-top:10px; background:var(--bg-primary); padding:8px; border-radius:8px;"><audio src="${p.media.audio}" controls style="width:100%;"></audio></div>` : ''}
+      </div>
+
       <div class="post-reaction-bar">
         <button class="reaction-btn ${p.userReacted ? 'active' : ''}" onclick="toggleReaction(${p.id})">👍 Like</button>
         <div class="reaction-summary-badge">👍 ${Object.values(p.reactions).reduce((a,b)=>a+b, 0)} • ${p.comments.length} Comments</div>
@@ -164,17 +182,45 @@ window.closePostModal = function() {
   if (modal) modal.style.display = "none";
 };
 
+// Helper to convert file input to DataURL base64 string
+function readFileAsDataURL(file) {
+  return new Promise((resolve) => {
+    if (!file) return resolve(null);
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.readAsDataURL(file);
+  });
+}
+
 const postForm = document.getElementById("create-post-form");
 if (postForm) {
-  postForm.addEventListener("submit", (e) => {
+  postForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+    
+    const imageFile = document.getElementById("media-image-input").files[0];
+    const videoFile = document.getElementById("media-video-input").files[0];
+    const audioFile = document.getElementById("media-audio-input").files[0];
+
+    const imageData = await readFileAsDataURL(imageFile);
+    const videoData = await readFileAsDataURL(videoFile);
+    const audioData = await readFileAsDataURL(audioFile);
+
     const state = getState();
     state.posts.unshift({
-      id: Date.now(), author: "Randy T.",
-      type: document.getElementById("modal-post-type").value,
-      time: "Just now", text: document.getElementById("modal-post-text").value,
-      reactions: { "👍": 0 }, comments: []
+      id: Date.now(),
+      author: "Randy T.",
+      type: document.getElementById("post-category-select").value || "General",
+      time: "Just now",
+      text: document.getElementById("modal-post-text").value,
+      reactions: { "👍": 0 },
+      comments: [],
+      media: {
+        image: imageData,
+        video: videoData,
+        audio: audioData
+      }
     });
+
     saveState(state);
     postForm.reset();
     closePostModal();
