@@ -130,7 +130,7 @@ function renderApp() {
   if (document.getElementById("admin-toolkit-moderation")) renderAdminToolkit(state.toolkitSuggestions);
 }
 
-/* 1. CAMPUS FEED & FULL-FRAME CLICKABLE IMAGES GALLERY */
+/* 1. CAMPUS FEED & AUTO-FIT MEDIA GALLERY */
 window.filterFeed = function(filter, btn) {
   document.querySelectorAll(".feed-filter-btn").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
@@ -168,21 +168,25 @@ function renderFeed(posts, filter) {
       <div class="post-body">
         <p id="post-text-${p.id}">${p.text}</p>
         
-        <!-- FULL-FRAME CLICKABLE IMAGES -->
+        <!-- AUTO-FIT IMAGES GALLERY -->
         ${p.media && p.media.images && p.media.images.length > 0 ? `
-          <div style="display:grid; grid-template-columns: ${p.media.images.length === 1 ? '1fr' : 'repeat(auto-fit, minmax(180px, 1fr))'}; gap:6px; margin-top:10px;">
+          <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
             ${p.media.images.map(img => `
-              <div style="position:relative; width:100%; aspect-ratio: 16/9; overflow:hidden; border-radius:6px; background:var(--bg-primary); cursor:pointer;" onclick="openImageLightbox('${img}')">
-                <img src="${img}" style="width:100%; height:100%; object-fit:cover; transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+              <div class="post-media-frame" onclick="openImageLightbox('${img}')">
+                <img src="${img}">
               </div>
             `).join('')}
           </div>
         ` : ''}
 
-        <!-- MULTIPLE VIDEOS GALLERY -->
+        <!-- AUTO-FIT VIDEOS GALLERY -->
         ${p.media && p.media.videos && p.media.videos.length > 0 ? `
-          <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
-            ${p.media.videos.map(vid => `<video src="${vid}" controls style="width:100%; max-height:280px; border-radius:6px;"></video>`).join('')}
+          <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+            ${p.media.videos.map(vid => `
+              <div class="post-video-frame">
+                <video src="${vid}" controls></video>
+              </div>
+            `).join('')}
           </div>
         ` : ''}
 
