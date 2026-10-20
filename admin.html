@@ -1,253 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VMC SYNC - Admin Control Portal</title>
+  <title>VMC Sync - Admin Control Panel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* Dedicated Admin Page Styling Adjustments */
-    .admin-container {
-      max-width: 1100px;
-      margin: 20px auto;
-      padding: 0 16px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-    .admin-full-width {
-      grid-column: 1 / -1;
-    }
-    .admin-header-badge {
-      background: var(--accent-blue);
-      color: #fff;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: bold;
-      margin-left: 10px;
-    }
-    .admin-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-    .stat-card {
-      background: var(--bg-card);
-      border-radius: 8px;
-      padding: 16px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-      border-left: 4px solid var(--accent-blue);
-    }
-    .stat-number {
-      font-size: 24px;
-      font-weight: bold;
-      color: var(--text-main);
-    }
-    .stat-label {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-    .admin-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 13px;
-    }
-    .admin-table th, .admin-table td {
-      padding: 10px;
-      border: 1px solid var(--border-color);
-      text-align: left;
-      color: var(--text-main);
-    }
-    .admin-table th {
-      background: var(--bg-primary);
-    }
-  </style>
 </head>
 <body>
 
-  <!-- TOP NAVIGATION BAR -->
+  <!-- TOPBAR HEADER -->
   <header class="fb-topbar">
-    <a href="index.html" class="topbar-brand tooltip-bottom" data-tooltip="Switch to Student Feed">
-      <img src="Logo3.png" alt="VMC SYNC Logo" class="brand-logo-img">
-      <h1 class="brand-title">VMC SYNC</h1>
-      <span class="admin-header-badge">ADMIN PORTAL</span>
+    <a href="index.html" class="topbar-brand">
+      <div class="brand-logo-img" style="font-weight: 800; font-size: 18px; color: var(--accent-blue);">VMC</div>
+      <h1 class="brand-title">Admin Panel</h1>
     </a>
 
     <div class="topbar-actions">
-      <a href="index.html" class="btn-primary-sm tooltip-bottom" data-tooltip="Go to Main Student UI">🌐 Student UI</a>
-      
-      <button id="theme-toggle-btn" class="theme-btn tooltip-bottom" data-tooltip="Toggle Dark/Light Mode" onclick="toggleThemeMode()">
-        <span id="theme-icon">🌙</span>
-      </button>
-
-      <div class="topbar-user">
-        <div class="avatar-placeholder">🛡️</div>
-        <span class="user-name">Administrator</span>
-      </div>
+      <a href="index.html" class="action-btn" style="text-decoration:none; font-size:12px; font-weight:600;"><i class="fa-solid fa-arrow-left"></i> Back to Student Portal</a>
+      <button id="theme-toggle-btn" class="theme-btn"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
     </div>
   </header>
 
-  <div style="max-width: 1100px; margin: 20px auto 0 auto; padding: 0 16px;">
-    <h2>Campus Administration Dashboard</h2>
-    <p style="color: var(--text-muted); font-size: 14px;">Publish official announcements, manage campus operating status, schedule events, and moderate student posts.</p>
+  <!-- MAIN CONTAINER -->
+  <div class="fb-container" style="grid-template-columns: 1fr;">
     
-    <!-- STATS OVERVIEW -->
-    <div class="admin-stats-grid">
-      <div class="stat-card">
-        <div class="stat-number" id="stat-total-posts">0</div>
-        <div class="stat-label">Total Student Posts</div>
-      </div>
-      <div class="stat-card" style="border-left-color: #28a745;">
-        <div class="stat-number" id="stat-announcements">2</div>
-        <div class="stat-label">Active Announcements</div>
-      </div>
-      <div class="stat-card" style="border-left-color: #ffc107;">
-        <div class="stat-number" id="stat-schedules">0</div>
-        <div class="stat-label">Saved Schedules</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="admin-container">
-
-    <!-- PUBLISH ANNOUNCEMENT FORM -->
-    <div class="sidebar-card">
-      <h3 class="sidebar-title">📢 Broadcast New Announcement</h3>
-      <form id="admin-announcement-form" onsubmit="handleAdminPublishAnnouncement(event)">
-        <div class="form-group">
-          <label class="form-label">Category:</label>
-          <select id="admin-ann-category" class="input-field">
-            <option value="ACADEMICS">ACADEMICS</option>
-            <option value="ADMIN">ADMIN / IT</option>
-            <option value="EVENTS">CAMPUS EVENTS</option>
-            <option value="URGENT">URGENT ALERT</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <input type="text" id="admin-ann-title" placeholder="Announcement Headline" required class="input-field">
-        </div>
-        <div class="form-group">
-          <textarea id="admin-ann-content" rows="3" placeholder="Full announcement message..." required class="input-field"></textarea>
-        </div>
-        <button type="submit" class="btn-primary-sm" style="width: 100%; padding: 8px;">Publish to Student Feed</button>
+    <!-- CAMPUS STATUS & ANNOUNCEMENT CONTROLS -->
+    <div class="sidebar-card" style="margin-bottom: 20px;">
+      <h3 class="sidebar-title"><i class="fa-solid fa-sliders"></i> Campus Controls & Announcements</h3>
+      <form id="admin-controls-form" class="stacked-form">
+        <label class="form-label">Campus Operational Status</label>
+        <select id="admin-campus-status" class="input-field">
+          <option value="Campus Open">Campus Open (Normal Operations)</option>
+          <option value="Classes Suspended">Classes Suspended</option>
+          <option value="Online Classes Only">Online Classes Only</option>
+          <option value="Campus Closed">Campus Closed</option>
+        </select>
+        <label class="form-label">Publish Announcement</label>
+        <input type="text" id="admin-announcement-title" class="input-field" placeholder="Announcement Title" required>
+        <textarea id="admin-announcement-text" class="input-field" rows="2" placeholder="Announcement details..." required></textarea>
+        <button type="submit" class="btn-primary-sm">Broadcast Announcement</button>
       </form>
     </div>
 
-    <!-- UPDATE CAMPUS STATUS FORM -->
-    <div class="sidebar-card">
-      <h3 class="sidebar-title">🏫 Campus Operating Status</h3>
-      <form id="admin-status-form" onsubmit="handleAdminUpdateStatus(event)">
-        <div class="form-group">
-          <label class="form-label">Current Status:</label>
-          <select id="admin-status-val" class="input-field">
-            <option value="NORMAL">🟢 Normal Operations</option>
-            <option value="MIDTERMS">📝 Midterm Examination Period</option>
-            <option value="SUSPENDED">🔴 Classes Suspended (Weather/Maintenance)</option>
-            <option value="HOLIDAY">🎉 Campus Holiday</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <input type="text" id="admin-status-note" placeholder="Status Note (e.g., Online classes only for Today)" class="input-field">
-        </div>
-        <button type="submit" class="btn-secondary-sm" style="width: 100%; padding: 8px;">Update System Status</button>
+    <!-- EVENT MANAGEMENT CREATOR -->
+    <div class="sidebar-card" style="margin-bottom: 20px;">
+      <h3 class="sidebar-title"><i class="fa-solid fa-calendar-plus"></i> Publish Campus Event</h3>
+      <form id="admin-event-form" class="stacked-form">
+        <input type="text" id="event-title" class="input-field" placeholder="Event Title (e.g., VMC Tech Fest 2026)" required>
+        <input type="text" id="event-date" class="input-field" placeholder="Date & Time (e.g., Nov 10, 2026 • 9:00 AM)" required>
+        <input type="text" id="event-location" class="input-field" placeholder="Location (e.g., Main Auditorium)" required>
+        <textarea id="event-desc" class="input-field" rows="2" placeholder="Event description..." required></textarea>
+        <button type="submit" class="btn-primary-sm">Publish Event</button>
       </form>
     </div>
 
-    <!-- POST MODERATION TABLE -->
-    <div class="sidebar-card admin-full-width">
-      <h3 class="sidebar-title">🛡️ Student Post Moderation</h3>
-      <p style="font-size: 12px; color: var(--text-muted);">Review and delete inappropriate student feed posts in real-time.</p>
-      
-      <div style="overflow-x: auto;">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Author</th>
-              <th>Type</th>
-              <th>Title</th>
-              <th>Content Excerpt</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="admin-post-moderation-list">
-            <!-- Populated dynamically -->
-          </tbody>
-        </table>
+    <!-- MODERATION TOOLS -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div class="sidebar-card">
+        <h3 class="sidebar-title"><i class="fa-solid fa-shield-halved"></i> Feed Moderation</h3>
+        <div id="admin-feed-moderation" style="display:flex; flex-direction:column; gap:8px;"></div>
+      </div>
+      <div class="sidebar-card">
+        <h3 class="sidebar-title"><i class="fa-solid fa-lightbulb"></i> Toolkit Suggestion Moderation</h3>
+        <div id="admin-toolkit-moderation" style="display:flex; flex-direction:column; gap:8px;"></div>
       </div>
     </div>
 
   </div>
 
   <script src="vmc-sync-core.js"></script>
-  <script>
-    // Admin-specific page scripts
-    document.addEventListener('DOMContentLoaded', () => {
-      refreshAdminStats();
-      renderModerationList();
-    });
-
-    function refreshAdminStats() {
-      const posts = JSON.parse(localStorage.getItem('vmc_campus_posts') || '[]');
-      const schedules = JSON.parse(localStorage.getItem('vmc_schedules') || '[]');
-      
-      document.getElementById('stat-total-posts').textContent = posts.length;
-      document.getElementById('stat-schedules').textContent = schedules.length;
-    }
-
-    function renderModerationList() {
-      const tbody = document.getElementById('admin-post-moderation-list');
-      if (!tbody) return;
-
-      const posts = JSON.parse(localStorage.getItem('vmc_campus_posts') || '[]');
-      
-      if (posts.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No student posts found.</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = posts.map(p => `
-        <tr>
-          <td>${p.id}</td>
-          <td>${escapeHTML(p.author)}</td>
-          <td><span class="announcement-badge">${p.type}</span></td>
-          <td><strong>${escapeHTML(p.title)}</strong></td>
-          <td>${escapeHTML(p.content.substring(0, 50))}${p.content.length > 50 ? '...' : ''}</td>
-          <td>
-            <button class="btn-danger-xs" onclick="adminDeletePost(${p.id})">Delete</button>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function adminDeletePost(postId) {
-      if (confirm('Admin Action: Permanently delete this post?')) {
-        deletePost(postId); // Uses core delete function
-        refreshAdminStats();
-        renderModerationList();
-      }
-    }
-
-    function handleAdminPublishAnnouncement(e) {
-      e.preventDefault();
-      const category = document.getElementById('admin-ann-category').value;
-      const title = document.getElementById('admin-ann-title').value;
-      const content = document.getElementById('admin-ann-content').value;
-
-      alert(`Announcement Published!\n[${category}] ${title}`);
-      document.getElementById('admin-announcement-form').reset();
-    }
-
-    function handleAdminUpdateStatus(e) {
-      e.preventDefault();
-      const status = document.getElementById('admin-status-val').value;
-      const note = document.getElementById('admin-status-note').value;
-
-      alert(`Campus Status Updated to: ${status}\nNote: ${note}`);
-    }
-  </script>
 </body>
 </html>
