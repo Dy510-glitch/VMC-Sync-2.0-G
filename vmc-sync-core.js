@@ -1,6 +1,6 @@
 /**
  * VMC SYNC - CORE JAVASCRIPT ENGINE
- * Handles multi-tab sync, theme management, assignment tracking, toolkit apps, multiple media uploads, and post options.
+ * Handles multi-tab sync, theme management, assignment tracking, toolkit apps, multiple media uploads, post dropdowns, and full-frame image lightbox view.
  */
 
 const DEFAULT_STATE = {
@@ -64,10 +64,16 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("vmc_state_changed", renderApp);
   window.addEventListener("storage", renderApp);
 
+  // Close dropdowns when clicking outside
   document.addEventListener("click", (e) => {
     if (!e.target.closest('.post-menu-container')) {
       document.querySelectorAll('.post-menu-dropdown').forEach(d => d.style.display = 'none');
     }
+  });
+
+  // Close Lightbox on Escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeImageLightbox();
   });
 });
 
@@ -124,7 +130,7 @@ function renderApp() {
   if (document.getElementById("admin-toolkit-moderation")) renderAdminToolkit(state.toolkitSuggestions);
 }
 
-/* 1. CAMPUS FEED & MULTIPLE MEDIA GALLERY */
+/* 1. CAMPUS FEED & FULL-FRAME CLICKABLE IMAGES GALLERY */
 window.filterFeed = function(filter, btn) {
   document.querySelectorAll(".feed-filter-btn").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
@@ -162,10 +168,14 @@ function renderFeed(posts, filter) {
       <div class="post-body">
         <p id="post-text-${p.id}">${p.text}</p>
         
-        <!-- MULTIPLE IMAGES GALLERY -->
+        <!-- FULL-FRAME CLICKABLE IMAGES -->
         ${p.media && p.media.images && p.media.images.length > 0 ? `
-          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:6px; margin-top:10px;">
-            ${p.media.images.map(img => `<img src="${img}" style="width:100%; height:180px; border-radius:6px; object-fit:cover;">`).join('')}
+          <div style="display:grid; grid-template-columns: ${p.media.images.length === 1 ? '1fr' : 'repeat(auto-fit, minmax(180px, 1fr))'}; gap:6px; margin-top:10px;">
+            ${p.media.images.map(img => `
+              <div style="position:relative; width:100%; aspect-ratio: 16/9; overflow:hidden; border-radius:6px; background:var(--bg-primary); cursor:pointer;" onclick="openImageLightbox('${img}')">
+                <img src="${img}" style="width:100%; height:100%; object-fit:cover; transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+              </div>
+            `).join('')}
           </div>
         ` : ''}
 
@@ -206,6 +216,21 @@ function renderFeed(posts, filter) {
     </div>
   `).join('');
 }
+
+/* LIGHTBOX MODAL CONTROLS */
+window.openImageLightbox = function(src) {
+  const modal = document.getElementById("image-lightbox-modal");
+  const img = document.getElementById("lightbox-img");
+  if (modal && img) {
+    img.src = src;
+    modal.style.display = "flex";
+  }
+};
+
+window.closeImageLightbox = function() {
+  const modal = document.getElementById("image-lightbox-modal");
+  if (modal) modal.style.display = "none";
+};
 
 window.togglePostMenu = function(e, id) {
   e.stopPropagation();
@@ -257,7 +282,6 @@ window.closePostModal = function() {
   if (modal) modal.style.display = "none";
 };
 
-// Batch read multiple files as Base64 DataURLs
 function readMultipleFiles(files) {
   return Promise.all(Array.from(files).map(file => {
     return new Promise((resolve) => {
