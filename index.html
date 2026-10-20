@@ -42,7 +42,7 @@
         <div class="app-filter-bar">
           <button class="app-chip active" data-view="feed">Campus Feed</button>
           <button class="app-chip" data-view="assignments">Assignment Tracker</button>
-          <button class="app-chip" data-view="toolkit">Student Toolkit & Suggestions</button>
+          <button class="app-chip" data-view="toolkit">Student Toolkit & Apps</button>
           <button class="app-chip" data-view="lostfound">Lost & Found</button>
           <button class="app-chip" data-view="events">Event Management</button>
         </div>
@@ -118,8 +118,10 @@
         </div>
       </div>
 
-      <!-- 3. STUDENT TOOLKIT & SUGGESTIONS VIEW -->
+      <!-- 3. STUDENT TOOLKIT VIEW -->
       <div id="view-toolkit" class="portal-view" style="display: none;">
+        
+        <!-- GPA CALCULATOR -->
         <div class="sidebar-card" style="margin-bottom: 16px;">
           <h3 class="sidebar-title"><i class="fa-solid fa-calculator"></i> GPA Calculator</h3>
           <div id="gpa-rows-container">
@@ -140,17 +142,105 @@
           <div id="gpa-result-display" class="result-box-sm" style="display:none;">Estimated Term GPA: <span id="gpa-score">0.00</span></div>
         </div>
 
+        <!-- ESSENTIAL CREATIVE & ACADEMIC APPS HUB -->
+        <div class="sidebar-card" style="margin-bottom: 16px;">
+          <h3 class="sidebar-title"><i class="fa-solid fa-cubes"></i> Essential Assignment & Editing Tools</h3>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Curated web applications to help you complete slide presentations, video editing, graphic design, and research tasks.</p>
+
+          <div id="built-in-apps-grid" style="display: flex; flex-direction: column; gap: 14px;">
+            
+            <!-- Category 1: Presentations -->
+            <div>
+              <h4 style="font-size:13px; color:var(--accent-blue); margin-bottom:6px;"><i class="fa-solid fa-file-powerpoint"></i> Slide Presentations & Pitch Decks</h4>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; background:var(--bg-primary);">
+                  <strong>Canva Presentations</strong>
+                  <p style="font-size:11px; color:var(--text-muted); margin:2px 0 4px 0;">Interactive templates & deck export</p>
+                  <a href="https://www.canva.com" target="_blank" class="btn-primary-sm" style="font-size:10px; text-decoration:none; display:inline-block;">Open Canva</a>
+                </div>
+                <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; background:var(--bg-primary);">
+                  <strong>Gamma App</strong>
+                  <p style="font-size:11px; color:var(--text-muted); margin:2px 0 4px 0;">AI-assisted deck & document generation</p>
+                  <a href="https://gamma.app" target="_blank" class="btn-primary-sm" style="font-size:10px; text-decoration:none; display:inline-block;">Open Gamma</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 2: Video Editing -->
+            <div>
+              <h4 style="font-size:13px; color:var(--accent-blue); margin-bottom:6px;"><i class="fa-solid fa-video"></i> Video Editors for Project Reports</h4>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; background:var(--bg-primary);">
+                  <strong>CapCut Web</strong>
+                  <p style="font-size:11px; color:var(--text-muted); margin:2px 0 4px 0;">Browser video editing & auto-subtitles</p>
+                  <a href="https://www.capcut.com" target="_blank" class="btn-primary-sm" style="font-size:10px; text-decoration:none; display:inline-block;">Open CapCut</a>
+                </div>
+                <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; background:var(--bg-primary);">
+                  <strong>Clipchamp</strong>
+                  <p style="font-size:11px; color:var(--text-muted); margin:2px 0 4px 0;">Microsoft online screen & video recorder</p>
+                  <a href="https://clipchamp.com" target="_blank" class="btn-primary-sm" style="font-size:10px; text-decoration:none; display:inline-block;">Open Clipchamp</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 3: Image Editing & Design -->
+            <div>
+              <h4 style="font-size:13px; color:var(--accent-blue); margin-bottom:6px;"><i class="fa-solid fa-image"></i> Photo & Image Editors</h4>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; background:var(--bg-primary);">
+                  <strong>Photopea</strong>
+                  <p style="font-size:11px; color:var(--text-muted); margin:2px 0 4px 0;">Free browser Photoshop alternative (.PSD)</p>
+                  <a href="https://www.photopea.com" target="_blank" class="btn-primary-sm" style="font-size:10px; text-decoration:none; display:inline-block;">Open Photopea</a>
+                </div>
+                <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; background:var(--bg-primary);">
+                  <strong>Remove.bg</strong>
+                  <p style="font-size:11px; color:var(--text-muted); margin:2px 0 4px 0;">Instant background remover for photos</p>
+                  <a href="https://www.remove.bg" target="_blank" class="btn-primary-sm" style="font-size:10px; text-decoration:none; display:inline-block;">Open Remove.bg</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 4: Documents & Writing -->
+            <div>
+              <h4 style="font-size:13px; color:var(--accent-blue); margin-bottom:6px;"><i class="fa-solid fa-file-lines"></i> Document Editors & Citation Tools</h4>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; background:var(--bg-primary);">
+                  <strong>Google Docs & Sheets</strong>
+                  <p style="font-size:11px; color:var(--text-muted); margin:2px 0 4px 0;">Real-time collaborative essay & report writer</p>
+                  <a href="https://docs.google.com" target="_blank" class="btn-primary-sm" style="font-size:10px; text-decoration:none; display:inline-block;">Open Google Docs</a>
+                </div>
+                <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; background:var(--bg-primary);">
+                  <strong>Grammarly</strong>
+                  <p style="font-size:11px; color:var(--text-muted); margin:2px 0 4px 0;">Spelling, grammar & tone checking</p>
+                  <a href="https://www.grammarly.com" target="_blank" class="btn-primary-sm" style="font-size:10px; text-decoration:none; display:inline-block;">Open Grammarly</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- STUDENT COMMUNITY SUGGESTION FORM -->
         <div class="sidebar-card">
-          <h3 class="sidebar-title"><i class="fa-solid fa-lightbulb"></i> Toolkit & Resource Suggestions</h3>
-          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Suggest a digital tool, academic software, or reference library link for VMC students.</p>
+          <h3 class="sidebar-title"><i class="fa-solid fa-lightbulb"></i> Submit a Tool Suggestion</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Know a great editing or academic web tool? Share it with your fellow VMC students below!</p>
           <form id="suggest-tool-form" class="stacked-form" style="margin-bottom: 16px;">
-            <input type="text" id="tool-name" class="input-field" placeholder="Tool / Resource Name (e.g., Figma for UI Design)" required>
-            <input type="url" id="tool-link" class="input-field" placeholder="Website URL (https://...)" required>
-            <textarea id="tool-desc" class="input-field" rows="2" placeholder="Why is this useful for students?" required></textarea>
-            <button type="submit" class="btn-primary-sm" style="width:100%;">Submit Suggestion</button>
+            <input type="text" id="tool-name" class="input-field" placeholder="Tool Name (e.g. Notion for Task Planning)" required>
+            <select id="tool-category-select" class="input-field" required>
+              <option value="Slide Presentation">Slide Presentation</option>
+              <option value="Video Editor">Video Editor</option>
+              <option value="Image Editor">Image Editor</option>
+              <option value="Document Editor">Document Editor</option>
+              <option value="Other Utility">Other Academic Tool</option>
+            </select>
+            <input type="url" id="tool-link" class="input-field" placeholder="Website Link (https://...)" required>
+            <textarea id="tool-desc" class="input-field" rows="2" placeholder="Describe how this helps with assignments..." required></textarea>
+            <button type="submit" class="btn-primary-sm" style="width:100%;">Submit Tool Suggestion</button>
           </form>
+          <h4 style="font-size:13px; margin-bottom:8px;">Student Community Suggestions</h4>
           <div id="toolkit-suggestions-list" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
+
       </div>
 
       <!-- 4. LOST & FOUND VIEW -->
@@ -184,7 +274,7 @@
 
   </div>
 
-  <!-- POST CREATION MODAL WITH MULTIMEDIA ATTACHMENTS -->
+  <!-- MODALS -->
   <div id="post-modal" class="modal-overlay" style="display: none;">
     <div class="fb-modal">
       <div class="modal-header">
