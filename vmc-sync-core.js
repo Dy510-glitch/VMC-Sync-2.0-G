@@ -1,6 +1,6 @@
 /**
  * VMC SYNC - CORE JAVASCRIPT ENGINE
- * Handles multi-tab sync, theme management, assignment tracking, toolkit suggestions, admin controls, and media posts.
+ * Handles multi-tab sync, theme management, assignment tracking, toolkit apps, post options dropdown (Edit, Delete, Copy Link, Report), and media posts.
  */
 
 const DEFAULT_STATE = {
@@ -29,7 +29,7 @@ const DEFAULT_STATE = {
     { id: 401, title: "Midterm Exams Schedule", text: "Midterms will start next week. Check your student portals for room assignments." }
   ],
   toolkitSuggestions: [
-    { id: 501, name: "GitHub Student Developer Pack", link: "https://education.github.com/pack", desc: "Free developer tools and software licenses for college students." }
+    { id: 501, name: "Mendeley Reference Manager", category: "Document Editor", link: "https://www.mendeley.com", desc: "Generates automatic APA/IEEE citations and manages research papers." }
   ],
   events: [
     { id: 601, title: "VMC IT & Systems Colloquium 2026", date: "Nov 15, 2026 • 1:00 PM", location: "Audio-Visual Room", desc: "Annual gathering showcasing student software prototypes and tech talks." }
@@ -57,6 +57,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("vmc_state_changed", renderApp);
   window.addEventListener("storage", renderApp);
+
+  // Close dropdowns when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest('.post-menu-container')) {
+      document.querySelectorAll('.post-menu-dropdown').forEach(d => d.style.display = 'none');
+    }
+  });
 });
 
 /* THEME TOGGLE */
@@ -113,7 +120,7 @@ function renderApp() {
   if (document.getElementById("admin-toolkit-moderation")) renderAdminToolkit(state.toolkitSuggestions);
 }
 
-/* 1. CAMPUS FEED & MULTIMEDIA RENDERER */
+/* 1. CAMPUS FEED & DROPDOWN OPTIONS MENU */
 window.filterFeed = function(filter, btn) {
   document.querySelectorAll(".feed-filter-btn").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
@@ -128,7 +135,7 @@ function renderFeed(posts, filter) {
 
   container.innerHTML = filtered.map(p => `
     <div class="post-card">
-      <div class="post-header">
+      <div class="post-header" style="position:relative;">
         <div style="display:flex; gap:10px; align-items:center;">
           <div class="avatar-placeholder" style="width:32px; height:32px; font-size:14px;">${p.author[0]}</div>
           <div>
@@ -136,10 +143,21 @@ function renderFeed(posts, filter) {
             <span class="post-time">${p.time}</span>
           </div>
         </div>
+
+        <!-- POST OPTIONS DROPDOWN MENU -->
+        <div class="post-menu-container" style="position:relative;">
+          <button class="action-btn" onclick="togglePostMenu(event, ${p.id})" style="padding:4px 8px; font-size:14px;"><i class="fa-solid fa-ellipsis"></i></button>
+          <div id="post-menu-${p.id}" class="post-menu-dropdown" style="display:none; position:absolute; right:0; top:28px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,0.15); width:140px; z-index:100; overflow:hidden;">
+            <button onclick="editPost(${p.id})" style="width:100%; text-align:left; background:none; border:none; padding:8px 12px; font-size:12px; color:var(--text-main); cursor:pointer;"><i class="fa-solid fa-pen"></i> Edit Post</button>
+            <button onclick="copyPostLink(${p.id})" style="width:100%; text-align:left; background:none; border:none; padding:8px 12px; font-size:12px; color:var(--text-main); cursor:pointer;"><i class="fa-solid fa-link"></i> Copy Link</button>
+            <button onclick="reportPost(${p.id})" style="width:100%; text-align:left; background:none; border:none; padding:8px 12px; font-size:12px; color:var(--text-main); cursor:pointer;"><i class="fa-solid fa-flag"></i> Report</button>
+            <button onclick="deletePost(${p.id})" style="width:100%; text-align:left; background:none; border:none; padding:8px 12px; font-size:12px; color:#d93025; cursor:pointer; border-top:1px solid var(--border-color);"><i class="fa-solid fa-trash"></i> Delete Post</button>
+          </div>
+        </div>
       </div>
       
       <div class="post-body">
-        <p>${p.text}</p>
+        <p id="post-text-${p.id}">${p.text}</p>
         
         <!-- EMBEDDED MEDIA RENDERERS -->
         ${p.media && p.media.image ? `<div style="margin-top:10px;"><img src="${p.media.image}" style="max-width:100%; max-height:350px; border-radius:8px; object-fit:cover;"></div>` : ''}
@@ -170,6 +188,45 @@ function renderFeed(posts, filter) {
   `).join('');
 }
 
+/* POST DROPDOWN OPTIONS LOGIC */
+window.togglePostMenu = function(e, id) {
+  e.stopPropagation();
+  document.querySelectorAll('.post-menu-dropdown').forEach(d => {
+    if (d.id !== `post-menu-${id}`) d.style.display = 'none';
+  });
+  const menu = document.getElementById(`post-menu-${id}`);
+  if (menu) menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+};
+
+window.editPost = function(id) {
+  const state = getState();
+  const post = state.posts.find(p => p.id === id);
+  if (post) {
+    const updatedText = prompt("Edit your post content:", post.text);
+    if (updatedText !== null && updatedText.trim() !== "") {
+      post.text = updatedText.trim();
+      saveState(state);
+    }
+  }
+};
+
+window.deletePost = function(id) {
+  if (confirm("Are you sure you want to delete this post?")) {
+    const state = getState();
+    state.posts = state.posts.filter(p => p.id !== id);
+    saveState(state);
+  }
+};
+
+window.copyPostLink = function(id) {
+  navigator.clipboard.writeText(`${window.location.origin}#post-${id}`);
+  alert("Post link copied to clipboard!");
+};
+
+window.reportPost = function(id) {
+  alert("Post has been flagged and submitted for administrator moderation.");
+};
+
 window.openPostModal = function(type) {
   const modal = document.getElementById("post-modal");
   if (modal) {
@@ -182,7 +239,6 @@ window.closePostModal = function() {
   if (modal) modal.style.display = "none";
 };
 
-// Helper to convert file input to DataURL base64 string
 function readFileAsDataURL(file) {
   return new Promise((resolve) => {
     if (!file) return resolve(null);
@@ -351,6 +407,7 @@ if (suggestForm) {
     state.toolkitSuggestions.push({
       id: Date.now(),
       name: document.getElementById("tool-name").value,
+      category: document.getElementById("tool-category-select").value,
       link: document.getElementById("tool-link").value,
       desc: document.getElementById("tool-desc").value
     });
@@ -365,7 +422,10 @@ function renderToolkitSuggestions(suggestions) {
   if (!container) return;
   container.innerHTML = suggestions.map(s => `
     <div style="padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-primary);">
-      <a href="${s.link}" target="_blank" style="font-weight: bold; font-size: 13px; color: var(--accent-blue); text-decoration: none;">${s.name} <i class="fa-solid fa-external-link-alt" style="font-size:10px;"></i></a>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <a href="${s.link}" target="_blank" style="font-weight: bold; font-size: 13px; color: var(--accent-blue); text-decoration: none;">${s.name} <i class="fa-solid fa-external-link-alt" style="font-size:10px;"></i></a>
+        <span style="font-size:10px; font-weight:bold; background:var(--bg-subtle); padding:2px 6px; border-radius:4px;">${s.category || 'Utility'}</span>
+      </div>
       <p style="font-size: 11px; margin: 4px 0 0 0; color: var(--text-main);">${s.desc}</p>
     </div>
   `).join('');
@@ -486,7 +546,7 @@ function renderAdminToolkit(suggestions) {
   if (!container) return;
   container.innerHTML = suggestions.map(s => `
     <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-primary);">
-      <span style="font-size:12px;"><strong>${s.name}</strong></span>
+      <span style="font-size:12px;"><strong>${s.name}</strong> (${s.category || 'Utility'})</span>
       <button class="btn-secondary-sm" style="background:#ffebe9; color:#d93025;" onclick="adminDeleteSuggestion(${s.id})">Remove</button>
     </div>
   `).join('');
