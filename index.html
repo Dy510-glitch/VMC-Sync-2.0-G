@@ -268,7 +268,7 @@
 
   </div>
 
-  <!-- POST CREATION MODAL WITH MULTIPLE FILE ATTACHMENTS -->
+  <!-- POST CREATION MODAL -->
   <div id="post-modal" class="modal-overlay" style="display: none;">
     <div class="fb-modal">
       <div class="modal-header">
@@ -313,6 +313,7 @@
     </div>
   </div>
 
+  <!-- LOST ITEM MODAL -->
   <div id="lost-modal" class="modal-overlay" style="display: none;">
     <div class="fb-modal">
       <div class="modal-header">
@@ -334,6 +335,12 @@
         </div>
       </form>
     </div>
+  </div>
+
+  <!-- FULL-FRAME IMAGE LIGHTBOX MODAL -->
+  <div id="image-lightbox-modal" class="modal-overlay" style="display: none; z-index: 2000; background: rgba(0, 0, 0, 0.9);" onclick="closeImageLightbox()">
+    <button style="position: absolute; top: 16px; right: 24px; background: none; border: none; color: white; font-size: 32px; cursor: pointer;" onclick="closeImageLightbox()">&times;</button>
+    <img id="lightbox-img" src="" style="max-width: 90vw; max-height: 90vh; object-fit: contain; border-radius: 6px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);" onclick="event.stopPropagation()">
   </div>
 
   <script src="vmc-sync-core.js"></script>
