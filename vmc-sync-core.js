@@ -1,6 +1,6 @@
 /**
  * VMC SYNC - CORE JAVASCRIPT ENGINE
- * Handles multi-tab sync, theme management, assignment tracking, toolkit apps, post options dropdown (Edit, Delete, Copy Link, Report), and media posts.
+ * Handles multi-tab sync, theme management, assignment tracking, toolkit apps, multiple media uploads, and post options.
  */
 
 const DEFAULT_STATE = {
@@ -16,7 +16,7 @@ const DEFAULT_STATE = {
       text: "Welcome to VMC Sync! Don't forget to submit your Information Systems project.", 
       reactions: { "👍": 1 }, 
       comments: [],
-      media: { image: null, video: null, audio: null }
+      media: { images: [], videos: [], audios: [] }
     }
   ],
   tasks: [
@@ -42,8 +42,14 @@ function getState() {
 }
 
 function saveState(state) {
-  localStorage.setItem("VMC_SYNC_DATA", JSON.stringify(state));
-  window.dispatchEvent(new Event("vmc_state_changed"));
+  try {
+    localStorage.setItem("VMC_SYNC_DATA", JSON.stringify(state));
+    window.dispatchEvent(new Event("vmc_state_changed"));
+  } catch (err) {
+    if (err.name === 'QuotaExceededError') {
+      alert("Storage quota exceeded! Please clear some posts or upload smaller media files.");
+    }
+  }
 }
 
 if (!localStorage.getItem("VMC_SYNC_DATA")) {
@@ -58,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("vmc_state_changed", renderApp);
   window.addEventListener("storage", renderApp);
 
-  // Close dropdowns when clicking outside
   document.addEventListener("click", (e) => {
     if (!e.target.closest('.post-menu-container')) {
       document.querySelectorAll('.post-menu-dropdown').forEach(d => d.style.display = 'none');
@@ -115,12 +120,11 @@ function renderApp() {
   if (document.getElementById("toolkit-suggestions-list")) renderToolkitSuggestions(state.toolkitSuggestions);
   if (document.getElementById("events-list-container")) renderEvents(state.events);
 
-  // Admin Renderers
   if (document.getElementById("admin-feed-moderation")) renderAdminFeed(state.posts);
   if (document.getElementById("admin-toolkit-moderation")) renderAdminToolkit(state.toolkitSuggestions);
 }
 
-/* 1. CAMPUS FEED & DROPDOWN OPTIONS MENU */
+/* 1. CAMPUS FEED & MULTIPLE MEDIA GALLERY */
 window.filterFeed = function(filter, btn) {
   document.querySelectorAll(".feed-filter-btn").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
@@ -144,7 +148,6 @@ function renderFeed(posts, filter) {
           </div>
         </div>
 
-        <!-- POST OPTIONS DROPDOWN MENU -->
         <div class="post-menu-container" style="position:relative;">
           <button class="action-btn" onclick="togglePostMenu(event, ${p.id})" style="padding:4px 8px; font-size:14px;"><i class="fa-solid fa-ellipsis"></i></button>
           <div id="post-menu-${p.id}" class="post-menu-dropdown" style="display:none; position:absolute; right:0; top:28px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,0.15); width:140px; z-index:100; overflow:hidden;">
@@ -159,10 +162,26 @@ function renderFeed(posts, filter) {
       <div class="post-body">
         <p id="post-text-${p.id}">${p.text}</p>
         
-        <!-- EMBEDDED MEDIA RENDERERS -->
-        ${p.media && p.media.image ? `<div style="margin-top:10px;"><img src="${p.media.image}" style="max-width:100%; max-height:350px; border-radius:8px; object-fit:cover;"></div>` : ''}
-        ${p.media && p.media.video ? `<div style="margin-top:10px;"><video src="${p.media.video}" controls style="width:100%; max-height:300px; border-radius:8px;"></video></div>` : ''}
-        ${p.media && p.media.audio ? `<div style="margin-top:10px; background:var(--bg-primary); padding:8px; border-radius:8px;"><audio src="${p.media.audio}" controls style="width:100%;"></audio></div>` : ''}
+        <!-- MULTIPLE IMAGES GALLERY -->
+        ${p.media && p.media.images && p.media.images.length > 0 ? `
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:6px; margin-top:10px;">
+            ${p.media.images.map(img => `<img src="${img}" style="width:100%; height:180px; border-radius:6px; object-fit:cover;">`).join('')}
+          </div>
+        ` : ''}
+
+        <!-- MULTIPLE VIDEOS GALLERY -->
+        ${p.media && p.media.videos && p.media.videos.length > 0 ? `
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+            ${p.media.videos.map(vid => `<video src="${vid}" controls style="width:100%; max-height:280px; border-radius:6px;"></video>`).join('')}
+          </div>
+        ` : ''}
+
+        <!-- MULTIPLE AUDIO TRACKS -->
+        ${p.media && p.media.audios && p.media.audios.length > 0 ? `
+          <div style="display:flex; flex-direction:column; gap:6px; margin-top:10px;">
+            ${p.media.audios.map(aud => `<div style="background:var(--bg-primary); padding:6px; border-radius:6px;"><audio src="${aud}" controls style="width:100%;"></audio></div>`).join('')}
+          </div>
+        ` : ''}
       </div>
 
       <div class="post-reaction-bar">
@@ -188,7 +207,6 @@ function renderFeed(posts, filter) {
   `).join('');
 }
 
-/* POST DROPDOWN OPTIONS LOGIC */
 window.togglePostMenu = function(e, id) {
   e.stopPropagation();
   document.querySelectorAll('.post-menu-dropdown').forEach(d => {
@@ -239,13 +257,15 @@ window.closePostModal = function() {
   if (modal) modal.style.display = "none";
 };
 
-function readFileAsDataURL(file) {
-  return new Promise((resolve) => {
-    if (!file) return resolve(null);
-    const reader = new FileReader();
-    reader.onload = (e) => resolve(e.target.result);
-    reader.readAsDataURL(file);
-  });
+// Batch read multiple files as Base64 DataURLs
+function readMultipleFiles(files) {
+  return Promise.all(Array.from(files).map(file => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.readAsDataURL(file);
+    });
+  }));
 }
 
 const postForm = document.getElementById("create-post-form");
@@ -253,13 +273,13 @@ if (postForm) {
   postForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     
-    const imageFile = document.getElementById("media-image-input").files[0];
-    const videoFile = document.getElementById("media-video-input").files[0];
-    const audioFile = document.getElementById("media-audio-input").files[0];
+    const imageFiles = document.getElementById("media-image-input").files;
+    const videoFiles = document.getElementById("media-video-input").files;
+    const audioFiles = document.getElementById("media-audio-input").files;
 
-    const imageData = await readFileAsDataURL(imageFile);
-    const videoData = await readFileAsDataURL(videoFile);
-    const audioData = await readFileAsDataURL(audioFile);
+    const imagesData = await readMultipleFiles(imageFiles);
+    const videosData = await readMultipleFiles(videoFiles);
+    const audiosData = await readMultipleFiles(audioFiles);
 
     const state = getState();
     state.posts.unshift({
@@ -271,9 +291,9 @@ if (postForm) {
       reactions: { "👍": 0 },
       comments: [],
       media: {
-        image: imageData,
-        video: videoData,
-        audio: audioData
+        images: imagesData,
+        videos: videosData,
+        audios: audiosData
       }
     });
 
