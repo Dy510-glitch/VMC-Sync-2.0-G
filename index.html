@@ -17,10 +17,11 @@
     </a>
 
     <div class="topbar-search">
-      <input type="text" id="global-search" class="search-input" placeholder="Search VMC Sync (posts, assignments, items)...">
+      <input type="text" id="global-search" class="search-input" placeholder="Search VMC Sync...">
     </div>
 
     <div class="topbar-actions">
+      <a href="admin.html" class="action-btn" style="text-decoration:none; font-size:12px; font-weight:600;"><i class="fa-solid fa-user-shield"></i> Admin</a>
       <button id="theme-toggle-btn" class="theme-btn tooltip-bottom" data-tooltip="Toggle Theme">
         <i class="fa-solid fa-moon" id="theme-icon"></i>
       </button>
@@ -34,15 +35,16 @@
   <!-- MAIN CONTAINER -->
   <div class="fb-container">
     
-    <!-- LEFT SIDEBAR: QUICK NAVIGATION & APPS -->
+    <!-- LEFT SIDEBAR: NAVIGATION -->
     <aside class="fb-sidebar-left">
       <div class="sidebar-card">
         <h3 class="sidebar-title"><i class="fa-solid fa-compass"></i> Navigation Hub</h3>
         <div class="app-filter-bar">
           <button class="app-chip active" data-view="feed">Campus Feed</button>
-          <button class="app-chip" data-view="assignments">Assignments</button>
-          <button class="app-chip" data-view="toolkit">Student Toolkit</button>
+          <button class="app-chip" data-view="assignments">Assignment Tracker</button>
+          <button class="app-chip" data-view="toolkit">Student Toolkit & Suggestions</button>
           <button class="app-chip" data-view="lostfound">Lost & Found</button>
+          <button class="app-chip" data-view="events">Event Management</button>
         </div>
       </div>
 
@@ -54,15 +56,15 @@
       </div>
     </aside>
 
-    <!-- CENTER CONTENT FEED / ACTIVE VIEW -->
+    <!-- CENTER CONTENT VIEWS -->
     <main class="fb-main-content">
       
-      <!-- VIEW 1: CAMPUS FEED -->
+      <!-- 1. CAMPUS FEED VIEW -->
       <div id="view-feed" class="portal-view">
         <div class="sidebar-card post-creator-card">
           <div class="creator-header">
             <div class="avatar-placeholder" style="width:32px; height:32px; font-size:14px;">R</div>
-            <button id="post-input-trigger">Share an update, academic note, or question...</button>
+            <button id="post-input-trigger" onclick="openPostModal('General')">Share an update, academic note, or question...</button>
           </div>
           <div class="creator-actions">
             <button class="action-btn" onclick="openPostModal('General')"><i class="fa-solid fa-pen-to-square" style="color:#2d88ff;"></i> General Post</button>
@@ -77,12 +79,10 @@
           <button class="feed-filter-btn" onclick="filterFeed('Urgent', this)">Urgent</button>
         </div>
 
-        <div id="feed-posts-container">
-          <!-- Dynamic posts rendered here -->
-        </div>
+        <div id="feed-posts-container"></div>
       </div>
 
-      <!-- VIEW 2: ASSIGNMENTS -->
+      <!-- 2. ASSIGNMENT TRACKER VIEW -->
       <div id="view-assignments" class="portal-view" style="display: none;">
         <div class="sidebar-card">
           <h3 class="sidebar-title"><i class="fa-solid fa-list-check"></i> Assignment Tracker</h3>
@@ -112,32 +112,24 @@
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody id="task-table-body">
-                <!-- Tasks dynamically loaded -->
-              </tbody>
+              <tbody id="task-table-body"></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- VIEW 3: STUDENT TOOLKIT (GPA & RESOURCES) -->
+      <!-- 3. STUDENT TOOLKIT & SUGGESTIONS VIEW -->
       <div id="view-toolkit" class="portal-view" style="display: none;">
-        <div class="sidebar-card">
+        <div class="sidebar-card" style="margin-bottom: 16px;">
           <h3 class="sidebar-title"><i class="fa-solid fa-calculator"></i> GPA Calculator</h3>
           <div id="gpa-rows-container">
             <div class="form-row gpa-row">
               <input type="text" placeholder="Subject" class="input-field gpa-subject">
               <input type="number" placeholder="Units" class="input-field gpa-units" min="1" max="6" value="3">
               <select class="input-field gpa-grade">
-                <option value="1.0">1.00</option>
-                <option value="1.25">1.25</option>
-                <option value="1.5">1.50</option>
-                <option value="1.75">1.75</option>
-                <option value="2.0">2.00</option>
-                <option value="2.25">2.25</option>
-                <option value="2.5">2.50</option>
-                <option value="3.0">3.00</option>
-                <option value="5.0">5.00</option>
+                <option value="1.0">1.00</option><option value="1.25">1.25</option><option value="1.5">1.50</option>
+                <option value="1.75">1.75</option><option value="2.0">2.00</option><option value="2.25">2.25</option>
+                <option value="2.5">2.50</option><option value="3.0">3.00</option><option value="5.0">5.00</option>
               </select>
             </div>
           </div>
@@ -147,36 +139,52 @@
           </div>
           <div id="gpa-result-display" class="result-box-sm" style="display:none;">Estimated Term GPA: <span id="gpa-score">0.00</span></div>
         </div>
+
+        <div class="sidebar-card">
+          <h3 class="sidebar-title"><i class="fa-solid fa-lightbulb"></i> Toolkit & Resource Suggestions</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Suggest a digital tool, academic software, or reference library link for VMC students.</p>
+          <form id="suggest-tool-form" class="stacked-form" style="margin-bottom: 16px;">
+            <input type="text" id="tool-name" class="input-field" placeholder="Tool / Resource Name (e.g., Figma for UI Design)" required>
+            <input type="url" id="tool-link" class="input-field" placeholder="Website URL (https://...)" required>
+            <textarea id="tool-desc" class="input-field" rows="2" placeholder="Why is this useful for students?" required></textarea>
+            <button type="submit" class="btn-primary-sm" style="width:100%;">Submit Suggestion</button>
+          </form>
+          <div id="toolkit-suggestions-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
       </div>
 
-      <!-- VIEW 4: LOST & FOUND -->
+      <!-- 4. LOST & FOUND VIEW -->
       <div id="view-lostfound" class="portal-view" style="display: none;">
         <div class="sidebar-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <h3 class="sidebar-title" style="margin:0;"><i class="fa-solid fa-box-open"></i> Lost & Found Registry</h3>
             <button class="btn-primary-sm" onclick="openLostModal()">Report Item</button>
           </div>
-          <div id="lostfound-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <!-- Items dynamically loaded -->
-          </div>
+          <div id="lostfound-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"></div>
+        </div>
+      </div>
+
+      <!-- 5. EVENT MANAGEMENT VIEW -->
+      <div id="view-events" class="portal-view" style="display: none;">
+        <div class="sidebar-card">
+          <h3 class="sidebar-title"><i class="fa-solid fa-calendar-days"></i> Campus Events & Activities</h3>
+          <div id="events-list-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
         </div>
       </div>
 
     </main>
 
-    <!-- RIGHT SIDEBAR: ANNOUNCEMENTS & WIDGETS -->
+    <!-- RIGHT SIDEBAR: ANNOUNCEMENTS -->
     <aside class="fb-sidebar-right">
       <div class="sidebar-card">
         <h4 class="tab-subtitle"><i class="fa-solid fa-bullhorn"></i> Campus Announcements</h4>
-        <div id="announcements-container">
-          <!-- Announcements populated here -->
-        </div>
+        <div id="announcements-container"></div>
       </div>
     </aside>
 
   </div>
 
-  <!-- POST CREATION MODAL -->
+  <!-- MODALS -->
   <div id="post-modal" class="modal-overlay" style="display: none;">
     <div class="fb-modal">
       <div class="modal-header">
@@ -195,7 +203,6 @@
     </div>
   </div>
 
-  <!-- LOST ITEM REPORT MODAL -->
   <div id="lost-modal" class="modal-overlay" style="display: none;">
     <div class="fb-modal">
       <div class="modal-header">
@@ -206,10 +213,7 @@
         <label class="form-label">Item Title</label>
         <input type="text" id="lost-title" class="input-field" placeholder="e.g. Casio Calculator" required>
         <label class="form-label">Type</label>
-        <select id="lost-type" class="input-field">
-          <option value="Lost">Lost Item</option>
-          <option value="Found">Found Item</option>
-        </select>
+        <select id="lost-type" class="input-field"><option value="Lost">Lost Item</option><option value="Found">Found Item</option></select>
         <label class="form-label">Location</label>
         <input type="text" id="lost-location" class="input-field" placeholder="e.g. 2nd Floor Hallway" required>
         <label class="form-label">Description & Contact Info</label>
