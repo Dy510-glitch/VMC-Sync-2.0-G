@@ -1,6 +1,6 @@
 /**
  * VMC SYNC - CORE JAVASCRIPT ENGINE
- * Handles multi-tab sync, theme management, assignment tracking, toolkit apps, multiple media uploads, post dropdowns, and admin event/announcement/lost-and-found moderation.
+ * Handles multi-tab sync, theme management, sidebar assignment tracking, toolkit apps, multiple media uploads, post dropdowns, and admin event/announcement/lost-and-found moderation.
  */
 
 const DEFAULT_STATE = {
@@ -17,6 +17,23 @@ const DEFAULT_STATE = {
       reactions: { "👍": 1 }, 
       comments: [],
       media: { images: [], videos: [], audios: [] }
+    },
+    {
+      id: 999,
+      author: "VMC Student Council",
+      type: "General",
+      time: "Just now",
+      text: "📊 Quick Campus Pulse: How prepared are you for the upcoming midterm examinations?",
+      reactions: { "👍": 12 },
+      comments: [],
+      media: { images: [], videos: [], audios: [] },
+      isPoll: true,
+      pollOptions: [
+        { text: "Fully prepared & reviewing!", votes: 15 },
+        { text: "Studying hard right now", votes: 24 },
+        { text: "Need more coffee and sleep 😭", votes: 42 }
+      ],
+      userVoted: false
     }
   ],
   tasks: [
@@ -73,7 +90,48 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeImageLightbox();
   });
+
+  // Live Global Search Filtering
+  const searchInput = document.getElementById("global-search");
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      const state = getState();
+      
+      if (query === "") {
+        renderFeed(state.posts, state.currentFilter);
+        return;
+      }
+
+      const filteredPosts = state.posts.filter(p => 
+        p.text.toLowerCase().includes(query) || 
+        p.author.toLowerCase().includes(query) ||
+        p.type.toLowerCase().includes(query)
+      );
+
+      renderFeed(filteredPosts, state.currentFilter);
+    });
+  }
 });
+
+/* TOAST NOTIFICATIONS */
+function showToast(message, icon = "fa-circle-check") {
+  const container = document.getElementById("toast-container");
+  if (!container) return;
+
+  const toast = document.createElement("div");
+  toast.className = "vmc-toast";
+  toast.innerHTML = `<i class="fa-solid ${icon}" style="color:var(--accent-blue);"></i> ${message}`;
+  
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(10px)";
+    toast.style.transition = "all 0.3s ease";
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
 
 /* THEME TOGGLE WITH LOGO POP & GLOW ANIMATION */
 function initTheme() {
@@ -100,6 +158,7 @@ function initTheme() {
       const state = getState();
       state.theme = next;
       saveState(state);
+      showToast(`Switched to ${next} mode`, "fa-palette");
     });
   }
 }
@@ -125,7 +184,7 @@ function renderApp() {
   if (statusEl) statusEl.innerText = state.campusStatus;
   
   if (document.getElementById("feed-posts-container")) renderFeed(state.posts, state.currentFilter);
-  if (document.getElementById("task-table-body")) renderTasks(state.tasks);
+  if (document.getElementById("sidebar-task-list")) renderTasks(state.tasks);
   if (document.getElementById("lostfound-grid")) renderLostFound(state.lostFound);
   if (document.getElementById("announcements-container")) renderAnnouncements(state.announcements);
   if (document.getElementById("toolkit-suggestions-list")) renderToolkitSuggestions(state.toolkitSuggestions);
@@ -176,6 +235,27 @@ function renderFeed(posts, filter) {
       <div class="post-body">
         <p id="post-text-${p.id}">${p.text}</p>
         
+        <!-- INTERACTIVE POLL WIDGET -->
+        ${p.isPoll && p.pollOptions ? `
+          <div style="background:var(--bg-primary); padding:12px; border-radius:8px; border:1px solid var(--border-color); margin-top:10px;">
+            ${p.pollOptions.map((opt, idx) => {
+              const totalVotes = p.pollOptions.reduce((sum, o) => sum + o.votes, 0) || 1;
+              const percentage = Math.round((opt.votes / totalVotes) * 100);
+              return `
+                <button class="poll-option-btn" onclick="votePoll(${p.id}, ${idx})">
+                  <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
+                    <span>${opt.text}</span>
+                    <span style="font-size:11px; color:var(--text-muted);">${opt.votes} votes (${percentage}%)</span>
+                  </div>
+                  <div style="width:100%; background:var(--bg-subtle); height:6px; border-radius:3px; overflow:hidden;">
+                    <div style="width:${percentage}%; background:var(--accent-blue); height:100%; transition: width 0.3s ease;"></div>
+                  </div>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        ` : ''}
+
         ${p.media && p.media.images && p.media.images.length > 0 ? `
           <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
             ${p.media.images.map(img => `
@@ -226,6 +306,21 @@ function renderFeed(posts, filter) {
   `).join('');
 }
 
+window.votePoll = function(postId, optionIdx) {
+  const state = getState();
+  const post = state.posts.find(p => p.id === postId);
+  if (post && post.pollOptions) {
+    if (!post.userVoted) {
+      post.pollOptions[optionIdx].votes += 1;
+      post.userVoted = true;
+      saveState(state);
+      showToast("Vote recorded successfully!", "fa-square-poll-vertical");
+    } else {
+      showToast("You have already voted on this poll.", "fa-triangle-exclamation");
+    }
+  }
+};
+
 window.openImageLightbox = function(src) {
   const modal = document.getElementById("image-lightbox-modal");
   const img = document.getElementById("lightbox-img");
@@ -257,6 +352,7 @@ window.editPost = function(id) {
     if (updatedText !== null && updatedText.trim() !== "") {
       post.text = updatedText.trim();
       saveState(state);
+      showToast("Post updated successfully!");
     }
   }
 };
@@ -266,16 +362,17 @@ window.deletePost = function(id) {
     const state = getState();
     state.posts = state.posts.filter(p => p.id !== id);
     saveState(state);
+    showToast("Post deleted successfully!", "fa-trash");
   }
 };
 
 window.copyPostLink = function(id) {
   navigator.clipboard.writeText(`${window.location.origin}#post-${id}`);
-  alert("Post link copied to clipboard!");
+  showToast("Post link copied to clipboard!", "fa-link");
 };
 
 window.reportPost = function(id) {
-  alert("Post has been flagged and submitted for administrator moderation.");
+  showToast("Post has been flagged for moderation.", "fa-flag");
 };
 
 window.openPostModal = function(type) {
@@ -332,6 +429,7 @@ if (postForm) {
     saveState(state);
     postForm.reset();
     closePostModal();
+    showToast("Post published to feed!", "fa-circle-check");
   });
 }
 
@@ -366,7 +464,17 @@ window.deleteComment = function(postId, commentId) {
   }
 };
 
-/* 2. ASSIGNMENT TRACKER */
+/* 2. ASSIGNMENT TRACKER (SIDEBAR WIDGET) */
+window.openTaskModal = function() { 
+  const m = document.getElementById("task-modal");
+  if (m) m.style.display = "flex"; 
+};
+
+window.closeTaskModal = function() { 
+  const m = document.getElementById("task-modal");
+  if (m) m.style.display = "none"; 
+};
+
 const taskForm = document.getElementById("add-task-form");
 if (taskForm) {
   taskForm.addEventListener("submit", (e) => {
@@ -382,34 +490,55 @@ if (taskForm) {
     });
     saveState(state);
     taskForm.reset();
+    closeTaskModal();
+    showToast("Assignment added to tracker!", "fa-tasks");
   });
 }
 
 function renderTasks(tasks) {
-  const tbody = document.getElementById("task-table-body");
-  if (!tbody) return;
-  tbody.innerHTML = tasks.map(t => `
-    <tr>
-      <td><input type="checkbox" ${t.completed ? "checked" : ""} onchange="toggleTask(${t.id})"></td>
-      <td style="${t.completed ? 'text-decoration: line-through; color: var(--text-muted);' : ''}">${t.title}</td>
-      <td>${t.course}</td>
-      <td>${t.due}</td>
-      <td>${t.priority}</td>
-      <td><button class="btn-secondary-sm" style="color:var(--accent-blue);" onclick="deleteTask(${t.id})">Del</button></td>
-    </tr>
-  `).join('');
+  const container = document.getElementById("sidebar-task-list");
+  if (!container) return;
+
+  if (!tasks || tasks.length === 0) {
+    container.innerHTML = `<p style="font-size:12px; color:var(--text-muted);">No pending assignments.</p>`;
+    return;
+  }
+
+  container.innerHTML = tasks.map(t => {
+    const priorityColor = t.priority === 'High' ? '#d93025' : t.priority === 'Medium' ? '#f29900' : '#137333';
+    return `
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-primary);">
+        <div style="display:flex; gap:8px; align-items:flex-start; overflow:hidden;">
+          <input type="checkbox" ${t.completed ? "checked" : ""} onchange="toggleTask(${t.id})" style="margin-top:3px; cursor:pointer;">
+          <div>
+            <h5 style="margin:0; font-size:12px; color:var(--text-main); ${t.completed ? 'text-decoration: line-through; color: var(--text-muted);' : ''}">${t.title}</h5>
+            <span style="font-size:10px; color:var(--text-muted);">📚 ${t.course} • Due: ${t.due}</span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span style="font-size:9px; font-weight:bold; padding:2px 4px; border-radius:3px; background:${priorityColor}15; color:${priorityColor};">${t.priority}</span>
+          <button class="btn-secondary-sm" style="color:#d93025; background:none; border:none; cursor:pointer; font-size:11px;" onclick="deleteTask(${t.id})">×</button>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 window.toggleTask = function(id) {
   const state = getState();
   const task = state.tasks.find(t => t.id === id);
-  if (task) { task.completed = !task.completed; saveState(state); }
+  if (task) { 
+    task.completed = !task.completed; 
+    saveState(state); 
+    showToast(task.completed ? "Task marked as completed!" : "Task marked active", "fa-circle-check");
+  }
 };
 
 window.deleteTask = function(id) {
   const state = getState();
   state.tasks = state.tasks.filter(t => t.id !== id);
   saveState(state);
+  showToast("Task removed", "fa-trash");
 };
 
 /* 3. GPA & TOOLKIT SUGGESTIONS */
@@ -447,6 +576,7 @@ if (calcGpaBtn) {
     if (totalUnits > 0) {
       document.getElementById("gpa-score").innerText = (weightedPoints / totalUnits).toFixed(2);
       document.getElementById("gpa-result-display").style.display = "block";
+      showToast("Term GPA calculated successfully!", "fa-calculator");
     }
   });
 }
@@ -465,7 +595,7 @@ if (suggestForm) {
     });
     saveState(state);
     suggestForm.reset();
-    alert("Toolkit suggestion submitted!");
+    showToast("Toolkit suggestion submitted!", "fa-lightbulb");
   });
 }
 
@@ -500,6 +630,7 @@ if (lostForm) {
     saveState(state);
     lostForm.reset();
     closeLostModal();
+    showToast("Lost & Found report submitted!", "fa-box-open");
   });
 }
 
@@ -554,7 +685,7 @@ if (adminControlsForm) {
     });
     saveState(state);
     adminControlsForm.reset();
-    alert("Campus settings and announcement broadcasted successfully!");
+    showToast("Announcement broadcasted successfully!", "fa-bullhorn");
   });
 }
 
@@ -572,7 +703,7 @@ if (adminEventForm) {
     });
     saveState(state);
     adminEventForm.reset();
-    alert("Campus event published!");
+    showToast("Campus event published!", "fa-calendar-days");
   });
 }
 
@@ -626,6 +757,7 @@ window.adminEditEvent = function(id) {
     event.desc = newDesc.trim() || event.desc;
 
     saveState(state);
+    showToast("Event updated successfully!");
   }
 };
 
@@ -634,6 +766,7 @@ window.adminDeleteEvent = function(id) {
     const state = getState();
     state.events = state.events.filter((e, idx) => (e.id || idx) !== id);
     saveState(state);
+    showToast("Event deleted", "fa-trash");
   }
 };
 
@@ -652,6 +785,7 @@ window.adminDeletePost = function(id) {
   const state = getState();
   state.posts = state.posts.filter(p => p.id !== id);
   saveState(state);
+  showToast("Post removed by admin", "fa-trash");
 };
 
 function renderAdminToolkit(suggestions) {
@@ -669,6 +803,7 @@ window.adminDeleteSuggestion = function(id) {
   const state = getState();
   state.toolkitSuggestions = state.toolkitSuggestions.filter(s => s.id !== id);
   saveState(state);
+  showToast("Toolkit suggestion removed", "fa-trash");
 };
 
 function renderAdminAnnouncements(announcements) {
@@ -701,6 +836,7 @@ window.adminDeleteAnnouncement = function(id) {
     const state = getState();
     state.announcements = state.announcements.filter((a, idx) => (a.id || idx) !== id);
     saveState(state);
+    showToast("Announcement deleted", "fa-trash");
   }
 };
 
@@ -737,5 +873,6 @@ window.adminDeleteLostFoundItem = function(id) {
     const state = getState();
     state.lostFound = state.lostFound.filter((item, idx) => (item.id || idx) !== id);
     saveState(state);
+    showToast("Lost & Found report removed", "fa-trash");
   }
 };
