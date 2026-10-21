@@ -12,7 +12,7 @@
   <!-- TOPBAR HEADER -->
   <header class="fb-topbar">
     <a href="index.html" class="topbar-brand">
-      <img src="vmc-logo.png" id="vmc-logo-img" alt="VMC Logo" class="glowing-logo">
+    <img src="Logo3.png" idalt="VMC Logo" style="height: 36px; width: auto; object-fit: contain;">
       <h1 class="brand-title">VMC Sync</h1>
     </a>
 
@@ -70,14 +70,14 @@
       <section id="view-feed" class="portal-view active-view">
         <!-- CREATE POST COMPONENT -->
         <div class="create-post-card">
-          <div style="display:flex; gap:10px; align-items:center;">
+          <div style="display:flex; gap:10px; align-items:center; margin-bottom: 10px;">
             <div class="avatar-placeholder">R</div>
-            <button class="create-post-trigger" onclick="openPostModal('General')">Share an academic update, question, or announcement...</button>
+            <button class="create-post-trigger" onclick="openPostModal('General')" style="flex:1; text-align:left; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:20px; padding:10px 16px; color:var(--text-muted); cursor:pointer;">Share an academic update, question, or announcement...</button>
           </div>
-          <div class="create-post-actions">
-            <button class="post-action-btn" onclick="openPostModal('Academic')"><i class="fa-solid fa-book" style="color:#1877f2;"></i> Academic</button>
-            <button class="post-action-btn" onclick="openPostModal('General')"><i class="fa-solid fa-bullhorn" style="color:#e41e3f;"></i> Announcement</button>
-            <button class="post-action-btn" onclick="openPostModal('Event')"><i class="fa-solid fa-calendar-check" style="color:#2e7d32;"></i> Event</button>
+          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:10px; gap:8px;">
+            <button class="post-action-btn" onclick="openPostModal('Academic')" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; background:none; border:none; padding:8px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600; color:var(--text-main);"><i class="fa-solid fa-book" style="color:#1877f2;"></i> Academic</button>
+            <button class="post-action-btn" onclick="openPostModal('General')" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; background:none; border:none; padding:8px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600; color:var(--text-main);"><i class="fa-solid fa-bullhorn" style="color:#e41e3f;"></i> Announcement</button>
+            <button class="post-action-btn" onclick="openPostModal('Event')" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; background:none; border:none; padding:8px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600; color:var(--text-main);"><i class="fa-solid fa-calendar-check" style="color:#2e7d32;"></i> Event</button>
           </div>
         </div>
 
