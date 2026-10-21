@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-/* THEME TOGGLE */
+/* THEME TOGGLE WITH LOGO POP & GLOW ANIMATION */
 function initTheme() {
   const state = getState();
   document.documentElement.setAttribute("data-theme", state.theme);
@@ -92,6 +92,14 @@ function initTheme() {
       document.documentElement.setAttribute("data-theme", next);
       if (icon) icon.className = next === "dark" ? "fa-solid fa-sun" : "fa-solid fa-moon";
       
+      // TRIGGER LOGO POP & GLOW ANIMATION
+      const logoImg = document.getElementById("vmc-logo-img");
+      if (logoImg) {
+        logoImg.classList.remove("logo-pop-animation");
+        void logoImg.offsetWidth; // Force reflow
+        logoImg.classList.add("logo-pop-animation");
+      }
+
       const state = getState();
       state.theme = next;
       saveState(state);
@@ -128,6 +136,7 @@ function renderApp() {
 
   if (document.getElementById("admin-feed-moderation")) renderAdminFeed(state.posts);
   if (document.getElementById("admin-toolkit-moderation")) renderAdminToolkit(state.toolkitSuggestions);
+  if (document.getElementById("admin-announcements-list")) renderAdminAnnouncements(state.announcements);
 }
 
 /* 1. CAMPUS FEED & AUTO-FIT MEDIA GALLERY */
@@ -604,4 +613,34 @@ window.adminDeleteSuggestion = function(id) {
   const state = getState();
   state.toolkitSuggestions = state.toolkitSuggestions.filter(s => s.id !== id);
   saveState(state);
+};
+
+function renderAdminAnnouncements(announcements) {
+  const container = document.getElementById("admin-announcements-list");
+  if (!container) return;
+
+  if (announcements.length === 0) {
+    container.innerHTML = `<p style="font-size:12px; color:var(--text-muted);">No active announcements.</p>`;
+    return;
+  }
+
+  container.innerHTML = announcements.map(a => `
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-primary);">
+      <div>
+        <h5 style="margin:0 0 2px 0; font-size:13px; color:var(--text-main);">${a.title}</h5>
+        <p style="margin:0; font-size:11px; color:var(--text-muted);">${a.text}</p>
+      </div>
+      <button class="btn-secondary-sm" style="background:#ffebe9; color:#d93025; font-size:11px; cursor:pointer;" onclick="adminDeleteAnnouncement(${a.id})">
+        <i class="fa-solid fa-trash"></i> Delete
+      </button>
+    </div>
+  `).join('');
+}
+
+window.adminDeleteAnnouncement = function(id) {
+  if (confirm("Are you sure you want to delete this announcement?")) {
+    const state = getState();
+    state.announcements = state.announcements.filter(a => a.id !== id);
+    saveState(state);
+  }
 };
