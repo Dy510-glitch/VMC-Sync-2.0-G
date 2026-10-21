@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VMC Sync - Villagers Montessori College Portal</title>
+  <title>VMC Sync - Student Portal & Community Hub</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -12,336 +12,309 @@
   <!-- TOPBAR HEADER -->
   <header class="fb-topbar">
     <a href="index.html" class="topbar-brand">
-      <img src="Logo3.png" idalt="VMC Logo" style="height: 36px; width: auto; object-fit: contain;">
+      <img src="vmc-logo.png" id="vmc-logo-img" alt="VMC Logo" class="glowing-logo">
       <h1 class="brand-title">VMC Sync</h1>
     </a>
 
-    <div class="topbar-search">
-      <input type="text" id="global-search" class="search-input" placeholder="Search VMC Sync...">
+    <div class="topbar-search-container">
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input type="text" id="global-search" class="topbar-search-input" placeholder="Search posts, tools, or announcements...">
     </div>
 
     <div class="topbar-actions">
-      <a href="admin.html" class="action-btn" style="text-decoration:none; font-size:12px; font-weight:600;"><i class="fa-solid fa-user-shield"></i> Admin</a>
-      <button id="theme-toggle-btn" class="theme-btn tooltip-bottom" data-tooltip="Toggle Theme">
-        <i class="fa-solid fa-moon" id="theme-icon"></i>
-      </button>
-      <div class="topbar-user">
-        <div class="avatar-placeholder">R</div>
-        <span class="user-name">Randy T.</span>
-      </div>
+      <a href="admin.html" class="action-btn" title="Admin Panel"><i class="fa-solid fa-user-gear"></i> Admin</a>
+      <button id="theme-toggle-btn" class="theme-btn" title="Toggle Light/Dark Theme"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
     </div>
   </header>
 
-  <!-- MAIN CONTAINER -->
+  <!-- NAVIGATION FILTER BAR -->
+  <nav class="app-filter-bar">
+    <button class="app-chip active" data-view="feed"><i class="fa-solid fa-newspaper"></i> Campus Feed</button>
+    <button class="app-chip" data-view="toolkit"><i class="fa-solid fa-toolbox"></i> Student Toolkit</button>
+    <button class="app-chip" data-view="lostfound"><i class="fa-solid fa-box-open"></i> Lost & Found</button>
+    <button class="app-chip" data-view="gpa"><i class="fa-solid fa-calculator"></i> GPA Calculator</button>
+  </nav>
+
+  <!-- MAIN THREE-COLUMN CONTAINER -->
   <div class="fb-container">
-    
-    <!-- LEFT SIDEBAR: NAVIGATION -->
+
+    <!-- LEFT SIDEBAR -->
     <aside class="fb-sidebar-left">
       <div class="sidebar-card">
-        <h3 class="sidebar-title"><i class="fa-solid fa-compass"></i> Navigation Hub</h3>
-        <div class="app-filter-bar">
-          <button class="app-chip active" data-view="feed">Campus Feed</button>
-          <button class="app-chip" data-view="assignments">Assignment Tracker</button>
-          <button class="app-chip" data-view="toolkit">Student Toolkit & Apps</button>
-          <button class="app-chip" data-view="lostfound">Lost & Found</button>
-          <button class="app-chip" data-view="events">Event Management</button>
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+          <div class="avatar-placeholder">R</div>
+          <div>
+            <h3 style="margin:0; font-size:14px; font-weight:700; color:var(--text-main);">Randy T. Galarce</h3>
+            <span style="font-size:11px; color:var(--accent-blue); font-weight:600;">BS Information Systems</span>
+          </div>
+        </div>
+        <div style="border-top:1px solid var(--border-color); padding-top:10px; margin-top:10px;">
+          <p style="font-size:12px; margin:0 0 4px 0; color:var(--text-muted);"><i class="fa-solid fa-building-columns"></i> Operational Status:</p>
+          <span id="display-campus-status" class="status-badge">Campus Open</span>
         </div>
       </div>
 
       <div class="sidebar-card">
-        <h4 class="tab-subtitle">Campus Status</h4>
-        <div id="status-pill-box" class="result-box-sm">
-          <i class="fa-solid fa-circle-check"></i> <span id="display-campus-status">Campus Open</span>
-        </div>
+        <h4 class="sidebar-title"><i class="fa-solid fa-compass"></i> Quick Links</h4>
+        <ul style="list-style:none; padding:0; margin:0; font-size:13px; display:flex; flex-direction:column; gap:8px;">
+          <li><a href="#feed" style="color:var(--text-main); text-decoration:none;"><i class="fa-solid fa-house" style="width:20px;"></i> Main Feed</a></li>
+          <li><a href="admin.html" style="color:var(--text-main); text-decoration:none;"><i class="fa-solid fa-shield-halved" style="width:20px;"></i> Admin Control Panel</a></li>
+        </ul>
       </div>
     </aside>
 
-    <!-- CENTER CONTENT VIEWS -->
-    <main class="fb-main-content">
-      
+    <!-- CENTER FEED & PORTAL VIEWS -->
+    <main class="fb-main-feed">
+
       <!-- 1. CAMPUS FEED VIEW -->
-      <div id="view-feed" class="portal-view">
-        <div class="sidebar-card post-creator-card">
-          <div class="creator-header">
-            <div class="avatar-placeholder" style="width:32px; height:32px; font-size:14px;">R</div>
-            <button id="post-input-trigger" onclick="openPostModal('General')">Share updates, photos, videos, audio notes, or questions...</button>
+      <section id="view-feed" class="portal-view active-view">
+        <!-- CREATE POST COMPONENT -->
+        <div class="create-post-card">
+          <div style="display:flex; gap:10px; align-items:center;">
+            <div class="avatar-placeholder">R</div>
+            <button class="create-post-trigger" onclick="openPostModal('General')">Share an academic update, question, or announcement...</button>
           </div>
-          <div class="creator-actions">
-            <button class="action-btn" onclick="openPostModal('General')"><i class="fa-solid fa-pen-to-square" style="color:#2d88ff;"></i> Text Post</button>
-            <button class="action-btn" onclick="openPostModal('General')"><i class="fa-solid fa-image" style="color:#45bd62;"></i> Photos/Videos</button>
-            <button class="action-btn" onclick="openPostModal('General')"><i class="fa-solid fa-music" style="color:#f7b928;"></i> Audio Tracks</button>
+          <div class="create-post-actions">
+            <button class="post-action-btn" onclick="openPostModal('Academic')"><i class="fa-solid fa-book" style="color:#1877f2;"></i> Academic</button>
+            <button class="post-action-btn" onclick="openPostModal('General')"><i class="fa-solid fa-bullhorn" style="color:#e41e3f;"></i> Announcement</button>
+            <button class="post-action-btn" onclick="openPostModal('Event')"><i class="fa-solid fa-calendar-check" style="color:#2e7d32;"></i> Event</button>
           </div>
         </div>
 
-        <div class="feed-filter-bar">
+        <!-- CATEGORY SUB-FILTERS -->
+        <div class="feed-sub-filter">
           <button class="feed-filter-btn active" onclick="filterFeed('All', this)">All Posts</button>
-          <button class="feed-filter-btn" onclick="filterFeed('General', this)">General</button>
           <button class="feed-filter-btn" onclick="filterFeed('Academic', this)">Academic</button>
+          <button class="feed-filter-btn" onclick="filterFeed('General', this)">General</button>
+          <button class="feed-filter-btn" onclick="filterFeed('Event', this)">Events</button>
         </div>
 
+        <!-- DYNAMIC POSTS CONTAINER -->
         <div id="feed-posts-container"></div>
-      </div>
+      </section>
 
-      <!-- 2. ASSIGNMENT TRACKER VIEW -->
-      <div id="view-assignments" class="portal-view" style="display: none;">
+      <!-- 2. STUDENT TOOLKIT VIEW -->
+      <section id="view-toolkit" class="portal-view" style="display:none;">
+        <div class="sidebar-card" style="margin-bottom:16px;">
+          <h3 class="sidebar-title"><i class="fa-solid fa-toolbox"></i> Essential Web Utilities</h3>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Curated software and online tools for student productivity and coursework.</p>
+          
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <a href="https://www.canva.com" target="_blank" class="toolkit-card-item">
+              <i class="fa-solid fa-palette" style="font-size:18px; color:#00c4cc;"></i>
+              <div>
+                <h5 style="margin:0; font-size:13px;">Canva</h5>
+                <span style="font-size:10px; color:var(--text-muted);">Graphic & Presentation Design</span>
+              </div>
+            </a>
+            <a href="https://gamma.app" target="_blank" class="toolkit-card-item">
+              <i class="fa-solid fa-wand-magic-sparkles" style="font-size:18px; color:#8a2be2;"></i>
+              <div>
+                <h5 style="margin:0; font-size:13px;">Gamma AI</h5>
+                <span style="font-size:10px; color:var(--text-muted);">AI Slide Generator</span>
+              </div>
+            </a>
+            <a href="https://www.photopea.com" target="_blank" class="toolkit-card-item">
+              <i class="fa-solid fa-image" style="font-size:18px; color:#188038;"></i>
+              <div>
+                <h5 style="margin:0; font-size:13px;">Photopea</h5>
+                <span style="font-size:10px; color:var(--text-muted);">Web Photoshop Alternative</span>
+              </div>
+            </a>
+            <a href="https://www.capcut.com" target="_blank" class="toolkit-card-item">
+              <i class="fa-solid fa-video" style="font-size:18px; color:#000;"></i>
+              <div>
+                <h5 style="margin:0; font-size:13px;">CapCut Web</h5>
+                <span style="font-size:10px; color:var(--text-muted);">Video Editing Suite</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- STUDENT SUGGESTIONS HUB -->
         <div class="sidebar-card">
-          <h3 class="sidebar-title"><i class="fa-solid fa-list-check"></i> Assignment Tracker</h3>
-          <form id="add-task-form" class="stacked-form" style="margin-bottom: 16px;">
-            <input type="text" id="task-title" class="input-field" placeholder="Assignment Title (e.g. IT101 System Specs)" required>
-            <div class="form-row">
-              <input type="text" id="task-course" class="input-field" placeholder="Course Code" required>
-              <input type="date" id="task-due" class="input-field" required>
-            </div>
-            <select id="task-priority" class="input-field">
-              <option value="High">High Priority</option>
-              <option value="Medium" selected>Medium Priority</option>
-              <option value="Low">Low Priority</option>
+          <h3 class="sidebar-title"><i class="fa-solid fa-lightbulb"></i> Community Tool Suggestions</h3>
+          <form id="suggest-tool-form" class="stacked-form" style="margin-bottom:14px;">
+            <input type="text" id="tool-name" class="input-field" placeholder="Tool Name (e.g., Notion)" required>
+            <select id="tool-category-select" class="input-field">
+              <option value="Document Editor">Document Editor</option>
+              <option value="Presentation">Presentation</option>
+              <option value="Graphics & Video">Graphics & Video</option>
+              <option value="Utility">Utility / Other</option>
             </select>
-            <button type="submit" class="btn-primary-sm" style="width:100%;">Add Assignment</button>
+            <input type="url" id="tool-link" class="input-field" placeholder="Website URL (https://...)" required>
+            <textarea id="tool-desc" class="input-field" rows="2" placeholder="Brief description of how this helps students..." required></textarea>
+            <button type="submit" class="btn-primary-sm">Submit Tool Suggestion</button>
           </form>
 
-          <div class="table-responsive">
-            <table class="toolkit-table">
-              <thead>
-                <tr>
-                  <th>Status</th>
-                  <th>Title</th>
-                  <th>Course</th>
-                  <th>Due</th>
-                  <th>Priority</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="task-table-body"></tbody>
-            </table>
-          </div>
+          <h4 style="font-size:13px; margin-bottom:8px;">Suggested by Students</h4>
+          <div id="toolkit-suggestions-list" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
-      </div>
+      </section>
 
-      <!-- 3. STUDENT TOOLKIT VIEW -->
-      <div id="view-toolkit" class="portal-view" style="display: none;">
-        
-        <!-- GPA CALCULATOR -->
-        <div class="sidebar-card" style="margin-bottom: 16px;">
-          <h3 class="sidebar-title"><i class="fa-solid fa-calculator"></i> GPA Calculator</h3>
-          <div id="gpa-rows-container">
-            <div class="form-row gpa-row">
-              <input type="text" placeholder="Subject" class="input-field gpa-subject">
-              <input type="number" placeholder="Units" class="input-field gpa-units" min="1" max="6" value="3">
-              <select class="input-field gpa-grade">
+      <!-- 3. LOST & FOUND VIEW -->
+      <section id="view-lostfound" class="portal-view" style="display:none;">
+        <div class="sidebar-card" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h3 class="sidebar-title" style="margin:0;"><i class="fa-solid fa-box-open"></i> Campus Lost & Found Registry</h3>
+            <p style="font-size:11px; color:var(--text-muted); margin:2px 0 0 0;">Report misplaced items or browse items found across VMC premises.</p>
+          </div>
+          <button class="btn-primary-sm" onclick="openLostModal()">+ Report Item</button>
+        </div>
+
+        <div id="lostfound-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;"></div>
+      </section>
+
+      <!-- 4. GPA CALCULATOR VIEW -->
+      <section id="view-gpa" class="portal-view" style="display:none;">
+        <div class="sidebar-card">
+          <h3 class="sidebar-title"><i class="fa-solid fa-calculator"></i> Academic Term GPA Calculator</h3>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Compute your weighted term grade average (1.00 to 5.00 grading scale).</p>
+
+          <div id="gpa-rows-container" style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+            <div class="form-row gpa-row" style="display:flex; gap:8px;">
+              <input type="text" placeholder="Subject Name (e.g., IS302)" class="input-field gpa-subject" style="flex:2;">
+              <input type="number" placeholder="Units" class="input-field gpa-units" min="1" max="6" value="3" style="flex:1;">
+              <select class="input-field gpa-grade" style="flex:1;">
                 <option value="1.0">1.00</option><option value="1.25">1.25</option><option value="1.5">1.50</option>
                 <option value="1.75">1.75</option><option value="2.0">2.00</option><option value="2.25">2.25</option>
                 <option value="2.5">2.50</option><option value="3.0">3.00</option><option value="5.0">5.00</option>
               </select>
             </div>
           </div>
-          <div class="toolkit-action-row">
-            <button id="add-gpa-row" class="btn-secondary-sm">Add Subject</button>
-            <button id="calc-gpa-btn" class="btn-primary-sm">Calculate GPA</button>
+
+          <div style="display:flex; gap:8px; margin-bottom:12px;">
+            <button type="button" id="add-gpa-row" class="btn-secondary-sm">+ Add Subject</button>
+            <button type="button" id="calc-gpa-btn" class="btn-primary-sm">Calculate Term GPA</button>
           </div>
-          <div id="gpa-result-display" class="result-box-sm" style="display:none;">Estimated Term GPA: <span id="gpa-score">0.00</span></div>
-        </div>
 
-        <!-- ESSENTIAL CREATIVE & ACADEMIC APPS HUB -->
-        <div class="sidebar-card" style="margin-bottom: 16px;">
-          <h3 class="sidebar-title"><i class="fa-solid fa-cubes"></i> Essential Assignment & Editing Tools</h3>
-          <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Curated web applications to help you complete slide presentations, video editing, graphic design, and research tasks.</p>
-
-          <div id="built-in-apps-grid" style="display: flex; flex-direction: column; gap: 14px;">
-            <div>
-              <h4 style="font-size:13px; color:var(--accent-blue); margin-bottom:6px;"><i class="fa-solid fa-file-powerpoint"></i> Slide Presentations & Pitch Decks</h4>
-              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; background:var(--bg-primary);">
-                  <strong>Canva Presentations</strong>
-                  <p style="font-size:11px; color:var(--text-muted); margin:2px 0 4px 0;">Interactive templates & deck export</p>
-                  <a href="https://www.canva.com" target="_blank" class="btn-primary-sm" style="font-size:10px; text-decoration:none; display:inline-block;">Open Canva</a>
-                </div>
-                <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; background:var(--bg-primary);">
-                  <strong>Gamma App</strong>
-                  <p style="font-size:11px; color:var(--text-muted); margin:2px 0 4px 0;">AI-assisted deck & document generation</p>
-                  <a href="https://gamma.app" target="_blank" class="btn-primary-sm" style="font-size:10px; text-decoration:none; display:inline-block;">Open Gamma</a>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h4 style="font-size:13px; color:var(--accent-blue); margin-bottom:6px;"><i class="fa-solid fa-video"></i> Video Editors for Project Reports</h4>
-              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; background:var(--bg-primary);">
-                  <strong>CapCut Web</strong>
-                  <p style="font-size:11px; color:var(--text-muted); margin:2px 0 4px 0;">Browser video editing & auto-subtitles</p>
-                  <a href="https://www.capcut.com" target="_blank" class="btn-primary-sm" style="font-size:10px; text-decoration:none; display:inline-block;">Open CapCut</a>
-                </div>
-                <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; background:var(--bg-primary);">
-                  <strong>Clipchamp</strong>
-                  <p style="font-size:11px; color:var(--text-muted); margin:2px 0 4px 0;">Microsoft online screen & video recorder</p>
-                  <a href="https://clipchamp.com" target="_blank" class="btn-primary-sm" style="font-size:10px; text-decoration:none; display:inline-block;">Open Clipchamp</a>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h4 style="font-size:13px; color:var(--accent-blue); margin-bottom:6px;"><i class="fa-solid fa-image"></i> Photo & Image Editors</h4>
-              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; background:var(--bg-primary);">
-                  <strong>Photopea</strong>
-                  <p style="font-size:11px; color:var(--text-muted); margin:2px 0 4px 0;">Free browser Photoshop alternative (.PSD)</p>
-                  <a href="https://www.photopea.com" target="_blank" class="btn-primary-sm" style="font-size:10px; text-decoration:none; display:inline-block;">Open Photopea</a>
-                </div>
-                <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; background:var(--bg-primary);">
-                  <strong>Remove.bg</strong>
-                  <p style="font-size:11px; color:var(--text-muted); margin:2px 0 4px 0;">Instant background remover for photos</p>
-                  <a href="https://www.remove.bg" target="_blank" class="btn-primary-sm" style="font-size:10px; text-decoration:none; display:inline-block;">Open Remove.bg</a>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h4 style="font-size:13px; color:var(--accent-blue); margin-bottom:6px;"><i class="fa-solid fa-file-lines"></i> Document Editors & Citation Tools</h4>
-              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; background:var(--bg-primary);">
-                  <strong>Google Docs & Sheets</strong>
-                  <p style="font-size:11px; color:var(--text-muted); margin:2px 0 4px 0;">Real-time collaborative essay & report writer</p>
-                  <a href="https://docs.google.com" target="_blank" class="btn-primary-sm" style="font-size:10px; text-decoration:none; display:inline-block;">Open Google Docs</a>
-                </div>
-                <div style="border:1px solid var(--border-color); padding:8px; border-radius:6px; background:var(--bg-primary);">
-                  <strong>Grammarly</strong>
-                  <p style="font-size:11px; color:var(--text-muted); margin:2px 0 4px 0;">Spelling, grammar & tone checking</p>
-                  <a href="https://www.grammarly.com" target="_blank" class="btn-primary-sm" style="font-size:10px; text-decoration:none; display:inline-block;">Open Grammarly</a>
-                </div>
-              </div>
-            </div>
+          <div id="gpa-result-display" style="display:none; padding:12px; background:var(--bg-primary); border:1px solid var(--accent-blue); border-radius:6px; text-align:center;">
+            <span style="font-size:12px; color:var(--text-muted);">Your Term GPA:</span>
+            <h2 id="gpa-score" style="margin:4px 0 0 0; color:var(--accent-blue); font-size:24px;">1.00</h2>
           </div>
         </div>
-
-        <!-- STUDENT COMMUNITY SUGGESTION FORM -->
-        <div class="sidebar-card">
-          <h3 class="sidebar-title"><i class="fa-solid fa-lightbulb"></i> Submit a Tool Suggestion</h3>
-          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Know a great editing or academic web tool? Share it with your fellow VMC students below!</p>
-          <form id="suggest-tool-form" class="stacked-form" style="margin-bottom: 16px;">
-            <input type="text" id="tool-name" class="input-field" placeholder="Tool Name (e.g. Notion for Task Planning)" required>
-            <select id="tool-category-select" class="input-field" required>
-              <option value="Slide Presentation">Slide Presentation</option>
-              <option value="Video Editor">Video Editor</option>
-              <option value="Image Editor">Image Editor</option>
-              <option value="Document Editor">Document Editor</option>
-              <option value="Other Utility">Other Academic Tool</option>
-            </select>
-            <input type="url" id="tool-link" class="input-field" placeholder="Website Link (https://...)" required>
-            <textarea id="tool-desc" class="input-field" rows="2" placeholder="Describe how this helps with assignments..." required></textarea>
-            <button type="submit" class="btn-primary-sm" style="width:100%;">Submit Tool Suggestion</button>
-          </form>
-          <h4 style="font-size:13px; margin-bottom:8px;">Student Community Suggestions</h4>
-          <div id="toolkit-suggestions-list" style="display:flex; flex-direction:column; gap:8px;"></div>
-        </div>
-
-      </div>
-
-      <!-- 4. LOST & FOUND VIEW -->
-      <div id="view-lostfound" class="portal-view" style="display: none;">
-        <div class="sidebar-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <h3 class="sidebar-title" style="margin:0;"><i class="fa-solid fa-box-open"></i> Lost & Found Registry</h3>
-            <button class="btn-primary-sm" onclick="openLostModal()">Report Item</button>
-          </div>
-          <div id="lostfound-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;"></div>
-        </div>
-      </div>
-
-      <!-- 5. EVENT MANAGEMENT VIEW -->
-      <div id="view-events" class="portal-view" style="display: none;">
-        <div class="sidebar-card">
-          <h3 class="sidebar-title"><i class="fa-solid fa-calendar-days"></i> Campus Events & Activities</h3>
-          <div id="events-list-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
-        </div>
-      </div>
+      </section>
 
     </main>
 
-    <!-- RIGHT SIDEBAR: ANNOUNCEMENTS -->
+    <!-- RIGHT SIDEBAR -->
     <aside class="fb-sidebar-right">
+      
+      <!-- CAMPUS ANNOUNCEMENTS -->
       <div class="sidebar-card">
-        <h4 class="tab-subtitle"><i class="fa-solid fa-bullhorn"></i> Campus Announcements</h4>
-        <div id="announcements-container"></div>
+        <h3 class="sidebar-title"><i class="fa-solid fa-bullhorn"></i> Campus Announcements</h3>
+        <div id="announcements-container" style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- Announcements rendered dynamically -->
+        </div>
       </div>
+
+      <!-- ASSIGNMENT TRACKER (RIGHT SIDEBAR WIDGET) -->
+      <div class="sidebar-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+          <h3 class="sidebar-title" style="margin:0;"><i class="fa-solid fa-tasks"></i> My Assignment Tracker</h3>
+          <button class="btn-primary-sm" onclick="openTaskModal()" style="font-size:11px; padding:4px 8px;">+ Add Task</button>
+        </div>
+        <div id="sidebar-task-list" style="display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto;">
+          <!-- Tasks rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- UPCOMING CAMPUS EVENTS -->
+      <div class="sidebar-card">
+        <h3 class="sidebar-title"><i class="fa-solid fa-calendar-days"></i> Campus Events</h3>
+        <div id="events-list-container" style="display:flex; flex-direction:column; gap:12px;">
+          <!-- Events rendered dynamically -->
+        </div>
+      </div>
+
     </aside>
 
   </div>
 
-  <!-- POST CREATION MODAL -->
-  <div id="post-modal" class="modal-overlay" style="display: none;">
-    <div class="fb-modal">
+  <!-- CREATE POST MODAL -->
+  <div id="post-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
       <div class="modal-header">
-        <h3 style="margin:0; font-size:16px;">Create Campus Post</h3>
-        <button class="close-btn" onclick="closePostModal()">&times;</button>
+        <h3>Create Post</h3>
+        <button class="modal-close-btn" onclick="closePostModal()">&times;</button>
       </div>
       <form id="create-post-form">
-        <input type="hidden" id="modal-post-type" value="General">
-        <label class="form-label">Post Category</label>
-        <select id="post-category-select" class="input-field">
-          <option value="General">General</option>
-          <option value="Academic">Academic</option>
+        <select id="post-category-select" class="input-field" style="margin-bottom:10px;">
+          <option value="General">General Announcement</option>
+          <option value="Academic">Academic / Coursework</option>
+          <option value="Event">Campus Event</option>
         </select>
+        <textarea id="modal-post-text" class="input-field" rows="4" placeholder="What's on your mind?" required></textarea>
         
-        <label class="form-label">What's on your mind?</label>
-        <textarea id="modal-post-text" class="input-field" rows="3" placeholder="Share with VMC students..." required></textarea>
-        
-        <!-- MULTIPLE ATTACHMENT INPUTS -->
-        <div style="border: 1px dashed var(--border-color); padding: 10px; border-radius: 6px; margin-bottom: 12px; background: var(--bg-primary);">
-          <label class="form-label" style="margin-bottom:6px;"><i class="fa-solid fa-paperclip"></i> Attach Media (Multiple Allowed)</label>
-          <div style="display: flex; flex-direction: column; gap: 6px;">
-            <div>
-              <span style="font-size:10px; color:var(--text-muted);">Photos:</span>
-              <input type="file" id="media-image-input" accept="image/*" multiple class="input-field" style="margin-bottom:0; font-size:11px;">
-            </div>
-            <div>
-              <span style="font-size:10px; color:var(--text-muted);">Videos:</span>
-              <input type="file" id="media-video-input" accept="video/*" multiple class="input-field" style="margin-bottom:0; font-size:11px;">
-            </div>
-            <div>
-              <span style="font-size:10px; color:var(--text-muted);">Audio Tracks:</span>
-              <input type="file" id="media-audio-input" accept="audio/*" multiple class="input-field" style="margin-bottom:0; font-size:11px;">
-            </div>
-          </div>
+        <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px;">
+          <label style="font-size:11px; font-weight:600; color:var(--text-muted);"><i class="fa-solid fa-image"></i> Attach Images:</label>
+          <input type="file" id="media-image-input" accept="image/*" multiple class="input-field" style="padding:4px;">
+          
+          <label style="font-size:11px; font-weight:600; color:var(--text-muted);"><i class="fa-solid fa-video"></i> Attach Video Clips:</label>
+          <input type="file" id="media-video-input" accept="video/*" multiple class="input-field" style="padding:4px;">
+          
+          <label style="font-size:11px; font-weight:600; color:var(--text-muted);"><i class="fa-solid fa-music"></i> Attach Audio Notes:</label>
+          <input type="file" id="media-audio-input" accept="audio/*" multiple class="input-field" style="padding:4px;">
         </div>
 
-        <div class="modal-actions">
-          <button type="button" class="btn-secondary-sm" onclick="closePostModal()">Cancel</button>
-          <button type="submit" class="btn-primary-sm">Post to Feed</button>
-        </div>
+        <input type="hidden" id="modal-post-type" value="General">
+        <button type="submit" class="btn-primary-sm" style="width:100%; margin-top:14px; padding:10px;">Publish Post</button>
       </form>
     </div>
   </div>
 
-  <!-- LOST ITEM MODAL -->
-  <div id="lost-modal" class="modal-overlay" style="display: none;">
-    <div class="fb-modal">
+  <!-- ADD TASK MODAL -->
+  <div id="task-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card" style="width:340px;">
       <div class="modal-header">
-        <h3 style="margin:0; font-size:16px;">Report Lost or Found Item</h3>
-        <button class="close-btn" onclick="closeLostModal()">&times;</button>
+        <h3>Add New Assignment</h3>
+        <button class="modal-close-btn" onclick="closeTaskModal()">&times;</button>
       </div>
-      <form id="report-lost-form">
-        <label class="form-label">Item Title</label>
-        <input type="text" id="lost-title" class="input-field" placeholder="e.g. Casio Calculator" required>
-        <label class="form-label">Type</label>
-        <select id="lost-type" class="input-field"><option value="Lost">Lost Item</option><option value="Found">Found Item</option></select>
-        <label class="form-label">Location</label>
-        <input type="text" id="lost-location" class="input-field" placeholder="e.g. 2nd Floor Hallway" required>
-        <label class="form-label">Description & Contact Info</label>
-        <textarea id="lost-desc" class="input-field" rows="3" placeholder="Provide details..." required></textarea>
-        <div class="modal-actions">
-          <button type="button" class="btn-secondary-sm" onclick="closeLostModal()">Cancel</button>
-          <button type="submit" class="btn-primary-sm">Submit Report</button>
+      <form id="add-task-form" class="stacked-form" style="display:flex; flex-direction:column; gap:8px;">
+        <input type="text" id="task-title" class="input-field" placeholder="Task Title" required style="width:100%;">
+        <input type="text" id="task-course" class="input-field" placeholder="Course Code (e.g., IS302)" required style="width:100%;">
+        <input type="date" id="task-due" class="input-field" required style="width:100%;">
+        <select id="task-priority" class="input-field" style="width:100%;">
+          <option value="High">High Priority</option>
+          <option value="Medium" selected>Medium Priority</option>
+          <option value="Low">Low Priority</option>
+        </select>
+        <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
+          <button type="button" class="btn-secondary-sm" onclick="closeTaskModal()">Cancel</button>
+          <button type="submit" class="btn-primary-sm">Save Task</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- FULL-FRAME IMAGE LIGHTBOX MODAL -->
-  <div id="image-lightbox-modal" class="modal-overlay" style="display: none; z-index: 2000; background: rgba(0, 0, 0, 0.9);" onclick="closeImageLightbox()">
-    <button style="position: absolute; top: 16px; right: 24px; background: none; border: none; color: white; font-size: 32px; cursor: pointer;" onclick="closeImageLightbox()">&times;</button>
-    <img id="lightbox-img" src="" style="max-width: 90vw; max-height: 90vh; object-fit: contain; border-radius: 6px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);" onclick="event.stopPropagation()">
+  <!-- REPORT LOST ITEM MODAL -->
+  <div id="lost-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Report Lost or Found Item</h3>
+        <button class="modal-close-btn" onclick="closeLostModal()">&times;</button>
+      </div>
+      <form id="report-lost-form" class="stacked-form">
+        <select id="lost-type" class="input-field">
+          <option value="Lost">I Lost Something</option>
+          <option value="Found">I Found Something</option>
+        </select>
+        <input type="text" id="lost-title" class="input-field" placeholder="Item Name (e.g., Blue Tumbler)" required>
+        <input type="text" id="lost-location" class="input-field" placeholder="Location (e.g., Computer Lab 2)" required>
+        <textarea id="lost-desc" class="input-field" rows="3" placeholder="Additional details or how to claim..." required></textarea>
+        <button type="submit" class="btn-primary-sm" style="width:100%; margin-top:10px;">Submit Report</button>
+      </form>
+    </div>
   </div>
+
+  <!-- FULL-SCREEN LIGHTBOX MODAL -->
+  <div id="image-lightbox-modal" class="lightbox-overlay" style="display:none;" onclick="closeImageLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightbox-img" class="lightbox-content" src="" alt="Full Resolution View">
+  </div>
+
+  <!-- FLOATING TOAST CONTAINER -->
+  <div id="toast-container"></div>
 
   <script src="vmc-sync-core.js"></script>
 </body>
