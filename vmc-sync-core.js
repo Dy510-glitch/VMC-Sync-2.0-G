@@ -10,7 +10,7 @@ const DEFAULT_STATE = {
   posts: [
     { 
       id: 1, 
-      author: "Randy T.", 
+      author: "Randy T. Galarce", 
       type: "Academic", 
       time: "10 mins ago", 
       text: "Welcome to VMC Sync! Don't forget to submit your Information Systems project.", 
