@@ -1,6 +1,6 @@
 /**
  * VMC SYNC - CORE JAVASCRIPT ENGINE
- * Handles multi-tab sync, theme management, assignment tracking, toolkit apps, multiple media uploads, post dropdowns, and full-frame image lightbox view.
+ * Handles multi-tab sync, theme management, assignment tracking, toolkit apps, multiple media uploads, post dropdowns, and admin event/announcement moderation.
  */
 
 const DEFAULT_STATE = {
@@ -64,14 +64,12 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("vmc_state_changed", renderApp);
   window.addEventListener("storage", renderApp);
 
-  // Close dropdowns when clicking outside
   document.addEventListener("click", (e) => {
     if (!e.target.closest('.post-menu-container')) {
       document.querySelectorAll('.post-menu-dropdown').forEach(d => d.style.display = 'none');
     }
   });
 
-  // Close Lightbox on Escape key
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeImageLightbox();
   });
@@ -92,11 +90,10 @@ function initTheme() {
       document.documentElement.setAttribute("data-theme", next);
       if (icon) icon.className = next === "dark" ? "fa-solid fa-sun" : "fa-solid fa-moon";
       
-      // TRIGGER LOGO POP & GLOW ANIMATION
       const logoImg = document.getElementById("vmc-logo-img");
       if (logoImg) {
         logoImg.classList.remove("logo-pop-animation");
-        void logoImg.offsetWidth; // Force reflow
+        void logoImg.offsetWidth;
         logoImg.classList.add("logo-pop-animation");
       }
 
@@ -137,6 +134,7 @@ function renderApp() {
   if (document.getElementById("admin-feed-moderation")) renderAdminFeed(state.posts);
   if (document.getElementById("admin-toolkit-moderation")) renderAdminToolkit(state.toolkitSuggestions);
   if (document.getElementById("admin-announcements-list")) renderAdminAnnouncements(state.announcements);
+  if (document.getElementById("admin-events-list")) renderAdminEvents(state.events);
 }
 
 /* 1. CAMPUS FEED & AUTO-FIT MEDIA GALLERY */
@@ -177,7 +175,6 @@ function renderFeed(posts, filter) {
       <div class="post-body">
         <p id="post-text-${p.id}">${p.text}</p>
         
-        <!-- AUTO-FIT IMAGES GALLERY -->
         ${p.media && p.media.images && p.media.images.length > 0 ? `
           <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
             ${p.media.images.map(img => `
@@ -188,7 +185,6 @@ function renderFeed(posts, filter) {
           </div>
         ` : ''}
 
-        <!-- AUTO-FIT VIDEOS GALLERY -->
         ${p.media && p.media.videos && p.media.videos.length > 0 ? `
           <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
             ${p.media.videos.map(vid => `
@@ -199,7 +195,6 @@ function renderFeed(posts, filter) {
           </div>
         ` : ''}
 
-        <!-- MULTIPLE AUDIO TRACKS -->
         ${p.media && p.media.audios && p.media.audios.length > 0 ? `
           <div style="display:flex; flex-direction:column; gap:6px; margin-top:10px;">
             ${p.media.audios.map(aud => `<div style="background:var(--bg-primary); padding:6px; border-radius:6px;"><audio src="${aud}" controls style="width:100%;"></audio></div>`).join('')}
@@ -230,7 +225,6 @@ function renderFeed(posts, filter) {
   `).join('');
 }
 
-/* LIGHTBOX MODAL CONTROLS */
 window.openImageLightbox = function(src) {
   const modal = document.getElementById("image-lightbox-modal");
   const img = document.getElementById("lightbox-img");
@@ -568,7 +562,7 @@ if (adminEventForm) {
   adminEventForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const state = getState();
-    state.events.push({
+    state.events.unshift({
       id: Date.now(),
       title: document.getElementById("event-title").value,
       date: document.getElementById("event-date").value,
@@ -580,6 +574,67 @@ if (adminEventForm) {
     alert("Campus event published!");
   });
 }
+
+/* ADMIN EVENT MODERATION (EDIT & DELETE) */
+function renderAdminEvents(events) {
+  const container = document.getElementById("admin-events-list");
+  if (!container) return;
+
+  if (!events || events.length === 0) {
+    container.innerHTML = `<p style="font-size:12px; color:var(--text-muted);">No published events.</p>`;
+    return;
+  }
+
+  container.innerHTML = events.map((e, idx) => {
+    const eventId = e.id || idx;
+    return `
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-primary);">
+        <div>
+          <h5 style="margin:0 0 2px 0; font-size:13px; color:var(--text-main);">${e.title}</h5>
+          <p style="margin:0; font-size:11px; color:var(--text-muted);">📍 ${e.location} • ${e.date}</p>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn-secondary-sm" style="font-size:11px; cursor:pointer;" onclick="adminEditEvent(${eventId})">
+            <i class="fa-solid fa-pen"></i> Edit
+          </button>
+          <button class="btn-secondary-sm" style="background:#ffebe9; color:#d93025; font-size:11px; cursor:pointer;" onclick="adminDeleteEvent(${eventId})">
+            <i class="fa-solid fa-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.adminEditEvent = function(id) {
+  const state = getState();
+  const event = state.events.find((e, idx) => (e.id || idx) === id);
+  if (event) {
+    const newTitle = prompt("Edit Event Title:", event.title);
+    if (newTitle === null) return;
+    const newDate = prompt("Edit Event Date & Time:", event.date);
+    if (newDate === null) return;
+    const newLocation = prompt("Edit Event Location:", event.location);
+    if (newLocation === null) return;
+    const newDesc = prompt("Edit Event Description:", event.desc);
+    if (newDesc === null) return;
+
+    event.title = newTitle.trim() || event.title;
+    event.date = newDate.trim() || event.date;
+    event.location = newLocation.trim() || event.location;
+    event.desc = newDesc.trim() || event.desc;
+
+    saveState(state);
+  }
+};
+
+window.adminDeleteEvent = function(id) {
+  if (confirm("Are you sure you want to delete this event?")) {
+    const state = getState();
+    state.events = state.events.filter((e, idx) => (e.id || idx) !== id);
+    saveState(state);
+  }
+};
 
 function renderAdminFeed(posts) {
   const container = document.getElementById("admin-feed-moderation");
@@ -619,28 +674,31 @@ function renderAdminAnnouncements(announcements) {
   const container = document.getElementById("admin-announcements-list");
   if (!container) return;
 
-  if (announcements.length === 0) {
+  if (!announcements || announcements.length === 0) {
     container.innerHTML = `<p style="font-size:12px; color:var(--text-muted);">No active announcements.</p>`;
     return;
   }
 
-  container.innerHTML = announcements.map(a => `
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-primary);">
-      <div>
-        <h5 style="margin:0 0 2px 0; font-size:13px; color:var(--text-main);">${a.title}</h5>
-        <p style="margin:0; font-size:11px; color:var(--text-muted);">${a.text}</p>
+  container.innerHTML = announcements.map((a, idx) => {
+    const annId = a.id || idx;
+    return `
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-primary);">
+        <div>
+          <h5 style="margin:0 0 2px 0; font-size:13px; color:var(--text-main);">${a.title}</h5>
+          <p style="margin:0; font-size:11px; color:var(--text-muted);">${a.text}</p>
+        </div>
+        <button class="btn-secondary-sm" style="background:#ffebe9; color:#d93025; font-size:11px; cursor:pointer;" onclick="adminDeleteAnnouncement(${annId})">
+          <i class="fa-solid fa-trash"></i> Delete
+        </button>
       </div>
-      <button class="btn-secondary-sm" style="background:#ffebe9; color:#d93025; font-size:11px; cursor:pointer;" onclick="adminDeleteAnnouncement(${a.id})">
-        <i class="fa-solid fa-trash"></i> Delete
-      </button>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 window.adminDeleteAnnouncement = function(id) {
   if (confirm("Are you sure you want to delete this announcement?")) {
     const state = getState();
-    state.announcements = state.announcements.filter(a => a.id !== id);
+    state.announcements = state.announcements.filter((a, idx) => (a.id || idx) !== id);
     saveState(state);
   }
 };
