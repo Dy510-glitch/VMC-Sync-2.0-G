@@ -12,7 +12,7 @@
   <!-- TOPBAR HEADER -->
   <header class="fb-topbar">
     <a href="index.html" class="topbar-brand">
-     <img src="Logo3.png" idalt="VMC Logo" style="height: 36px; width: auto; object-fit: contain;">
+      <img src="vmc-logo.png" id="vmc-logo-img" alt="VMC Logo" class="glowing-logo">
       <h1 class="brand-title">Admin Panel</h1>
     </a>
 
@@ -64,6 +64,13 @@
 
       <h4 style="font-size:13px; margin-bottom:8px;"><i class="fa-solid fa-calendar-days"></i> Manage Published Events</h4>
       <div id="admin-events-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+    </div>
+
+    <!-- LOST & FOUND REGISTRY MANAGEMENT -->
+    <div class="sidebar-card" style="margin-bottom: 20px;">
+      <h3 class="sidebar-title"><i class="fa-solid fa-box-open"></i> Lost & Found Registry Moderation</h3>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Remove claimed, resolved, or duplicate items reported by students.</p>
+      <div id="admin-lostfound-list" style="display:flex; flex-direction:column; gap:8px;"></div>
     </div>
 
     <!-- MODERATION TOOLS -->
