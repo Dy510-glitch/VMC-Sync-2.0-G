@@ -1,6 +1,6 @@
 /**
  * VMC SYNC - CORE JAVASCRIPT ENGINE
- * Handles multi-tab sync, theme management, assignment tracking, toolkit apps, multiple media uploads, post dropdowns, and admin event/announcement moderation.
+ * Handles multi-tab sync, theme management, assignment tracking, toolkit apps, multiple media uploads, post dropdowns, and admin event/announcement/lost-and-found moderation.
  */
 
 const DEFAULT_STATE = {
@@ -135,6 +135,7 @@ function renderApp() {
   if (document.getElementById("admin-toolkit-moderation")) renderAdminToolkit(state.toolkitSuggestions);
   if (document.getElementById("admin-announcements-list")) renderAdminAnnouncements(state.announcements);
   if (document.getElementById("admin-events-list")) renderAdminEvents(state.events);
+  if (document.getElementById("admin-lostfound-list")) renderAdminLostFound(state.lostFound);
 }
 
 /* 1. CAMPUS FEED & AUTO-FIT MEDIA GALLERY */
@@ -315,7 +316,7 @@ if (postForm) {
     const state = getState();
     state.posts.unshift({
       id: Date.now(),
-      author: "Randy T.",
+      author: "Randy T. Galarce",
       type: document.getElementById("post-category-select").value || "General",
       time: "Just now",
       text: document.getElementById("modal-post-text").value,
@@ -349,7 +350,7 @@ window.handleCommentKey = function(e, postId) {
     const state = getState();
     const post = state.posts.find(p => p.id === postId);
     if (post) {
-      post.comments.push({ id: Date.now(), author: "Randy T.", text: e.target.value.trim() });
+      post.comments.push({ id: Date.now(), author: "Randy T. Galarce", text: e.target.value.trim() });
       saveState(state);
       e.target.value = "";
     }
@@ -699,6 +700,42 @@ window.adminDeleteAnnouncement = function(id) {
   if (confirm("Are you sure you want to delete this announcement?")) {
     const state = getState();
     state.announcements = state.announcements.filter((a, idx) => (a.id || idx) !== id);
+    saveState(state);
+  }
+};
+
+/* ADMIN LOST & FOUND MODERATION */
+function renderAdminLostFound(items) {
+  const container = document.getElementById("admin-lostfound-list");
+  if (!container) return;
+
+  if (!items || items.length === 0) {
+    container.innerHTML = `<p style="font-size:12px; color:var(--text-muted);">No reported lost or found items.</p>`;
+    return;
+  }
+
+  container.innerHTML = items.map((item, idx) => {
+    const itemId = item.id || idx;
+    const isLost = item.type === 'Lost';
+    return `
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-primary);">
+        <div>
+          <span style="font-size:10px; font-weight:bold; padding:2px 6px; border-radius:4px; background:${isLost ? '#ffebe9' : '#e6f4ea'}; color:${isLost ? '#d93025' : '#137333'};">${item.type}</span>
+          <h5 style="margin:4px 0 2px 0; font-size:13px; color:var(--text-main);">${item.title}</h5>
+          <p style="margin:0; font-size:11px; color:var(--text-muted);">📍 ${item.location} — ${item.desc}</p>
+        </div>
+        <button class="btn-secondary-sm" style="background:#ffebe9; color:#d93025; font-size:11px; cursor:pointer;" onclick="adminDeleteLostFoundItem(${itemId})">
+          <i class="fa-solid fa-trash"></i> Remove
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+window.adminDeleteLostFoundItem = function(id) {
+  if (confirm("Are you sure you want to remove this item from the Lost & Found Registry?")) {
+    const state = getState();
+    state.lostFound = state.lostFound.filter((item, idx) => (item.id || idx) !== id);
     saveState(state);
   }
 };
