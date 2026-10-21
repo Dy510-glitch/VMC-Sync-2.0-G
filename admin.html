@@ -12,7 +12,7 @@
   <!-- TOPBAR HEADER -->
   <header class="fb-topbar">
     <a href="index.html" class="topbar-brand">
-      <div class="brand-logo-img" style="font-weight: 800; font-size: 18px; color: var(--accent-blue);">VMC</div>
+      <img src="vmc-logo.png" id="vmc-logo-img" alt="VMC Logo" class="glowing-logo">
       <h1 class="brand-title">Admin Panel</h1>
     </a>
 
@@ -27,7 +27,7 @@
     
     <!-- CAMPUS STATUS & ANNOUNCEMENT CONTROLS -->
     <div class="sidebar-card" style="margin-bottom: 20px;">
-      <h3 class="sidebar-title"><i class="fa-solid fa-sliders"></i> Campus Controls & Announcements</h3>
+      <h3 class="sidebar-title"><i class="fa-solid fa-sliders"></i> Campus Controls & Broadcast Announcements</h3>
       <form id="admin-controls-form" class="stacked-form">
         <label class="form-label">Campus Operational Status</label>
         <select id="admin-campus-status" class="input-field">
@@ -36,11 +36,19 @@
           <option value="Online Classes Only">Online Classes Only</option>
           <option value="Campus Closed">Campus Closed</option>
         </select>
+        
         <label class="form-label">Publish Announcement</label>
         <input type="text" id="admin-announcement-title" class="input-field" placeholder="Announcement Title" required>
         <textarea id="admin-announcement-text" class="input-field" rows="2" placeholder="Announcement details..." required></textarea>
         <button type="submit" class="btn-primary-sm">Broadcast Announcement</button>
       </form>
+    </div>
+
+    <!-- ACTIVE ANNOUNCEMENTS MANAGEMENT SECTION -->
+    <div class="sidebar-card" style="margin-bottom: 20px;">
+      <h3 class="sidebar-title"><i class="fa-solid fa-bullhorn"></i> Active Announcements Management</h3>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">View and remove active announcements currently displayed on the student portal.</p>
+      <div id="admin-announcements-list" style="display:flex; flex-direction:column; gap:8px;"></div>
     </div>
 
     <!-- EVENT MANAGEMENT CREATOR -->
